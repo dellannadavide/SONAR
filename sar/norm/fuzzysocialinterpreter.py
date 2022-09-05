@@ -1,0 +1,118 @@
+import copy
+import threading
+import traceback
+import random
+
+import utils.constants as Constants
+from sar.utils.fsutils import SARFuzzyRuleBase
+
+
+class FuzzySocialInterpreter:
+        def __init__(self, fuzzy_sets_file, ling_var_file, rules_file, min_certainty) -> None:
+            super().__init__()
+            self.fuzzy_sets_file = fuzzy_sets_file
+            self.ling_var_file = ling_var_file
+            self.rules_file = rules_file
+            self.fuzzyRuleBase = SARFuzzyRuleBase(self.fuzzy_sets_file, self.ling_var_file, self.rules_file, "social_interpreter")
+            self.min_certainty = min_certainty
+
+            #self.DIAMONDS = ['DUTY', 'INTELLECT', 'ADVERSITY', 'MATING', 'POSITIVITY', 'NEGATIVITY', 'DECEPTION', 'SOCIALITY']
+            self.lock = threading.Lock()
+
+        def getSocialInterpretationValues(self, inputs):
+            fs_output = None
+            self.lock.acquire()
+            try:
+                for i in inputs:
+                    if i in self.fuzzyRuleBase.inputs:
+                        # print("----------setting variable "+str(i)+" to "+str(inputs[i]))
+                        self.fuzzyRuleBase.fs.set_variable(i, inputs[i]) #todo somewhere mapping should be written
+                # print("----------performing mamdani inference")
+                fs_output = self.fuzzyRuleBase.fs.Mamdani_inference(verbose=False)
+                # print("----------end of inference")
+            except Exception:
+                print(traceback.format_exc())
+                pass
+            self.lock.release()
+            return fs_output
+
+
+        def getBestSocialInterpretation(self, inputs):
+            fs_output = self.getSocialInterpretationValues(inputs)
+            if not fs_output is None:
+                best_interpr = max(fs_output, key=fs_output.get)
+                # print("Inputs: "+str(inputs))
+                # print(best_interpr)
+                """ Communicating the social interpretation back"""
+                if fs_output[best_interpr] > self.min_certainty:
+                    # I want to retrieve all interpr that have same certainty as the max and randomly select among them (otherwise we select always the first)
+                    all_best_int = []
+                    for interpr in fs_output.keys():
+                        if fs_output[interpr] == fs_output[best_interpr]:
+                            all_best_int.append(interpr)
+                    best_interpr = random.choice(all_best_int)
+                    return fs_output, best_interpr
+                else:
+                    return fs_output, None
+            else:
+                print("The inputs "+str(inputs)+" are currently not supported")
+                return None, None
+
+        def getRuleBase(self):
+            return self.fuzzyRuleBase
+
+        def updateRuleBase(self, newRuleBase):
+            self.lock.acquire()
+            self.fuzzyRuleBase = newRuleBase
+            self.lock.release()
+
+        def updateRuleBaseFS(self, newFS):
+            rulebase = copy.deepcopy(self.getRuleBase())
+            for lv in newFS._lvs:
+                v = newFS._lvs[lv]
+                lv_universe = v._universe_of_discourse
+                for fs in v._FSlist:
+                    try:
+                        a, b, c, d, k_GP, theta = fs.get_params()
+                        a = max(lv_universe[0], min(a, lv_universe[1]))
+                        b = max(lv_universe[0], min(b, lv_universe[1]))
+                        c = max(lv_universe[0], min(c, lv_universe[1]))
+                        d = max(lv_universe[0], min(d, lv_universe[1]))
+                        new_fs_param = {"a": a,
+                                        "b": b,
+                                        "c": c,
+                                        "d": d,
+                                        "k_GP": k_GP,
+                                        "theta": theta}
+                        rulebase.updateMFParams(fs._term, new_fs_param)
+                    except:
+                        pass
+
+            new_fuzzy_system = rulebase.createFuzzySystem()
+            rulebase.setFuzzySystem(new_fuzzy_system)
+            self.updateRuleBase(rulebase)
+
+        def contextualize(self, dataset, optim_param):
+            # print("======= current fs ======")
+            # print(self.fuzzyRuleBase.fs)
+            # for lv in self.fuzzyRuleBase.fs._lvs:
+            #     v = self.fuzzyRuleBase.fs._lvs[lv]
+            #     print(v._concept)
+            #     for fs in v._FSlist:
+            #         try:
+            #             print(fs.get_params())
+            #         except:
+            #             pass
+            contextualized_FS = self.fuzzyRuleBase.getContextualizedFS(dataset, optim_param) #returns a simpful fs
+
+            # print("======= contextualized fs ======")
+            # print(contextualized_FS)
+            # for lv in contextualized_FS._lvs:
+            #     v = contextualized_FS._lvs[lv]
+            #     print(v._concept)
+            #     for fs in v._FSlist:
+            #         try:
+            #             print(fs.get_params())
+            #         except:
+            #             pass
+            self.updateRuleBaseFS(contextualized_FS)
