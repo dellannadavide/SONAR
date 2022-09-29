@@ -10,7 +10,9 @@ from sar.utils.moea import PHI_Q
 pd.set_option('display.max_columns', None)
 
 aggregated_final_results = pd.DataFrame()
-res_folder = "second_round"
+res_folder = "20220918/exp_exp_20220905195629/"
+res_folder = "exp_exp_20220928153233/"
+# res_folder = "20220918/exp_exp_20220905195659/"
 for filename in os.listdir(res_folder):
     f = os.path.join(res_folder, filename)
     if os.path.isfile(f) and f.endswith(".csv"):
@@ -73,23 +75,23 @@ distributions_averages = {
 }
 distributions_stdevs = {
     "US": {
-        "low_distance": 0.1,
-        "mid_distance":	0.1,
-        "high_distance":	0.1,
-        "low_volume":	1,
-        "mid_volume":	1,
-        "high_volume":	1,
+        "low_distance": 0.15,
+        "mid_distance":	0.3,
+        "high_distance":	0.5,
+        "low_volume":	10,
+        "mid_volume":	10,
+        "high_volume":	10,
         "low_mov":	0.1,
         "mid_mov":	0.1,
         "high_mov":	0.1
     },
     "Austria": {
-        "low_distance": 0.1,
-        "mid_distance":	0.1,
-        "high_distance":	0.1,
-        "low_volume":	1,
-        "mid_volume":	1,
-        "high_volume":	1,
+        "low_distance": 0.15,
+        "mid_distance":	0.3,
+        "high_distance":	0.5,
+        "low_volume":	10,
+        "mid_volume":	10,
+        "high_volume":	10,
         "low_mov":	0.1,
         "mid_mov":	0.1,
         "high_mov":	0.1
@@ -97,9 +99,21 @@ distributions_stdevs = {
 }
 
 rmse_df = pd.DataFrame()
-gen_range = np.arange(0, 1.000001, 0.05)
+# gen_range = np.arange(0, 1.000001, 0.05)
+range_dist = np.arange(0, 4.000001, 0.05)
+range_vol = np.arange(0, 100.000001, 0.05)
+range_mov = np.arange(0, 1.000001, 0.05)
+
+
+
+mapping_ranges = {
+    "DIST": range_dist,
+    "VOLUME": range_vol,
+    "MOVEMENTS": range_mov
+}
+
 aggregated_final_results = aggregated_final_results.reset_index()  # make sure indexes pair with number of rows
-fsi = "FSI"
+fsi = "FSQ_position_qualifier"
 average_nrmse_means = []
 average_nrmse_stdevs = []
 average_interpretabilities = []
@@ -128,7 +142,13 @@ for index, row in aggregated_final_results.iterrows():
             c = row[fsi+"_"+dyn_var+"_"+fuzzyset+"_c"]
             d = row[fsi+"_"+dyn_var+"_"+fuzzyset+"_d"]
 
-            partition.append(skfuzzy.trapmf(gen_range, [a,b,c,d]))
+            if b<a:
+                b=a
+            if c<b:
+                c=b
+            if d<c:
+                d=c
+            partition.append(skfuzzy.trapmf(mapping_ranges[dyn_var], [a,b,c,d]))
 
             mean_est = b+c/2.0
             stdev_est = c-b
@@ -148,21 +168,24 @@ for index, row in aggregated_final_results.iterrows():
         rmse_mean = math.sqrt(rmse_mean/len(fuzzy_sets))
         rmse_stdev = math.sqrt(rmse_stdev /len(fuzzy_sets))
         # print(len(fuzzy_sets))
-        # print(rmse_mean, rmse_stdev)
+        print(rmse_mean, rmse_stdev)
+
+        print(means)
+        print(stdevs)
 
         normalizer_mean = np.mean(np.asarray(means))
         normalizer_stdev = np.mean(np.asarray(stdevs))
         nrmse_mean = 0.0
         nrmse_stdev=0.0
-        if normalizer_mean>0:
+        if normalizer_mean>0.0000001:
             nrmse_mean = rmse_mean/normalizer_mean
             average_nrmse_mean = average_nrmse_mean + nrmse_mean
-        if normalizer_stdev > 0:
+        if normalizer_stdev > 0.0000001:
             nrmse_stdev = rmse_stdev / normalizer_stdev
             average_nrmse_stdev = average_nrmse_stdev + nrmse_stdev
-        # print(nrmse_mean, nrmse_stdev)
+        print(nrmse_mean, nrmse_stdev)
 
-        average_interpretability = average_interpretability + PHI_Q(partition)
+        average_interpretability = average_interpretability + PHI_Q([min(mapping_ranges[dyn_var]), max(mapping_ranges[dyn_var])], partition)
 
 
     average_nrmse_mean = average_nrmse_mean/len(mappings.keys())

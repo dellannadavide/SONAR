@@ -20,10 +20,12 @@ def main(argv):
         'min_nr_datapoints': int,
         'min_certainty_threshold': float,
         'use_correct_interpretation': bool,
+        'consider_past_experience': bool,
         'genetic_algo': str,
         'ga_nr_gen': int,
         'pop_size': int,
         'contextualize': bool,
+        'min_nr_adaptations_for_contextualizing': int,
         'trial': int
     }
 
@@ -98,9 +100,12 @@ def main(argv):
         'trial': [],
         'STEP/DATAPOINT': [],
         'use_correct_interpretation': [],
+        'consider_past_experience': [],
+        'contextualize': [],
+        'min_nr_adaptations_for_contextualizing': [],
+        'correct_interpretation': [],
         'social_interpretation': [],
-        'certainty_interpretation': [],
-        'contextualize': []
+        'certainty_interpretation': []
     }
     # for socialcue in Constants.LV_SOCIAL_CUES:
     #     df_results[socialcue] = []
@@ -206,15 +211,20 @@ def main(argv):
 
             df_results['STEP/DATAPOINT'].append(i)
             df_results['use_correct_interpretation'].append(exp_param["use_correct_interpretation"])
+            df_results['consider_past_experience'].append(exp_param["consider_past_experience"])
+            df_results['contextualize'].append(exp_param["contextualize"])
+            df_results['min_nr_adaptations_for_contextualizing'].append(exp_param["min_nr_adaptations_for_contextualizing"])
+            df_results['correct_interpretation'].append(str(df["SocialInterpretation"][i]))
             df_results['social_interpretation'].append(best_social_interpr if not best_social_interpr is None else "None")
             # df_results['certainty_interpretation'].append(social_values[best_social_interpr] if ((not social_values is None) and (not best_social_interpr is None)) else "None")
             df_results['certainty_interpretation'].append(str(social_values))
-            df_results['contextualize'].append(exp_param["contextualize"])
             # for socialcue in Constants.LV_SOCIAL_CUES:
             #     df_results[socialcue].append(float(df[socialcue][i]))
             #
             # for dynamic_var in dynamic_lv:
             #     df_results[dynamic_var].append(float(df[dynamic_var][i]))
+
+
 
 
             for lv in dynamic_lv:

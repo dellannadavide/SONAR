@@ -4,8 +4,11 @@ import simpful as sf
 from simpful import *
 import utils.constants as Constants
 import pandas as pd
+import numpy as np
+
 
 from sar.utils.moea import getContextualizedFS
+from sar.utils.skfsutils import createSKFuzzyMFandGetDissimilarity
 
 
 def scaleFrom01ToAB(x, a, b, lambd, k_SF):
@@ -28,6 +31,10 @@ def linearScaleUniverseToA1B1(sf_ling_var, a1, b1): #sf_ling_var is a simpful li
                                           linearScaleFromABToA1B1(sf_ling_var._universe_of_discourse[1], sf_ling_var._universe_of_discourse[0], sf_ling_var._universe_of_discourse[1], a1, b1)]
     return sf_ling_var._universe_of_discourse
 
+
+
+def getDissimilarity(universe_boundaries, mf1_params, mf2_params):
+    return createSKFuzzyMFandGetDissimilarity(universe_boundaries, mf1_params, mf2_params)
 
 class SARFuzzyLingVar:
     def __init__(self, name, concept, universe_of_discourse, fuzzy_sets, fuzzy_sets_names) -> None:
@@ -349,13 +356,14 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
         # print("creating a dynamic trapezoid fuzzy set for term ", term)
         super().__init__(function=function, term=term)
 
-    def set_params(self, a=None, b=None, c=None, d=None, k_GP=None, theta=None):
-        if a is not None: self._funpointer._a = a
-        if b is not None: self._funpointer._b = b
-        if c is not None: self._funpointer._c = c
-        if d is not None: self._funpointer._d = d
-        if k_GP is not None: self._funpointer._k_GP = k_GP
-        if theta is not None: self._funpointer._theta = theta
+    def set_params_dict(self, params_dict):
+        if params_dict["a"] is not None: self._funpointer._a = params_dict["a"]
+        if params_dict["b"] is not None: self._funpointer._b = params_dict["b"]
+        if params_dict["c"] is not None: self._funpointer._c = params_dict["c"]
+        if params_dict["d"] is not None: self._funpointer._d = params_dict["d"]
+        if params_dict["k_GP"] is not None: self._funpointer._k_GP = params_dict["k_GP"]
+        if params_dict["theta"] is not None: self._funpointer._theta = params_dict["theta"]
+        self.ensureOrdering()
 
     def setGeneralizedPositivelyModifierParams(self, theta, k_GP):
         self._funpointer._theta = theta
@@ -365,11 +373,23 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
     def get_params(self):
         return self._funpointer._a, self._funpointer._b, self._funpointer._c, self._funpointer._d, self._funpointer._k_GP, self._funpointer._theta
 
+    def get_params_dict(self):
+        return {
+            "a": self._funpointer._a,
+            "b": self._funpointer._b,
+            "c": self._funpointer._c,
+            "d": self._funpointer._d,
+            "k_GP": self._funpointer._k_GP,
+            "theta": self._funpointer._theta
+        }
     def scale(self, a, b, lambd, k_SF):
         self._funpointer._a = scaleFrom01ToAB(self._funpointer._a, a, b, lambd, k_SF)
         self._funpointer._b = scaleFrom01ToAB(self._funpointer._b, a, b, lambd, k_SF)
         self._funpointer._c = scaleFrom01ToAB(self._funpointer._c, a, b, lambd, k_SF)
         self._funpointer._d = scaleFrom01ToAB(self._funpointer._d, a, b, lambd, k_SF)
+
+        self.ensureOrdering()
+
         return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
 
     def scaleLinear(self, a, b, a1, b1):
@@ -377,6 +397,9 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
         self._funpointer._b = linearScaleFromABToA1B1(self._funpointer._b, a, b, a1, b1)
         self._funpointer._c = linearScaleFromABToA1B1(self._funpointer._c, a, b, a1, b1)
         self._funpointer._d = linearScaleFromABToA1B1(self._funpointer._d, a, b, a1, b1)
+
+        self.ensureOrdering()
+
         return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
 
     def updateSupportBoundaries(self, a1, d1):
@@ -384,6 +407,9 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
         self._funpointer._d = d1
         self._funpointer._b = max(self._funpointer._a, min(self._funpointer._b, self._funpointer._d))
         self._funpointer._c = max(self._funpointer._a, min(self._funpointer._c, self._funpointer._d))
+
+        self.ensureOrdering()
+
         return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
 
     def modifyCorePosition(self, k_CP):
@@ -394,6 +420,8 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
         else:
             self._funpointer._b = b + ((d - c) * k_CP)
             self._funpointer._c = c + ((d - c) * k_CP)
+
+        self.ensureOrdering()
         return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
 
     def modifyCoreWidth(self, k_CW):
@@ -406,6 +434,8 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
         else:
             self._funpointer._b = b + ((a - b) * k_CW)
             self._funpointer._c = c + ((d - c) * k_CW)
+
+        self.ensureOrdering()
         return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
 
     def modifySupportWidth(self, k_SW, lv_universe):
@@ -423,4 +453,14 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
         self._funpointer._c = max(lv_universe[0], min(new_c, lv_universe[1]))
         self._funpointer._d = max(lv_universe[0], min(new_d, lv_universe[1]))
 
+        self.ensureOrdering()
+
         return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
+
+    def ensureOrdering(self):
+        if self._funpointer._b <= self._funpointer._a:
+            self._funpointer._b = self._funpointer._a
+        if self._funpointer._c <= self._funpointer._b:
+            self._funpointer._c = self._funpointer._b
+        if self._funpointer._d <= self._funpointer._c:
+            self._funpointer._d = self._funpointer._c

@@ -117,21 +117,24 @@ for society in societies:
                 temp_list = []
                 for cue in cues:
                     corr_val = float(soc_cue2diam_df.loc[soc_cue2diam_df[cues_string]==cue, social_interpretation].iloc[0])
-                    ignore_condition = (
-                                               (corr_val < 0.05) or
-                                               ((social_interpretation == "ADVERSITY") and (cue in ["WORKING", "FRIENDS", "COMMUNICATING"])) or
-                                               ((social_interpretation == "DECEPTION") and (
-                                                           cue in ["WORKING"])) or
-                                               ((social_interpretation == "NEGATIVITY") and (
-                                                       cue in ["WORKING"])) or
-                                               ((social_interpretation == "INTELLECT") and (cue in ["FAMILY", "WORKING", "BAR", "MATE", "FRIENDS", "EATING", "DRINKING"]))
-                                       ) \
-                                       and \
-                                       (
-                                           not ((social_interpretation == "ADVERSITY") and (cue == "MUSIC")) and
-                                           not ((social_interpretation == "INTELLECT") and (cue == "READING"))
-                                       )
-
+                    # print("corr val of ", cue, social_interpretation, ": ", corr_val)
+                    # ignore_condition = (
+                    #                            (corr_val < 0.05) or
+                    #                            ((social_interpretation == "ADVERSITY") and (cue in ["WORKING", "FRIENDS", "COMMUNICATING"])) or
+                    #                            ((social_interpretation == "DECEPTION") and (
+                    #                                        cue in ["WORKING"])) or
+                    #                            ((social_interpretation == "NEGATIVITY") and (
+                    #                                    cue in ["WORKING"])) or
+                    #                            ((social_interpretation == "INTELLECT") and (cue in ["FAMILY", "WORKING", "BAR", "MATE", "FRIENDS", "EATING", "DRINKING"]))
+                    #                    ) \
+                    #                    and \
+                    #                    (
+                    #                        not ((social_interpretation == "ADVERSITY") and (cue == "MUSIC")) and
+                    #                        not ((social_interpretation == "INTELLECT") and (cue == "READING"))
+                    #                    )
+                    # ignore_condition = (corr_val < 0.05)
+                    ignore_condition = (corr_val < 0)
+                    # print("ignore ", ignore_condition)
                     if ignore_condition:
                         temp_list.append("0")
                     else:
@@ -157,8 +160,7 @@ for society in societies:
             data.append(dp)
             nr_data_points_soc = nr_data_points_soc + 1
 
-
 print(data)
-with open("data/societies_norms/data_{}_{}dp_v11.csv".format(str(societies), str(nr_data_points)), "w+",newline="") as file:
+with open("../data/societies_norms/data_{}_{}dp_v11_simple.csv".format(str(societies), str(nr_data_points)), "w+",newline="") as file:
     write = csv.writer(file)
     write.writerows(data)

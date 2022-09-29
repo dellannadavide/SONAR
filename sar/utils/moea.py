@@ -34,6 +34,9 @@ import utils.constants as Constants
 import skfuzzy as fuzz
 import scipy.integrate as integrate
 
+from sar.utils.skfsutils import convertFSTOSkFuzzy, getDissimilaritySKFuzzyMF
+
+
 def f(xy, *fuzzy_sets):
     """ To determine the intersection between two functions """
     x, y = xy
@@ -71,8 +74,8 @@ def R_QXP(x):
     return f(x)
 
 
-def getALphaCutBoundaries(mf, alpha):
-    x = np.arange(0, 1.00001, 0.05)
+def getALphaCutBoundaries(universe_boundaries, mf, alpha):
+    x = np.arange(universe_boundaries[0], universe_boundaries[1]+0.00001, 0.05)
     # start = time.time()
     boundaries = fuzz.lambda_cut_boundaries(x, mf, alpha)
     # print("Time for computing alpha cut: ", time.time() - start)
@@ -82,37 +85,37 @@ def getALphaCutBoundaries(mf, alpha):
         boundaries = np.array([0.0, 0.0])
     return boundaries
 
-def fU1minusL2(alpha, A1, A2):
-    u_A1alpha = getALphaCutBoundaries(A1, alpha)[1]
-    l_A2alpha = getALphaCutBoundaries(A2, alpha)[0]
+def fU1minusL2(partition_universe_boundaries, alpha, A1, A2):
+    u_A1alpha = getALphaCutBoundaries(partition_universe_boundaries, A1, alpha)[1]
+    l_A2alpha = getALphaCutBoundaries(partition_universe_boundaries, A2, alpha)[0]
     # u_A1alpha = boundaries_A1[1]
     # l_A2alpha = boundaries_A2[0]
     if u_A1alpha>l_A2alpha:
         return u_A1alpha-l_A2alpha
     return 0
 
-def fL1minusU2(alpha, A1, A2):
-    l_A1alpha = getALphaCutBoundaries(A1, alpha)[0]
-    u_A2alpha = getALphaCutBoundaries(A2, alpha)[1]
+def fL1minusU2(partition_universe_boundaries, alpha, A1, A2):
+    l_A1alpha = getALphaCutBoundaries(partition_universe_boundaries, A1, alpha)[0]
+    u_A2alpha = getALphaCutBoundaries(partition_universe_boundaries, A2, alpha)[1]
     # l_A1alpha = boundaries_A1[0]
     # u_A2alpha = boundaries_A2[1]
     if l_A1alpha>u_A2alpha:
         return l_A1alpha-u_A2alpha
     return 0
 
-def DeltaA1A2(A1, A2) -> float:
+def DeltaA1A2(partition_universe_boundaries, A1, A2) -> float:
     # integral = 0
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore')
-        integral_U1minusL2 = integrate.quad(lambda alpha: fU1minusL2(alpha, A1, A2), 0.0, 1.0, limit=10)
-        integral_L1minusU2 = integrate.quad(lambda alpha: fL1minusU2(alpha, A1, A2), 0.0, 1.0, limit=10)
+        integral_U1minusL2 = integrate.quad(lambda alpha: fU1minusL2(partition_universe_boundaries, alpha, A1, A2), 0.0, 1.0, limit=10)
+        integral_L1minusU2 = integrate.quad(lambda alpha: fL1minusU2(partition_universe_boundaries, alpha, A1, A2), 0.0, 1.0, limit=10)
         # print(integral_U1minusL2)
         # print(integral_L1minusU2)
         integral = integral_U1minusL2[0]+integral_L1minusU2[0]
         # print(integral)
     return integral
 
-def YuanFuzzyOrderingIndex(A1, A2):
+def YuanFuzzyOrderingIndex(partition_universe_boundaries, A1, A2):
     """
     :param A1: membership function 1
     :param A2: membership function 2
@@ -120,8 +123,8 @@ def YuanFuzzyOrderingIndex(A1, A2):
     """
     # start = time.time()
     yuan_index = 0
-    num = DeltaA1A2(A2, A1)
-    denom = (DeltaA1A2(A1, A2)+DeltaA1A2(A2, A1))
+    num = DeltaA1A2(partition_universe_boundaries, A2, A1)
+    denom = (DeltaA1A2(partition_universe_boundaries, A1, A2)+DeltaA1A2(partition_universe_boundaries, A2, A1))
     if denom>0:
         yuan_index = num/denom
     # print("Time for computing yuan: ", time.time() - start)
@@ -197,15 +200,9 @@ def mu_q_dji(x, dji):
 #             A_x = A_x.real
 #         return min(1, max(0.0, A_x))
 
-def convertFSTOSkFuzzy(simpful_fuzzyset):
-    """ Assuming trapezoid """
-    x = np.arange(0, 1.000001, 0.05)
-    return fuzz.trapmf(x, [simpful_fuzzyset._funpointer._a,
-                       simpful_fuzzyset._funpointer._b,
-                       simpful_fuzzyset._funpointer._c,
-                       simpful_fuzzyset._funpointer._d])
 
-def PHI_Q(partition):
+
+def PHI_Q(partition_universe_boundaries, partition):
     """
     This functions computes the interpretability index defined by Botta et al. 2009
     in "Context adaptation of fuzzy systems through a multi-objective evolutionary approach"
@@ -222,7 +219,7 @@ def PHI_Q(partition):
             # y = crossing_point_value(partition[i], partition[j])
             # mf_i = convertFSTOSkFuzzy(partition[i])
             # mf_j = convertFSTOSkFuzzy(partition[j])
-            num = num + ((1/dji)*(mu_q_dji(YuanFuzzyOrderingIndex(partition[i], partition[j]), dji)))
+            num = num + ((1/dji)*(mu_q_dji(YuanFuzzyOrderingIndex(partition_universe_boundaries, partition[i], partition[j]), dji)))
             # num = num + ((1/dji)*(mu_q_dji(YuanFuzzyOrderingIndex(mf_i, mf_j), dji)))
             denom = denom + (1/dji)
     return num/denom
@@ -253,8 +250,9 @@ def computePHIPenalty(FS, ling_var_to_adapt):
     cumulative_penalty = 0
     for v in ling_var_to_adapt:  # only these because we are not modifying anyways the others, so they would't change
         partition = FS.get_fuzzy_sets(v)  # list of fuzzy sets
-        sk_partition = [convertFSTOSkFuzzy(p) for p in partition]
-        penalty = 1-PHI_Q(sk_partition)
+        partition_universe_boundaries = FS._lvs[v].get_universe_of_discourse()
+        sk_partition = [convertFSTOSkFuzzy(partition_universe_boundaries, p) for p in partition]
+        penalty = 1-PHI_Q(partition_universe_boundaries, sk_partition)
         cumulative_penalty = cumulative_penalty + penalty
     average_penalty = cumulative_penalty / len(ling_var_to_adapt)
     # print("Time for computing phi penalty: ", time.time() - start)
@@ -293,6 +291,32 @@ def computeMSE(FS, dataset):
             sum_squared_errors = sum_squared_errors + 1
     mse = (1 / len(dataset)) * sum_squared_errors
     return mse
+
+def computeAverageDissimilarityWithCurrentController(FS, ling_var_to_adapt, base_FS):
+    cumulative_dissimilarity = 0
+    nr_el = 0
+    # print("Computing Average Dissimilarity")
+    for v in ling_var_to_adapt:  # only these because we are not modifying anyways the others, so they would't change
+        # print("Variable: ", v)
+        new_partition = FS.get_fuzzy_sets(v)  # list of fuzzy sets
+        base_partition = base_FS.get_fuzzy_sets(v)
+        base_partition_universe_boundaries = base_FS._lvs[v].get_universe_of_discourse()
+        base_partition_universe = np.arange(base_partition_universe_boundaries[0], base_partition_universe_boundaries[1]+0.000001, 0.05)
+        for fs_idx in range(len(new_partition)):
+            new_sk_fs = convertFSTOSkFuzzy(base_partition_universe_boundaries, new_partition[fs_idx])
+            base_sk_fs = convertFSTOSkFuzzy(base_partition_universe_boundaries, base_partition[fs_idx])
+            # print(v, new_partition[fs_idx]._term, "Comparing the new fs")
+            # print(v, new_partition[fs_idx]._term, new_sk_fs)
+            # print(v, "with the base fs")
+            # print(v, base_partition[fs_idx]._term, base_sk_fs)
+            # print(v, "over universe")
+            # print(v, new_partition[fs_idx]._term, base_partition_universe_boundaries)
+            dissimilarity = getDissimilaritySKFuzzyMF(base_partition_universe, base_sk_fs, base_partition_universe, new_sk_fs)
+            # print(v, new_partition[fs_idx]._term, "Dissimilarity: ", dissimilarity)
+            cumulative_dissimilarity = cumulative_dissimilarity + dissimilarity
+            nr_el = nr_el + 1
+    average_dissimilarity = cumulative_dissimilarity / nr_el
+    return average_dissimilarity
 
 
 def evalSetORIGINAL(asyncTask, controllers, ling_var_to_adapt, dataset, nr_objectives):
@@ -346,9 +370,9 @@ def evalSetORIGINAL(asyncTask, controllers, ling_var_to_adapt, dataset, nr_objec
     thread.join()
     return results
 
-def evalSet(fit_fun, population, ling_var_to_adapt, dataset, nr_objectives, interpretability_index):
+def evalSet(fit_fun, population, ling_var_to_adapt, dataset, nr_objectives, interpretability_index, base_controller):
     start = time.time()
-    evalFitness = partial(fit_fun, ling_var_to_adapt=ling_var_to_adapt, dataset=dataset, nr_objectives=nr_objectives, interpretability_index=interpretability_index)
+    evalFitness = partial(fit_fun, ling_var_to_adapt=ling_var_to_adapt, dataset=dataset, nr_objectives=nr_objectives, interpretability_index=interpretability_index, base_controller=base_controller)
     pool = Pool(cpu_count(logical=False))
     pop_fitness = pool.map(evalFitness, population)
     pool.close()
@@ -440,11 +464,12 @@ def getControllerFromChromosome(base_controller, ling_var_to_adapt, optim_param,
     return new_controller
 
 
-def fitnessFunction(controller, ling_var_to_adapt, dataset, nr_objectives, interpretability_index):
+def fitnessFunction(controller, ling_var_to_adapt, dataset, nr_objectives, interpretability_index, base_controller):
     result = {}
     result['mse'] = 1.0
     if nr_objectives==2:
-        result['mse'] = computeMSE(controller, dataset)
+        # result['mse'] = computeMSE(controller, dataset)
+        result['mse'] = computeAverageDissimilarityWithCurrentController(controller, ling_var_to_adapt, base_controller)
 
     if interpretability_index==Constants.PHI_INTERPRETABILITY_INDEX:
         result['avg_phi'] = computePHIPenalty(controller, ling_var_to_adapt)
@@ -460,7 +485,7 @@ def fitnessFunction_Multi_All(base_controller, ling_var_to_adapt, dataset, optim
                                                        ling_var_to_adapt,
                                                        optim_param,
                                                        chromosome))  # here you should be able to create all necessary info to create a bunch of descriptions that will lead to creating a bunch of fuzzy controllers that should be evaluated w.r.t. their output I guess
-    results = evalSet(fitnessFunction, controllers, ling_var_to_adapt, dataset, optim_param["n_obj_f"], optim_param["interpretability_index"])
+    results = evalSet(fitnessFunction, controllers, ling_var_to_adapt, dataset, optim_param["n_obj_f"], optim_param["interpretability_index"], base_controller)
     return results
 
 class MyMOEAProblem(Problem):
@@ -631,6 +656,7 @@ def getContextualizedFS(FS, ling_var_to_adapt, dataset, optim_param):
     problem = MyMOEAProblem(len(mask), lb_list, ub_list, FS, ling_var_to_adapt, dataset, optim_param=optim_param)
     ref_points = np.array([[0.0]*optim_param["n_obj_f"]])
 
+
     termination = get_termination("n_gen", optim_param["n_gen"])
 
     algo = None
@@ -681,6 +707,9 @@ def getContextualizedFS(FS, ling_var_to_adapt, dataset, optim_param):
             )
 
     if not algo is None:
+        # print(":.................................")
+        # print(algo)
+        # print(optim_param)
         res = minimize(problem,
                        algo,
                        termination,

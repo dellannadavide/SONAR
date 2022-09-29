@@ -1,4 +1,6 @@
 import copy
+import math
+
 from simpful import *
 
 import sys
@@ -14,7 +16,7 @@ parent = os.path.dirname(current)
 # the sys.path.
 sys.path.append(parent)
 
-from sar.utils.fsutils import linearScaleUniverseToA1B1
+from sar.utils.fsutils import linearScaleUniverseToA1B1, getDissimilarity
 from utils import utils
 import numpy as np
 import utils.constants as Constants
@@ -25,6 +27,10 @@ class NormAdapter2SIMnoagent():
         self.fsi = fsi #fuzzy social interpreter (None if not needed by the particular worker)
         self.fsq = fsq #fuzzy social qualifier (None if not needed, otherwise a list of fuzzy systems)
         # print("starting up norm adapter")
+
+        self.curr_adaptation = {}
+        self.curr_adaptation_all = 0
+        self.lamb = 0.001
 
         self.FS = FuzzySystem()
 
@@ -63,8 +69,11 @@ class NormAdapter2SIMnoagent():
             "gp": False,
             "n_obj_f": 1,
             "interpretability_index": Constants.PHI_INTERPRETABILITY_INDEX,
-            "contextualize": True
+            "consider_past_experience": False,
+            "contextualize": True,
+            "min_nr_adaptations_for_contextualizing": 10
         }
+
         nr_var_descriptors = 0
         if self.optim_param["scale"]:
             nr_var_descriptors += 5
@@ -84,10 +93,14 @@ class NormAdapter2SIMnoagent():
             self.optim_param["algo"] = params["genetic_algo"]
             self.optim_param["pop_size"] = params["pop_size"]
             self.optim_param["n_gen"] = params["ga_nr_gen"]
-            self.optim_param["algo"] = params["genetic_algo"]
             self.optim_param["interpretability_index"] = params["interpretability_index"]
             self.min_nr_datapoints_for_adaptation = params["min_nr_datapoints"]
             self.optim_param["contextualize"] = params["contextualize"]
+            self.optim_param["min_nr_adaptations_for_contextualizing"] = params["min_nr_adaptations_for_contextualizing"]
+            self.optim_param["consider_past_experience"] = params["consider_past_experience"]
+            if self.optim_param["consider_past_experience"]:
+                self.optim_param["n_obj_f"] = 2
+                self.optim_param["algo"] = Constants.NSGA3
 
 
     def collectDataPointFromMessage(self, message):
@@ -218,33 +231,19 @@ class NormAdapter2SIMnoagent():
                     print(social_int)
                     dp = aggr_knowledge[social_int]
                     print("social interpreter")
-                    self.adaptRuleBase(self.fsi, dp)
+                    self.adaptRuleBase(self.fsi, dp, data, self.curr_adaptation)
                     for fsq in self.fsq:
                         print("social qualifier " + str(fsq))
-                        self.adaptRuleBase(self.fsq[fsq], dp)
-
-                # self.agent.fsi.fuzzyRuleBase.fs.produce_figure()
-                if self.optim_param["contextualize"]:
-                    """ 
-                    Then I adjust the core width and the support width via MOEA (I call this contextualization) in order to maximize interpretability
-                    """
-                    # print("Adaptation of the core and support of the fuzzy sets via MOEA")
-                    # print("social interpreter")
-                    self.fsi.contextualize(data, self.optim_param)
-                    for fsq in self.fsq:
-                        # print("social qualifier " + str(fsq))
-                        self.fsq[fsq].contextualize(data, self.optim_param)
-
-                    # self.agent.fsi.fuzzyRuleBase.fs.produce_figure()
+                        self.adaptRuleBase(self.fsq[fsq], dp, data, self.curr_adaptation)
 
                 # print("Adaptation completed.")
+                # self.curr_adaptation = self.curr_adaptation +1
                 self.adapting = False
 
                 # self.agent.collected_knowledge = []
                 # print("Adaptation completed.")
 
-    def adaptRuleBase(self, fuzzy_social_system, dp):
-
+    def adaptRuleBase(self, fuzzy_social_system, dp, data, curr_adaptation):
         rulebase = copy.deepcopy(fuzzy_social_system.getRuleBase())
         social_int = dp[Constants.TOPIC_SOCIAL_INTERPR]
         lvs = rulebase.getLVSFromRulesContainingHighValuesOf(social_int) #returns a dictionary rule: list of linguistic variables (strings) in rule
@@ -374,6 +373,7 @@ class NormAdapter2SIMnoagent():
 
                         for fs in partition: #fs is a DynamicTrapezoidFuzzySet
                             print(fs)
+                            curr_params_dict = fs.get_params_dict()
                             """ First applying core-position modifier """
                             c_mfs = fs.get_params() #c_mfs is actually a TUPLE of all parameters of the fuzzyset
                             print("\tcurrent mfs:"+str(c_mfs))
@@ -390,10 +390,41 @@ class NormAdapter2SIMnoagent():
                             print(new_mfs)
                             rulebase.updateMFParams(fs._term,
                                                     new_mfs)  # this should create a new trapezoidfuzzyset and update it
+
+                            if self.optim_param["consider_past_experience"]:
+                                if self.tooDifferent(new_universe, new_mfs, curr_params_dict, str(lv)):
+                                    #if it is too different I reverting back
+                                    fs.set_params_dict(curr_params_dict)
+                                    rulebase.updateMFParams(fs._term, curr_params_dict)
+                                    print("\ttoo different, correct the to  mfs:" + str(curr_params_dict))
                         adapted_lingVar.append(str(lv))
         if len(adapted_lingVar)>0:
+            for lv in adapted_lingVar:
+                if (not lv in self.curr_adaptation):
+                    self.curr_adaptation[lv] = 0
+                self.curr_adaptation[lv] = self.curr_adaptation[lv]+1
+            self.curr_adaptation_all = self.curr_adaptation_all + 1
             new_fuzzy_system = rulebase.createFuzzySystem()
             rulebase.setFuzzySystem(new_fuzzy_system)
             fuzzy_social_system.updateRuleBase(rulebase)
+
+        if self.optim_param["contextualize"]:
+            """ 
+            Then I adjust the core width and the support width via MOEA (I call this contextualization) in order to maximize interpretability
+            """
+            if (self.curr_adaptation_all % self.optim_param["min_nr_adaptations_for_contextualizing"]) == 0:
+                fuzzy_social_system.contextualize(data, self.optim_param)
+
+    def tooDifferent(self, universe_boundaries, new_mf_param, curr_mf_param, ling_var):
+        dissimilarity = getDissimilarity(universe_boundaries, new_mf_param, curr_mf_param)
+        if (not ling_var in self.curr_adaptation) or self.curr_adaptation[ling_var]==0:
+            self.curr_adaptation[ling_var] = 0
+            return False
+        print("-------Revision of ", ling_var, self.curr_adaptation[ling_var], ":", dissimilarity,
+              self.getMaxDissimilarityForCurrentAdaptation(self.curr_adaptation[ling_var]))
+        return dissimilarity > self.getMaxDissimilarityForCurrentAdaptation(self.curr_adaptation[ling_var]) #if it is bigger return true, i.e., it is tooDifferent
+
+    def getMaxDissimilarityForCurrentAdaptation(self, curr_adaptation):
+        return (2 ** (-(curr_adaptation / (math.log(2) / self.lamb))))
 
 

@@ -92,24 +92,22 @@ def main():
 
     exp_possible_val = {
         'society': ['Austria', 'US'],
-        # 'dataset_file': ['data_USAustria_10000dp_003p.xlsx', 'data_USAustria_10000dp_007p.xlsx', 'data_USAustria_10000dp_01p.xlsx', 'data_USAustria_10000dp_02p.xlsx'],
-        # 'dataset_file': ['data_USAustria_10000dp_003p.xlsx'],
-        # 'dataset_file': ['data_USAustria_10000dp_only1_dfixed.xlsx'],
-        'dataset_file': ['data_USAustria_8000dp_v11.xlsx'],
-        'max_dataset_size': [1000, 8000, 16000], #[1000, 999999],
+        'dataset_file': ['data_USAustria_8000dp_v11_simple.xlsx'],
+        'max_dataset_size': [1000, 10000],  # [1000, 8000, 16000], #[1000, 999999],
         'fuzzy_sets_file': ['fuzzy_sets_multiple_ref.xlsx'],
         'ling_vars_file': ['ling_var_multiple_ref.xlsx'],
-        'rules_file_id': ['_ref_all'],
-        'interpretability_index': [Constants.PHI_INTERPRETABILITY_INDEX], #["Phi", "XP"],
-        'min_nr_datapoints': [10, 50, 100], #[1, 5, 10],
-        # 'min_certainty_threshold': [0.0, 0.2, 0.5],
-        'min_certainty_threshold': [0.0, 0.05, 0.1, 0.15],
-        'use_correct_interpretation': [True, False],
+        'rules_file_id': ['_ref_all_refined2'], # ['_ref_all'], ['_ref_all_refined']
+        'interpretability_index': [Constants.PHI_INTERPRETABILITY_INDEX], # [Constants.PHI_INTERPRETABILITY_INDEX, Constants.AVG_COVERAGE_INDEX], #["Phi", "XP"],
+        'min_nr_datapoints': [10, 50, 100],  # [1, 5, 10],
+        'min_certainty_threshold': [0.0],  # [0.0, 0.05, 0.1, 0.15],
+        'use_correct_interpretation': [False],  # [True, False],
+        'consider_past_experience': [True, False],
         'genetic_algo': [Constants.GA],
         'ga_nr_gen': [100],
         'pop_size': [20],
-        'contextualize': [False],
-        'trial':  list(range(5))
+        'contextualize': [False],  # [False, True],
+        'min_nr_adaptations_for_contextualizing': [10],
+        'trial': list(range(5))
     }
     # exp_possible_val = {
     #     'society': ['Austria', 'US'],

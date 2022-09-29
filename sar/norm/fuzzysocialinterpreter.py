@@ -28,6 +28,7 @@ class FuzzySocialInterpreter:
                         # print("----------setting variable "+str(i)+" to "+str(inputs[i]))
                         self.fuzzyRuleBase.fs.set_variable(i, inputs[i]) #todo somewhere mapping should be written
                 # print("----------performing mamdani inference")
+                # print(self.fuzzyRuleBase.fs._rules)
                 fs_output = self.fuzzyRuleBase.fs.Mamdani_inference(verbose=False)
                 # print("----------end of inference")
             except Exception:
