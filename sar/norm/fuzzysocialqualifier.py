@@ -1,5 +1,6 @@
 import copy
 import threading
+import traceback
 
 import utils.constants as Constants
 from sar.utils.fsutils import SARFuzzyRuleBase
@@ -17,16 +18,22 @@ class FuzzySocialQualifier:
             self.lock = threading.Lock()
 
         def getSocialQualification(self, input):
+            fs_output = None
             self.lock.acquire()
-            for i in input:
-                try:
-                    self.fuzzyRuleBase.fs.set_variable(i, input[i])
-                    print("Set val "+str(input[i])+" to var "+str(i))
-                except:
-                    print("Variable "+str(i)+" not in the fuzzyRuleBase, skipping.")
-            fs_output = self.fuzzyRuleBase.fs.Mamdani_inference()
+            try:
+                for i in input:
+                    if i in self.fuzzyRuleBase.inputs:
+                        try:
+                            self.fuzzyRuleBase.fs.set_variable(i, input[i])
+                            # print("Set val "+str(input[i])+" to var "+str(i))
+                        except:
+                            print("Variable "+str(i)+" not in the fuzzyRuleBase, skipping.")
+                fs_output = self.fuzzyRuleBase.fs.Mamdani_inference()
+                # output_val = max(fs_output, key=fs_output.get)
+            except Exception:
+                print(traceback.format_exc())
+                pass
             self.lock.release()
-            # output_val = max(fs_output, key=fs_output.get)
             return fs_output
 
         def getRuleBase(self):

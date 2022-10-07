@@ -16,4 +16,8 @@ class PostureHandler(WorkerAgent):
         work_info_list = utils.splitStringToList(work_info)
         print(work_info_list)
         if work_info_list[0] == Constants.DIRECTIVE_GOTOPOSTURE:
-            self.mqtt_client.publish(Constants.TOPIC_POSTURE, Constants.DIRECTIVE_GOTOPOSTURE + Constants.STRING_SEPARATOR + str(work_info_list[1]))
+            self.mqtt_client.publish(Constants.TOPIC_POSTURE,
+                                     Constants.DIRECTIVE_GOTOPOSTURE + Constants.STRING_SEPARATOR + str(
+                                         work_info_list[1]))
+        if work_info_list[0] == Constants.DIRECTIVE_PLAYANIMATION:
+            self.mqtt_client.publish(Constants.TOPIC_POSTURE, Constants.DIRECTIVE_PLAYANIMATION + Constants.STRING_SEPARATOR + str(work_info_list[1]))

@@ -145,8 +145,8 @@ class NormAdapter2SIMnoagent():
             for social_interpretation in Constants.SOCIAL_INTERPRETATIONS:
                 if (len(self.collected_knowledge_per_social_int[
                            social_interpretation]) % self.min_nr_datapoints_for_adaptation) == 0:
-                    print("LEngth of collected knowledge for ", social_interpretation, ": ", str(len(self.collected_knowledge_per_social_int[social_interpretation])))
-                    print(self.collected_knowledge_per_social_int[social_interpretation])
+                    # print("LEngth of collected knowledge for ", social_interpretation, ": ", str(len(self.collected_knowledge_per_social_int[social_interpretation])))
+                    # print(self.collected_knowledge_per_social_int[social_interpretation])
                     for dp in self.collected_knowledge_per_social_int[social_interpretation]:
                         # print("data point")
                         # print(dp)

@@ -90,7 +90,7 @@ behavioral_rules = { #first element refers to distance, second element refers to
 
 
 
-cue2diam_file = "../data/societies_norms/cues-to-diamonds-fs-all.xlsx"
+cue2diam_file = "../../data/societies_norms/cues-to-diamonds-fs-all.xlsx"
 
 
 societies = ["Austria", "US"]

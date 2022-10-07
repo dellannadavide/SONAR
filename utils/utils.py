@@ -10,11 +10,17 @@ def prepareMessage(received_jid, performative, msg_body):
         msg.body = joinStrings(msg_body)
     return msg
 
-def splitStringToList(str_to_split):
-    return str_to_split.split(Constants.STRING_SEPARATOR)
+def splitStringToList(str_to_split, separator=None):
+    if separator is None:
+        return str_to_split.split(Constants.STRING_SEPARATOR)
+    else:
+        return str_to_split.split(separator)
 
-def joinStrings(list_to_join):
-    return Constants.STRING_SEPARATOR.join(list_to_join)
+def joinStrings(list_to_join, separator=None):
+    if separator is None:
+        return Constants.STRING_SEPARATOR.join(list_to_join)
+    else:
+        return separator.join(list_to_join)
 
 def splitStringBelToList(str_to_split):
     return str_to_split.split(Constants.BEL_STRING_SEPARATOR)

@@ -5,7 +5,7 @@ from sklearn import tree
 
 #Reading the data
 society = "US"
-dataset_file = "../data/societies_norms/data_USAustria_8000dp_v11_simple.xlsx"
+dataset_file = "../../data/societies_norms/data_USAustria_8000dp_v11_simple.xlsx"
 dataset_df = pd.read_excel(dataset_file, engine='openpyxl')
 df = dataset_df.loc[dataset_df['Society'].isin([society])]
 print(df.head)

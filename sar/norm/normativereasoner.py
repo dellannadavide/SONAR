@@ -5,22 +5,29 @@ class NormativeReasoner:
     def __init__(self) -> None:
         super().__init__()
         """
-        This dictionary containts paris <key, list>
-        where key corresponds to a social interpretation of a context,
-        and list is a list of prohibited or obliged actions or goals in that context.
-        If no norm applies in a certain context, the list is empty."""
+        This dictionary containts paris <key, dict>
+        where key corresponds to a context (a condition that characterizes a situation),
+        and dict is a dictionary containing 4 lists each containing, respectively, prohibited actions, prohibited goals, obliged actions, obliged goals, 
+        in that context.
+        If no norm applies in a certain context, the lists are empty."""
         self.norms = {
-            Constants.LV_DIST: [],
-            Constants.LV_DUTY: [],
-            Constants.LV_INTELLECT: [],
-            Constants.LV_ADVERSITY: [],
-            Constants.LV_MATING: [],
-            Constants.LV_POSITIVITY: [],
-            Constants.LV_NEGATIVITY: [],
-            Constants.LV_DECEPTION: [],
-            Constants.LV_SOCIALITY: []
-
+            Constants.LV_DIST: {},
+            Constants.LV_DUTY: {},
+            Constants.LV_INTELLECT: {},
+            Constants.LV_ADVERSITY: {},
+            Constants.LV_MATING: {},
+            Constants.LV_POSITIVITY: {},
+            Constants.LV_NEGATIVITY: {},
+            Constants.LV_DECEPTION: {},
+            Constants.LV_SOCIALITY: {},
+            "PRIVATE": {},
+            "SOCIAL": {},
+            "PUBLIC": {}
         }
+        for c in self.norms:
+            self.norms[c] = {"P_A": [], "P_G": [], "O_A": [], "O_G": []}
+
+        self.norms["SOCIAL"]["O_G"] = [["obliged_goal", "greet"]]
 
     def getApplicableNorms(self, list_of_social_eval_pairs):
         social_context = {}
@@ -43,4 +50,7 @@ class NormativeReasoner:
         """
 
         context = max(social_context, key=social_context.get)
-        return self.norms[context]
+        if context in self.norms:
+            return self.norms[context]
+        else:
+            return {"P_A": [], "P_G": [], "O_A": [], "O_G": []}

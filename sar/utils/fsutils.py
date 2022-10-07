@@ -37,7 +37,7 @@ def getDissimilarity(universe_boundaries, mf1_params, mf2_params):
     return createSKFuzzyMFandGetDissimilarity(universe_boundaries, mf1_params, mf2_params)
 
 class SARFuzzyLingVar:
-    def __init__(self, name, concept, universe_of_discourse, fuzzy_sets, fuzzy_sets_names) -> None:
+    def __init__(self, name, concept, universe_of_discourse, fuzzy_sets, fuzzy_sets_names, default_val=None) -> None:
         super().__init__()
         self.name = name
         self.concept = concept
@@ -45,6 +45,8 @@ class SARFuzzyLingVar:
         self.fuzzy_sets = fuzzy_sets
         self.fuzzy_sets_names = fuzzy_sets_names
         self.ling_var = self.createSimpfulLingVar()
+        self.default_val = default_val
+        # print("in the init of the sarfuzzylingvar of ", self.name, " default val is set to ", self.default_val)
 
     def getName(self):
         return self.name
@@ -59,6 +61,9 @@ class SARFuzzyLingVar:
     def createSimpfulLingVar(self):
         return sf.LinguisticVariable(self.fuzzy_sets, concept=self.concept,
                                      universe_of_discourse=self.universe_of_discourse)
+
+    def getDefaultVal(self):
+        return self.default_val
 
 
 class SARFuzzySet:
@@ -141,7 +146,7 @@ class SARFuzzyRuleBase:
 
         # print(self.fuzzy_sets_dict)
         # print(self.ling_vars_dict)
-        # print(self.rules)
+        print(self.rules)
 
 
         self.fs = self.createFuzzySystem()
@@ -215,10 +220,13 @@ class SARFuzzyRuleBase:
                                                self.ling_vars_dict[lv_id].concept,
                                                self.ling_vars_dict[lv_id].universe_of_discourse,
                                                partition,
-                                               self.ling_vars_dict[lv_id].fuzzy_sets_names)
+                                               self.ling_vars_dict[lv_id].fuzzy_sets_names,
+                                                         self.ling_vars_dict[lv_id].default_val)
             fuzzy_system.add_linguistic_variable(lv_id, self.ling_vars_dict[lv_id].getVar(), verbose=False)
 
         fuzzy_system.add_rules(self.rules, verbose=False)
+
+        # fuzzy_system.produce_figure()
         return fuzzy_system
 
 
@@ -241,11 +249,20 @@ class SARFuzzyRuleBase:
                 fss = []
                 for fs in fss_ids:
                     fss.append(fuzzy_sets[fs].fuzzy_set)
+                default_val = None
+                if "DefaultVal" in ling_vars_df.columns:
+                    print("default val found")
+                    print(float(row["DefaultVal"]))
+                    default_val = float(row["DefaultVal"])
+                    print(default_val)
+                else:
+                    print("NOT FOND DEFAULT VAL FOR VAR", lv_id)
                 ling_vars[lv_id] = SARFuzzyLingVar(lv_id,
                                                 str(row['Concept']),
                                                 [float(row['Min']), float(row['Max'])],
                                                 fss,
-                                                fss_ids)
+                                                fss_ids,
+                                                default_val)
         return ling_vars
 
     def isLVinRules(self, lv, rules):

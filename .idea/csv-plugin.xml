@@ -3,147 +3,287 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\experiments_adaptation\results\exp_exp_20220920132536\res_20220920132536_20220920132552_0.csv">
+        <entry key="\data\societies_norms\data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\exp_exp_20220920153715\res_20220920153715_20220920153718_0.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_20000dp_v11_simple.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\exp_exp_20220920161218\res_20220920161218_20220920161220_0.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\exp_exp_20220920163844\res_20220920163844_20220920163848_0.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v10.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\exp_exp_20220920173852\res_20220920173852_20220920173900_0.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v2.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\exp_exp_20220920211639\res_20220920211639_20220920211648_0.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v3.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831192545_1.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v4.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831192545_2.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v5.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831192545_3.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v6.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831192545_4.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v7.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831192545_5.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v8.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831192604_6.csv">
+        <entry key="\data\societies_norms\data_['Austria', 'US']_8000dp_v9.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831192604_7.csv">
+        <entry key="\data\societies_norms\data_['US', 'Austria']_10000dp_0.07p.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831194609_16.csv">
+        <entry key="\data\societies_norms\data_['US', 'Austria']_10000dp_0.1p.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831220401_17.csv">
+        <entry key="\data\societies_norms\data_['US', 'Austria']_10000dp_0.2p.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831221445_18.csv">
+        <entry key="\data\societies_norms\data_['US', 'Austria']_10000dp_0.2p_only1_dfixed.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831223048_19.csv">
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192545_0.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831223116_21.csv">
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192545_1.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831223120_20.csv">
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192545_2.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220831232326_22.csv">
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192545_3.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\experiments_adaptation\results\meeting_anahita_20220901\res_20220831192522_20220901003241_23.csv">
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192545_4.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192545_5.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192604_6.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192604_7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831192604_8.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831194609_16.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831202458_11.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831202458_13.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831204832_14.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831204832_15.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831204832_9.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831204833_10.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831220401_17.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831221445_18.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831223048_19.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831223116_21.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831223120_20.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831232326_22.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220901003241_23.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220901163219_29.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220902003932_31.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

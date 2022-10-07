@@ -25,10 +25,7 @@ class BDICore(BDIAgent):
             b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
                                           [Constants.DIRECTIVE_SAY, to_say]+self.curr_social_interp)
             self.add_behaviour(b)
-            # self.get("socialactuator").sendDirective("say;"+to_say)
-            #msg = Message(to=self.get("socialactuator"))  # Instantiate the message
-            #msg.body = "say,"+to_say  # Set the message content
-            #await self.send(msg)
+
             yield
 
         @actions.add(".shut_down", 1)
@@ -47,15 +44,58 @@ class BDICore(BDIAgent):
             b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
                                           [Constants.DIRECTIVE_REPLY_TO, str(agentspeak.grounded(term.args[1], intention.scope))]+self.curr_social_interp)
             self.add_behaviour(b)
+            # print("..............")
+            # b1 = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
+            #                               [Constants.DIRECTIVE_PLAYANIMATION, "TEST"] + self.curr_social_interp)
+            # self.add_behaviour(b1)
+            # print("..............")
+            # b2 = self.SendMessageBehaviour(Constants.SYSTEM_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
+            #                               [Constants.DIRECTIVE_EXEC_BEHAVIOR])
+            # self.add_behaviour(b2)
             # msg = utils.prepareMessage(Constants.SYSTEM_HANDLER_JID, Constants.PERFORMATIVE_REQUEST, Constants.DIRECTIVE_SHUT_DOWN)
             # await self.send(msg)
             yield
 
         @actions.add(".go_to_posture", 1)
         def _go_to_posture(agent, term, intention):
+            print("PERFORMING ACTION go to posture ", str(agentspeak.grounded(term.args[0], intention.scope)))
             b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
                                           [Constants.DIRECTIVE_GOTOPOSTURE, str(agentspeak.grounded(term.args[0], intention.scope))]+self.curr_social_interp)
             self.add_behaviour(b)
+            yield
+
+        @actions.add(".establish_trust", 1)
+        def _establish_trust(agent, term, intention):
+            print("action establish trust")
+            x = str(agentspeak.grounded(term.args[0], intention.scope))
+            if x == "unknown":
+                to_say = "Oh, I see. Thank you for trusting me with this, I understand this is not to be discussed with anyone else."
+            else:
+                to_say = "Oh, I see. "+str(x)+", thank you for trusting me with this. I understand this is not to be discussed with anyone else."
+            b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
+                                          [Constants.DIRECTIVE_SAY, to_say] + self.curr_social_interp)
+            self.add_behaviour(b)
+            b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
+                                          [Constants.DIRECTIVE_PLAYANIMATION, "establish_trust"] + self.curr_social_interp)
+            self.add_behaviour(b)
+            yield
+
+        @actions.add(".update_topic_of_interest", 2)
+        def _reply_to(agent, term, intention):
+            # print("As instructed by " + str(
+            #     agentspeak.grounded(term.args[0], intention.scope)) + ", I will start procedure to shut down")
+            b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
+                                          [Constants.DIRECTIVE_UPDATE_TOPIC_INTEREST,
+                                           str(agentspeak.grounded(term.args[0], intention.scope)),
+                                           str(agentspeak.grounded(term.args[1], intention.scope))] + self.curr_social_interp)
+            self.add_behaviour(b)
+            # msg = utils.prepareMessage(Constants.SYSTEM_HANDLER_JID, Constants.PERFORMATIVE_REQUEST, Constants.DIRECTIVE_SHUT_DOWN)
+            # await self.send(msg)
+            yield
+
+        @actions.add(".execute_action", 1)
+        def _execute_action(agent, term, intention):
+            print(" I should PERFORM ACTION ", str(agentspeak.grounded(term.args[0], intention.scope)))
             yield
 
         # @actions.add(".my_action", 1)
@@ -73,6 +113,7 @@ class BDICore(BDIAgent):
 
         async def run(self):
             msg = utils.prepareMessage(self.receiver, self.performative, self.message_list)
+            # print("sending message ", msg, "to ", self.receiver)
             await self.send(msg)
 
     class SenseReasonAct(CyclicBehaviour):
@@ -92,7 +133,7 @@ class BDICore(BDIAgent):
             msg = await self.receive(timeout=0.1)  # wait for a response message for 10 seconds
             if msg:
                 # print("BDI: Message received from DATACOLLECTOR at "+ str(time.time()))
-                print("BDI: Message received with content: {}".format(msg.body))
+                # print("BDI: Message received with content: {}".format(msg.body))
                 if msg.get_metadata("performative") == Constants.PERFORMATIVE_NEW_BELIEF:
                     belief = utils.splitStringBelToList(msg.body)
                     self.agent.bdi.set_belief(belief[0], belief[1], belief[2])
@@ -108,8 +149,8 @@ class BDICore(BDIAgent):
                         await self.send(response)
                         # print("Message sent to Chatter!")
                     if str(msg.sender) == Constants.DATACOLLECTOR_JID:
-                        # print("Chatter told me "+str(msg.body))
-                        # print(msg.body)
+                        print("Data Collector told me "+str(msg.body))
+                        print(msg.body)
                         msg_body = utils.splitStringToList(msg.body)
                         for b in msg_body:
                             bel = utils.splitStringBelToList(b)
@@ -122,8 +163,11 @@ class BDICore(BDIAgent):
                                 applicable_norms = self.agent.normative_reasoner.getApplicableNorms(self.agent.curr_social_interp[1:len(self.agent.curr_social_interp)])
                                 print(applicable_norms) #should be a list of beliefs e.g., proh(<..>)
                                 #then I set those norms as new beliefs
-                                if len(applicable_norms)>0:
-                                    self.agent.bdi.set_belief(*applicable_norms)
+                                types_of_norms = ["P_G", "P_A", "O_G", "O_A"]
+                                for nt in types_of_norms:
+                                    if len(applicable_norms[nt])>0:
+                                        for b in applicable_norms[nt]:
+                                            self.agent.bdi.set_belief(*b)
                             else:
                                 # print(bel)
                                 self.agent.bdi.set_belief(*bel)
@@ -155,7 +199,7 @@ class BDICore(BDIAgent):
 
     def removePrevNorms(self):
         #first all prohibitions then obligations
-        keys = ["prohibited", "obliged"]
+        keys = ["prohibited_goal", "prohibited_action", "obliged_goal", "obliged_action"]
         for key in keys:
             for to_rem in self.getBeliefsWithKey(key):
                 print(to_rem)

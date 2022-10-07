@@ -18,3 +18,6 @@ class SystemHandler(WorkerAgent):
         print(work_info_list)
         if work_info_list[0] == Constants.DIRECTIVE_SHUT_DOWN:
             self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE, Constants.DIRECTIVE_SHUT_DOWN)
+        if work_info_list[0] == Constants.DIRECTIVE_EXEC_BEHAVIOR:
+            print("sending directive to execute behavior")
+            self.mqtt_client.publish(Constants.TOPIC_BEHAVIOR, Constants.DIRECTIVE_EXEC_BEHAVIOR)

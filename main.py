@@ -123,7 +123,7 @@ if __name__ == '__main__':
     parser.add_argument('--password', type=str, default="bdipassword", help='XMPP password for the agent.')
     args = parser.parse_args()
 
-    enable_gui = True
+    enable_gui = False #todo: to remove the guy stuff or move appropriately somewhere
     gui_queue = None
     if enable_gui:
         # for the plots
@@ -131,9 +131,17 @@ if __name__ == '__main__':
         p = mp.Process(target=worker, args=(gui_queue,))
         p.start()
 
-    # print("Starting agent")
-    # a = BDIAgent("{}@{}".format(args.name, args.server), args.password, "basic.asl")
-    a = SARBDIAgent("{}@{}".format(args.name, args.server), args.password, gui_queue=gui_queue)
+    print("Starting agent")
+    workers_to_start = [
+        # "sys_handler",
+        "norm_adapter",
+        "chatter",
+        # "position_handler",
+        # "vision_handler",
+        # "posture_handler",
+        "collector"
+    ]
+    a = SARBDIAgent("{}@{}".format(args.name, args.server), args.password, gui_queue=gui_queue, workers_to_start=workers_to_start)
     future = a.start()
     future.result()
     print("Startup ended")

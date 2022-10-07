@@ -44,6 +44,7 @@ class PositionHandler(WorkerAgent):
 
     def on_message(self, client, userdata, message):
         rec_m = str(message.payload.decode("utf-8"))
+        # print("position handler: received message ", rec_m)
         self.received_inputs.append(rec_m)
 
     async def setup(self):
