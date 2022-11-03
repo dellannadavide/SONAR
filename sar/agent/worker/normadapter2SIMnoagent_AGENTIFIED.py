@@ -452,27 +452,28 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
         self.add_behaviour(b)
 
 
-    async def do_work(self, message):
+    async def do_work(self, work_info_dict):
+        print("!!!!!!!!!!!!!!!!!!!!! TO MAKE SURE THAT THE DICTIONARY WORK_INFO IS READ PROPERLY !!!!!!!!!!!!!!!!!!!!!!!")
         """ message is the message from the data collector with all the info
         it is a string which represents a list, where element 0 is the topic of element 1, and element 2 is the topic of element 2, etc."""
-        print("NORMADAPTER received message from data colll: ", message)
-        work_info_list = utils.splitStringToList(message)
-        nr_pairs = int(len(work_info_list) / 2)  # n.b. it is expected to be always even
-        data_point = {}
-        done = 0
-        for i in range(nr_pairs):
-            topic = work_info_list[done + i]
-            value = work_info_list[done + i + 1]
+        print("NORMADAPTER received message from data colll: ", work_info_dict)
+        # work_info_list = utils.splitStringToList(message)
+        # nr_pairs = int(len(work_info_list) / 2)  # n.b. it is expected to be always even
+        # data_point = {}
+        # done = 0
+        # for i in range(nr_pairs):
+        #     topic = work_info_list[done + i]
+        #     value = work_info_list[done + i + 1]
+        #
+        #     if not (topic == Constants.TOPIC_SOCIAL_INTERPR):
+        #         value = float(value)
+        #
+        #     data_point[topic] = value
+        #     done = done + 1
+        self.collected_knowledge.append(work_info_dict)
 
-            if not (topic == Constants.TOPIC_SOCIAL_INTERPR):
-                value = float(value)
-
-            data_point[topic] = value
-            done = done + 1
-        self.collected_knowledge.append(data_point)
-
-        social_int = data_point[Constants.TOPIC_SOCIAL_INTERPR]
-        self.collected_knowledge_per_social_int[social_int].append(data_point)
+        social_int = work_info_dict[Constants.TOPIC_SOCIAL_INTERPR]
+        self.collected_knowledge_per_social_int[social_int].append(work_info_dict)
 
         print("NORMADAPTER, kowledge:")
         print(self.collected_knowledge)

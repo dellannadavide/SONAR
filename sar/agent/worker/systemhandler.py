@@ -14,6 +14,8 @@ class SystemHandler(WorkerAgent):
         await super().setup()
 
     async def do_work(self, work_info):
+        print("!!!!!!!!!!!!!!!!!!!!! TO MAKE SURE THAT THE DICTIONARY WORK_INFO IS READ PROPERLY !!!!!!!!!!!!!!!!!!!!!!!")
+
         work_info_list = utils.splitStringToList(work_info)
         print(work_info_list)
         if work_info_list[0] == Constants.DIRECTIVE_SHUT_DOWN:

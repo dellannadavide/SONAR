@@ -27,10 +27,10 @@ class FuzzySocialInterpreter:
                     if i in self.fuzzyRuleBase.inputs:
                         # print("----------setting variable "+str(i)+" to "+str(inputs[i]))
                         self.fuzzyRuleBase.fs.set_variable(i, inputs[i]) #todo somewhere mapping should be written
-                print("----------performing mamdani inference in the zsocial interpreter")
-                print(self.fuzzyRuleBase.fs._rules)
+                # print("----------performing mamdani inference in the zsocial interpreter")
+                # print(self.fuzzyRuleBase.fs._rules)
                 fs_output = self.fuzzyRuleBase.fs.Mamdani_inference(verbose=False)
-                print(fs_output)
+                # print(fs_output)
                 # print("----------end of inference")
             except Exception:
                 print(traceback.format_exc())
@@ -43,8 +43,8 @@ class FuzzySocialInterpreter:
             fs_output = self.getSocialInterpretationValues(inputs)
             if not fs_output is None:
                 best_interpr = max(fs_output, key=fs_output.get)
-                print("Inputs: "+str(inputs))
-                print(best_interpr)
+                # print("Inputs: "+str(inputs))
+                # print(best_interpr)
                 """ Communicating the social interpretation back"""
                 if fs_output[best_interpr] > self.min_certainty:
                     # I want to retrieve all interpr that have same certainty as the max and randomly select among them (otherwise we select always the first)
@@ -55,10 +55,14 @@ class FuzzySocialInterpreter:
                     best_interpr = random.choice(all_best_int)
                     return fs_output, best_interpr
                 else:
-                    return fs_output, None
+                    return fs_output, "UNKNOWN"
             else:
                 print("The inputs "+str(inputs)+" are currently not supported")
-                return None, None
+                best_social_interpr = "UNKNOWN"
+                social_values = {}
+                for o in self.fuzzyRuleBase.outputs:
+                    social_values[o] = 0.0
+                return social_values, best_social_interpr
 
         def getRuleBase(self):
             return self.fuzzyRuleBase

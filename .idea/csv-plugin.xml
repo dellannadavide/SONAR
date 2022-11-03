@@ -87,6 +87,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\data\societies_norms\data_['US', 'Austria']_10000dp_0.03p.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\data\societies_norms\data_['US', 'Austria']_10000dp_0.07p.csv">
           <value>
             <Attribute>
@@ -186,6 +193,13 @@
           </value>
         </entry>
         <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831202458_11.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiments_adaptation\results\preliminary_pt1\meeting_anahita_20220901\res_20220831192522_20220831202458_12.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

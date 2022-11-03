@@ -15,9 +15,10 @@ class PositionHandler(WorkerAgent):
         Sends all collected text to the BDI agent
         """
 
-        def __init__(self, receiver):
+        def __init__(self, receiver, metadata):
             super().__init__()
             self.receiver = receiver
+            self.metadata = metadata
 
         def getDistances(self):
             bel_list_from_oldest_file = []
@@ -30,16 +31,25 @@ class PositionHandler(WorkerAgent):
         async def run(self):
             # print("chatter running the sendmsgtobdibehavior")
             s_list = self.getDistances()
+            metadata = None
+            if not self.metadata is None:
+                if "batch" in self.metadata:
+                    metadata = {"batch": self.metadata["batch"]}
             # print(s_list)
             if len(s_list) > 0:
                 msg_body = s_list
                 # print("sending data as requested to the bdi")
-                msg = utils.prepareMessage(self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
+                msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, msg_body, Constants.TOPIC_DISTANCE, metadata)
                 await self.send(msg)
+            # else:
+            #     msg_body = Constants.NO_DATA
+            #     # print(msg_body)
+            #     msg = utils.prepareMessage(self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
+            #     await self.send(msg)
 
-    async def send_msg_to(self, receiver, content=None):
+    async def send_msg_to(self, receiver, metadata=None, content=None):
         # print("As a chatter, I received request from the BDI module to send data")
-        b = self.SendMsgToBehaviour(receiver)
+        b = self.SendMsgToBehaviour(receiver, metadata)
         self.add_behaviour(b)
 
     def on_message(self, client, userdata, message):

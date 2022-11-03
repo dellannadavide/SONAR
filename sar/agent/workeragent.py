@@ -15,10 +15,10 @@ from simpful import *
 import paho.mqtt.client as mqtt
 import time
 
-from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer
-from chatterbot.trainers import UbuntuCorpusTrainer
-from chatterbot import filters
+# from chatterbot import ChatBot
+# from chatterbot.trainers import ChatterBotCorpusTrainer
+# from chatterbot.trainers import UbuntuCorpusTrainer
+# from chatterbot import filters
 
 import utils.constants as Constants
 from sar.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
@@ -26,6 +26,7 @@ from utils.mqttclient import MQTTClient
 
 from abc import abstractmethod
 import utils.utils as utils
+import json
 
 class WorkerAgent(Agent):
 
@@ -39,11 +40,11 @@ class WorkerAgent(Agent):
         async def run(self):
             msg = await self.receive(timeout=10)  # wait for a message for 10 seconds
             if msg:
-                performative = msg.get_metadata("performative")
+                performative = msg.get_metadata(Constants.SPADE_MSG_METADATA_PERFORMATIVE)
                 if performative == Constants.PERFORMATIVE_REQUEST:
-                    await self.agent.send_msg_to(str(msg.sender))
+                    await self.agent.send_msg_to(str(msg.sender), metadata=msg.metadata)
                 elif performative == Constants.PERFORMATIVE_INFORM:
-                    await self.agent.do_work(msg.body)
+                    await self.agent.do_work(utils.readMessage(msg.body, msg.metadata))
                 else:
                     print(str(msg.sender)+", you are telling me something I don't understand...")
                     print(msg.body)
@@ -59,11 +60,11 @@ class WorkerAgent(Agent):
         self.add_behaviour(b)
 
     @abstractmethod
-    async def send_msg_to(self, receiver, content=None):
+    async def send_msg_to(self, receiver, metadata=None, content=None):
         pass
 
     @abstractmethod
-    async def do_work(self, work_info):
+    async def do_work(self, work_info_dict):
         pass
 
 

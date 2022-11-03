@@ -168,6 +168,7 @@ class NormAdapter(WorkerAgent):
 
 
     async def do_work(self, work_info):
+        print("!!!!!!!!!!!!!!!!!!!!! TO MAKE SURE THAT THE DICTIONARY WORK_INFO IS READ PROPERLY !!!!!!!!!!!!!!!!!!!!!!!")
         """ work_info is the message from the data collector with all the info
         it is a string which represents a list, where element 0 is the topic of element 1, and element 2 is the topic of element 2, etc."""
         work_info_list = utils.splitStringToList(work_info)

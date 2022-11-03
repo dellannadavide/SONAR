@@ -22,7 +22,7 @@ from sar.agent.worker.systemhandler import SystemHandler
 import utils.constants as Constants
 from sar.agent.worker.visionhandler import VisionHandler
 from sar.agent.worker.visionhandlerSIM import VisionHandlerSim
-from sar.gui.gui_normadaptivity import GUI_NormAdaptivity
+# from sar.gui.gui_normadaptivity import GUI_NormAdaptivity
 from sar.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
 from sar.norm.fuzzysocialqualifier import FuzzySocialQualifier
 
@@ -144,7 +144,7 @@ class SARBDIAgent(Agent):
             await self.norm_adapter.start(auto_register=True)
 
         print("Starting the agent's BDI core ...")
-        bdicore_asl = "sar/basic.asl"
+        bdicore_asl = "sar/basic2.asl"
         self.bdi_core = BDICore(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, bdicore_asl)
         await self.bdi_core.start()
 

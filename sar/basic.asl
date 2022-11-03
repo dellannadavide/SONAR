@@ -38,12 +38,19 @@ is(bottom_right, book).
 +said(Person, Posture, is_posture): prohibited_goal(go_to_posture)
  <- -said(Person, Posture, is_posture).
 
-+said(Person, Something): distance(Person, personal)
-<- +is_personal_info(Something, Person).
+//+distance(Person, personal)
+//<- +is_personal_info(info, Person).
 
-+is_personal_info(Something, Person): said(Person, Something)
-<- .establish_trust(Person);
-    -said(Person, Something).
+//+is_personal_info(Something, Person) : not prohibited_action(establish_trust)
+//<- .establish_trust(Person).
+
+
+//+said(Person, Something): distance(Person, personal)
+//<- +is_personal_info(Something, Person).
+
+//+is_personal_info(Something, Person): said(Person, Something) & not prohibited_action(establish_trust)
+//<- .establish_trust(Person);
+//    -said(Person, Something).
 
 +said(Person, Something) : is_personal_info(Something, Person) & not prohibited_goal(reply_to)
  <- .reply_to(Person, Something);

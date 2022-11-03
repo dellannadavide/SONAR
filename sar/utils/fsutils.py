@@ -251,12 +251,12 @@ class SARFuzzyRuleBase:
                     fss.append(fuzzy_sets[fs].fuzzy_set)
                 default_val = None
                 if "DefaultVal" in ling_vars_df.columns:
-                    print("default val found")
-                    print(float(row["DefaultVal"]))
+                    # print("default val found")
+                    # print(float(row["DefaultVal"]))
                     default_val = float(row["DefaultVal"])
-                    print(default_val)
-                else:
-                    print("NOT FOND DEFAULT VAL FOR VAR", lv_id)
+                    # print(default_val)
+                # else:
+                    # print("NOT FOND DEFAULT VAL FOR VAR", lv_id)
                 ling_vars[lv_id] = SARFuzzyLingVar(lv_id,
                                                 str(row['Concept']),
                                                 [float(row['Min']), float(row['Max'])],

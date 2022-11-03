@@ -133,12 +133,12 @@ if __name__ == '__main__':
 
     print("Starting agent")
     workers_to_start = [
-        # "sys_handler",
-        "norm_adapter",
+        "sys_handler",
+        # "norm_adapter",
         "chatter",
-        # "position_handler",
-        # "vision_handler",
-        # "posture_handler",
+        # "position_handler", #to be ignored since replaced by the vision
+        "vision_handler",
+        "posture_handler",
         "collector"
     ]
     a = SARBDIAgent("{}@{}".format(args.name, args.server), args.password, gui_queue=gui_queue, workers_to_start=workers_to_start)
