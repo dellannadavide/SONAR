@@ -70,7 +70,13 @@ The list of requirements can be found in the ```requirements.txt``` file.
 A standard way to install all required libraries is to run command ```pip install -r /path/to/requirements.txt```. 
 Based on your environment you may adopt the most handy procedure.
 
-Finally, MQTT-Nao-Interface relies on an MQTT broker. Follow steps in Section 2 to install it.
+MQTT-Nao-Interface relies on an MQTT broker. Follow steps in Section 2 to install it.
+
+Finally, please download in folder ```MQTT-Nao-Interface/sensors/video/data``` the following files (they are not provided to avoid overloading the repository):
+- The pre-trained YOLO3 weight file ```yolov3.weights``` (used for object recognition). 
+You can find the file [here (237 MB)](https://pjreddie.com/media/files/yolov3.weights), or follow the instructions from the [YOLO webpage](https://pjreddie.com/darknet/yolo/) to download it in other ways.
+- The pre-trained shape predictor model ```shape_predictor_68_face_landmarks.dat``` (used for face detection and tracking). You can find a compressed archive version of the file [here (100 MB)](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2). You need to decompress the file and place the ```.dat``` file in the folder mentioned above.
+- The pre-trained model ```emotion-ferplus-8.onnx``` for emotion recognition from faces. You can find it [here (34 MB)](https://github.com/onnx/models/blob/main/vision/body_analysis/emotion_ferplus/model/emotion-ferplus-8.onnx).
 
 
 ### 3.2. Setup and Run
