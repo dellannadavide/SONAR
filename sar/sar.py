@@ -84,13 +84,13 @@ class SARBDIAgent(Agent):
 
         print("Starting all the worker agents...")
 
-        if "sys_handler" in self.workers_to_start:
+        if Constants.SYSTEM_HANDLER_NAME in self.workers_to_start:
             time.sleep(1)
             print("Starting the agent's System Handler ...")
             self.sys_handler = SystemHandler(Constants.SYSTEM_HANDLER_JID, Constants.SYSTEM_HANDLER_PWD, fsq=[self.fsq[Constants.ACTUATION_ASPECT_SYSTEM]])
             await self.sys_handler.start(auto_register=True)
 
-        if "chatter" in self.workers_to_start:
+        if Constants.CHATTER_NAME in self.workers_to_start:
             time.sleep(1)
             print("Starting the agent's Chatter ...")
             if simulation:
@@ -99,7 +99,7 @@ class SARBDIAgent(Agent):
                 self.chatter = Chatter(Constants.CHATTER_JID, Constants.CHATTER_PWD, fsq=[self.fsq[Constants.ACTUATION_ASPECT_CHATTER]])
             await self.chatter.start(auto_register=True)
 
-        if "position_handler" in self.workers_to_start:
+        if Constants.POSITION_HANDLER_NAME in self.workers_to_start:
             time.sleep(1)
             print("Starting the agent's Position Handler ...")
             if simulation:
@@ -111,7 +111,7 @@ class SARBDIAgent(Agent):
                 self.position_handler = PositionHandler(Constants.POSITION_HANDLER_JID, Constants.POSITION_HANDLER_PWD, fsq=[self.fsq[Constants.ACTUATION_ASPECT_POSITION]])
                 await self.position_handler.start(auto_register=True)
 
-        if "vision_handler" in self.workers_to_start:
+        if Constants.VISION_HANDLER_NAME in self.workers_to_start:
             time.sleep(1)
             print("Starting the agent's Vision Handler ...")
             if simulation:
@@ -122,25 +122,22 @@ class SARBDIAgent(Agent):
                 self.vision_handler = VisionHandler(Constants.VISION_HANDLER_JID, Constants.VISION_HANDLER_PWD)
                 await self.vision_handler.start(auto_register=True)
 
-        if "posture_handler" in self.workers_to_start:
+        if Constants.POSTURE_HANDLER_NAME in self.workers_to_start:
             time.sleep(1)
             print("Starting the agent's Posture Handler ...")
             self.posture_handler = PostureHandler(Constants.POSTURE_HANDLER_JID, Constants.POSTURE_HANDLER_PWD, fsq=[self.fsq[Constants.ACTUATION_ASPECT_POSTURE]])
             await self.posture_handler.start(auto_register=True)
 
-        if "collector" in self.workers_to_start:
+        if Constants.DATA_COLLECTOR_NAME in self.workers_to_start:
             time.sleep(1)
             print("Starting the agent's Data Collector ...")
-            self.collector = DataColletor(Constants.DATACOLLECTOR_JID, Constants.DATACOLLECTOR_PWD, fsi=self.fsi)
+            self.collector = DataColletor(Constants.DATA_COLLECTOR_JID, Constants.DATA_COLLECTOR_PWD, fsi=self.fsi)
             await self.collector.start(auto_register=True)
 
-        if "norm_adapter" in self.workers_to_start:
+        if Constants.NORM_ADAPTER_NAME in self.workers_to_start:
             time.sleep(1)
             print("Starting the agent's NormAdapter ...")
-            # self.norm_adapter = NormAdapter(Constants.NORMADAPTER_JID, Constants.NORMADAPTER_PWD, fsi=self.fsi, fsq=self.fsq)
-            # self.norm_adapter = NormAdapterMOEA(Constants.NORMADAPTER_JID, Constants.NORMADAPTER_PWD, fsi=self.fsi, fsq=self.fsq)
-            # self.norm_adapter = NormAdapter2(Constants.NORMADAPTER_JID, Constants.NORMADAPTER_PWD, fsi=self.fsi, fsq=self.fsq)
-            self.norm_adapter = NormAdapter2SIMnoagent_AGENTIFIED(Constants.NORMADAPTER_JID, Constants.NORMADAPTER_PWD, fsi=self.fsi, fsq=self.fsq)
+            self.norm_adapter = NormAdapter2SIMnoagent_AGENTIFIED(Constants.NORM_ADAPTER_JID, Constants.NORM_ADAPTER_PWD, fsi=self.fsi, fsq=self.fsq)
             await self.norm_adapter.start(auto_register=True)
 
         print("Starting the agent's BDI core ...")

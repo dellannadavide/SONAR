@@ -15,8 +15,8 @@ def main():
     # for a in Constants.ACTUATION_ASPECTS:
     #     fsq[a] = FuzzySocialQualifier(a, fuzzy_sets_file, ling_vars_file, rules_file)
 
-    norm_adapter = NormAdapter2SIM(Constants.NORMADAPTER_JID, Constants.NORMADAPTER_PWD, fsi=fsi, fsq=fsq)
-    # norm_adapter = NormAdapter2SIM(Constants.NORMADAPTER_JID, Constants.NORMADAPTER_PWD, fsi=fsi)
+    norm_adapter = NormAdapter2SIM(Constants.NORM_ADAPTER_JID, Constants.NORM_ADAPTER_PWD, fsi=fsi, fsq=fsq)
+    # norm_adapter = NormAdapter2SIM(Constants.NORM_ADAPTER_JID, Constants.NORM_ADAPTER_PWD, fsi=fsi)
     future = norm_adapter.start(auto_register=True)
     future.result()
 
@@ -97,7 +97,7 @@ def main():
                     for d in data:
                         msg_to_norm_adapter.extend([str(d), str(data[d])])
 
-                    # send_msg_to_norm_adapter = self.SendMsgToBehaviour(Constants.NORMADAPTER_JID, msg_to_norm_adapter)
+                    # send_msg_to_norm_adapter = self.SendMsgToBehaviour(Constants.NORM_ADAPTER_JID, msg_to_norm_adapter)
                     # print("DATACOLLECTOR: Created new sendmsgtoBehavior at " + str(time.time()))
                     # self.add_behaviour(send_msg_to_norm_adapter)
                     """ I'm replacing sending a message with a direct call"""

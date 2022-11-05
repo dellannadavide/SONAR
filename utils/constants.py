@@ -211,22 +211,8 @@ ACTUATION_ASPECTS = [
     ACTUATION_ASPECT_POSTURE
 ]
 
-BDI_CORE_JID = "sarbdicoreagent@localhost"
-BDI_CORE_PWD = "bdicore"
-CHATTER_JID = "sarchatter@localhost"
-CHATTER_PWD = "chatter"
-DATACOLLECTOR_JID = "sardatacollector@localhost"
-DATACOLLECTOR_PWD = "collector"
-SYSTEM_HANDLER_JID = "sarsystemhandler@localhost"
-SYSTEM_HANDLER_PWD = "handler"
-POSITION_HANDLER_JID = "sarpositionhandler@localhost"
-POSITION_HANDLER_PWD = "position"
-VISION_HANDLER_JID = "sarvisionhandler@localhost"
-VISION_HANDLER_PWD = "vision"
-POSTURE_HANDLER_JID = "sarposturehandler@localhost"
-POSTURE_HANDLER_PWD = "posture"
-NORMADAPTER_JID = "sarnormadapter@localhost"
-NORMADAPTER_PWD = "norm"
+
+
 
 PERFORMATIVE_INFORM = "inform"
 PERFORMATIVE_REQUEST = "request"
@@ -299,3 +285,41 @@ DE = "DE"
 
 PHI_INTERPRETABILITY_INDEX = "PHI"
 AVG_COVERAGE_INDEX = "COVERAGE"
+
+
+
+BDI_CORE_NAME = "nosar_bdicore"
+BDI_CORE_JID = "nosar_bdicore@localhost"
+BDI_CORE_PWD = "nosar_bdicore"
+CHATTER_NAME = "nosar_chatter"
+CHATTER_JID = "nosar_chatter@localhost"
+CHATTER_PWD = "nosar_chatter"
+DATA_COLLECTOR_NAME = "nosar_data_collector"
+DATA_COLLECTOR_JID = "nosar_data_collector@localhost"
+DATA_COLLECTOR_PWD = "nosar_data_collector"
+SYSTEM_HANDLER_NAME = "nosar_system_handler"
+SYSTEM_HANDLER_JID = "nosar_system_handler@localhost"
+SYSTEM_HANDLER_PWD = "nosar_system_handler"
+POSITION_HANDLER_NAME = "nosar_position_handler"
+POSITION_HANDLER_JID = "nosar_position_handler@localhost"
+POSITION_HANDLER_PWD = "nosar_position_handler"
+VISION_HANDLER_NAME = "nosar_vision_handler"
+VISION_HANDLER_JID = "nosar_vision_handler@localhost"
+VISION_HANDLER_PWD = "nosar_vision_handler"
+POSTURE_HANDLER_NAME = "nosar_posture_handler"
+POSTURE_HANDLER_JID = "nosar_posture_handler@localhost"
+POSTURE_HANDLER_PWD = "nosar_posture_handler"
+NORM_ADAPTER_NAME = "nosar_norm_adapter"
+NORM_ADAPTER_JID = "nosar_norm_adapter@localhost"
+NORM_ADAPTER_PWD = "nosar_norm_adapter"
+
+XMPP_AGENTS_DETAILS = {
+    BDI_CORE_NAME: { "jid": BDI_CORE_JID, "pwd": BDI_CORE_PWD, },
+    CHATTER_NAME: {"jid": CHATTER_JID, "pwd": CHATTER_PWD},
+    DATA_COLLECTOR_NAME: {"jid": BDI_CORE_JID, "pwd": BDI_CORE_PWD},
+    SYSTEM_HANDLER_NAME: {"jid": SYSTEM_HANDLER_JID, "pwd": SYSTEM_HANDLER_PWD},
+    POSITION_HANDLER_NAME: {"jid": POSITION_HANDLER_JID, "pwd": POSITION_HANDLER_PWD},
+    VISION_HANDLER_NAME: {"jid": VISION_HANDLER_JID, "pwd": VISION_HANDLER_PWD},
+    POSTURE_HANDLER_NAME: {"jid": POSTURE_HANDLER_JID, "pwd": POSTURE_HANDLER_PWD},
+    NORM_ADAPTER_NAME: {"jid": NORM_ADAPTER_JID, "pwd": NORM_ADAPTER_PWD}
+}

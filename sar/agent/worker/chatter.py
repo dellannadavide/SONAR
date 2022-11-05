@@ -553,7 +553,7 @@ class Chatter(WorkerAgent):
         """ Finally, storing the info in the conversation """
         self.converser.addBotResponseToConversation(to_say, is_spontaneous_response)
         if not is_spontaneous_response:
-            self.inputs_being_processed = self.inputs_being_processed - 1
+            self.inputs_being_processed = max(self.inputs_being_processed - 1, 0) # making sure I don't go below 0 in any case
 
         print("conversation is")
         self.converser.printConversation()

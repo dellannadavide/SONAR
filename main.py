@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 mpl.use('TkAgg')
 import matplotlib.colors as mcolors
 
+import utils.constants as Constants
 
 def worker(q):
     candidates = ["macosx", "qt5agg", "gtk3agg", "tkagg", "wxagg"]
@@ -117,11 +118,11 @@ def worker(q):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='spade bdi basic example')
-    parser.add_argument('--server', type=str, default="localhost", help='XMPP server address.')
-    parser.add_argument('--name', type=str, default="sarbdiagent", help='XMPP name for the agent.')
-    parser.add_argument('--password', type=str, default="bdipassword", help='XMPP password for the agent.')
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser(description='spade bdi basic example')
+    # parser.add_argument('--server', type=str, default="localhost", help='XMPP server address.')
+    # parser.add_argument('--name', type=str, default="bdicore", help='XMPP name for the agent.')
+    # parser.add_argument('--password', type=str, default="bdicore", help='XMPP password for the agent.')
+    # args = parser.parse_args()
 
     enable_gui = False #todo: to remove the guy stuff or move appropriately somewhere
     gui_queue = None
@@ -133,15 +134,15 @@ if __name__ == '__main__':
 
     print("Starting agent")
     workers_to_start = [
-        "sys_handler",
-        # "norm_adapter",
-        "chatter",
-        # "position_handler", #to be ignored since replaced by the vision
-        "vision_handler",
-        "posture_handler",
-        "collector"
+        Constants.SYSTEM_HANDLER_NAME,
+        Constants.NORM_ADAPTER_NAME,
+        Constants.CHATTER_NAME,
+        # Constants.POSITION_HANDLER_NAME, #to be ignored since replaced by the vision
+        Constants.VISION_HANDLER_NAME,
+        Constants.POSTURE_HANDLER_NAME,
+        Constants.DATA_COLLECTOR_NAME
     ]
-    a = SARBDIAgent("{}@{}".format(args.name, args.server), args.password, gui_queue=gui_queue, workers_to_start=workers_to_start)
+    a = SARBDIAgent(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, gui_queue=gui_queue, workers_to_start=workers_to_start)
     future = a.start()
     future.result()
     print("Startup ended")

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/NormativeBDISAR.iml" filepath="$PROJECT_DIR$/.idea/NormativeBDISAR.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/NOSAR.iml" filepath="$PROJECT_DIR$/.idea/NOSAR.iml" />
     </modules>
   </component>
 </project>

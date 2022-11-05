@@ -415,7 +415,7 @@ class BDICore(BDIAgent):
             # request the data
             # print("BDI: asking the chatter to give data")
             request_msg_from_data_collector = utils.prepareMessage(self.agent.jid,
-                                                                   Constants.DATACOLLECTOR_JID,
+                                                                   Constants.DATA_COLLECTOR_JID,
                                                                    Constants.PERFORMATIVE_REQUEST,
                                                                     msg_body={})
             # print("BDI: Sending Message to DATACOLLECTOR at "+ str(time.time()))
@@ -442,7 +442,7 @@ class BDICore(BDIAgent):
                         # await self.send(response)
                         print("!!!!!!!!!!!!!!!!!!this case should never happen and should be removed")
                         # print("Message sent to Chatter!")
-                    if str(msg.sender) == Constants.DATACOLLECTOR_JID:
+                    if str(msg.sender) == Constants.DATA_COLLECTOR_JID:
                         print("Data Collector told me " + str(msg.body))
                         #msg.body is a json in theory
 

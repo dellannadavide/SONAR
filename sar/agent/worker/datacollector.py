@@ -396,7 +396,7 @@ class DataColletor(WorkerAgent):
                     #         msg_to_norm_adapter.extend([str(s), str(social_values[s])])
                     # for d in data:
                     #     msg_to_norm_adapter.extend([str(d), str(data[d])])
-                    send_msg_to_norm_adapter = self.SendMsgToBehaviour(Constants.NORMADAPTER_JID, msg_to_norm_adapter)
+                    send_msg_to_norm_adapter = self.SendMsgToBehaviour(Constants.NORM_ADAPTER_JID, msg_to_norm_adapter)
                     print("DATACOLLECTOR: Created new sendmsgtoBehavior at " + str(time.time()))
                     print(msg_to_norm_adapter)
                     self.add_behaviour(send_msg_to_norm_adapter)
