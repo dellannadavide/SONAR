@@ -5,6 +5,8 @@ import traceback
 import utils.constants as Constants
 from sar.utils.fsutils import SARFuzzyRuleBase
 
+import logging
+logger = logging.getLogger("nosar.sar.norm.fuzzysocialqualifier")
 
 class FuzzySocialQualifier:
         def __init__(self, aspect, fuzzy_sets_file, ling_var_file, rules_file) -> None:
@@ -27,11 +29,11 @@ class FuzzySocialQualifier:
                             self.fuzzyRuleBase.fs.set_variable(i, input[i])
                             # print("Set val "+str(input[i])+" to var "+str(i))
                         except:
-                            print("Variable "+str(i)+" not in the fuzzyRuleBase, skipping.")
-                fs_output = self.fuzzyRuleBase.fs.Mamdani_inference()
+                            logger.info("Variable "+str(i)+" not in the fuzzyRuleBase, skipping.")
+                fs_output = self.fuzzyRuleBase.fs.Mamdani_inference(verbose=False)
                 # output_val = max(fs_output, key=fs_output.get)
             except Exception:
-                print(traceback.format_exc())
+                logger.exception(traceback.format_exc())
                 pass
             self.lock.release()
             return fs_output

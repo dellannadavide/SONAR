@@ -6,6 +6,9 @@ from utils.mqttclient import MQTTClient
 import utils.utils as utils
 import utils.constants as Constants
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.worker.posturehandler")
+
 class PostureHandler(WorkerAgent):
     async def setup(self):
         self.mqtt_client = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_PostureHandler_Publisher",
@@ -43,7 +46,7 @@ class PostureHandler(WorkerAgent):
                         ("_bottom" if Constants.ASL_FLUENT_BOTTOM_DIRECTION in person_is_looking else ("_top" if Constants.ASL_FLUENT_TOP_DIRECTION in person_is_looking else "")) +  \
                         ("_left" if Constants.ASL_FLUENT_RIGHT_DIRECTION in person_is_looking else ("_right" if Constants.ASL_FLUENT_LEFT_DIRECTION in person_is_looking else ""))
             if animation=="look":
-                print("!!!FOR SOME REASON i got no direction")
+                logging.warning("!!!FOR SOME REASON i got no direction, only animation=='look'")
             else:
                 self.mqtt_client.publish(Constants.TOPIC_POSTURE,
                                          utils.joinStrings([Constants.DIRECTIVE_PLAYANIMATION, animation]))

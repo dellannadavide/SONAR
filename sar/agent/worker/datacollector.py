@@ -12,6 +12,9 @@ import utils.utils as utils
 import utils.constants as Constants
 
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.worker.datacollector")
+
 class DataColletor(WorkerAgent):
     """
     Collects data from all different sources, cleans them and sends them to the BDI
@@ -78,16 +81,16 @@ class DataColletor(WorkerAgent):
                     # await self.agent.addToBatch(self.batch, sender, [])
                 # else:
 
-                print("DataCollector (batch "+str(self.batch)+"): Message received from "+sender+"-"+thread+" with content: {}".format(msg.body))
+                logger.info("DataCollector (batch "+str(self.batch)+"): Message received from "+sender+"-"+thread+" with content: {}".format(msg.body))
                 if sender == Constants.VISION_HANDLER_JID:
                     # print(msg.body)
                     # vision_data = utils.splitStringToList(msg.body)
-                    print("============vision data: ", str(msg_body_dict))
+                    logger.info("============vision data: {}".format(str(msg_body_dict)))
                     # vision_data = str(vision_data[len(vision_data) - 1]).lower()  # e.g., taking only the last one here
                     vision_data = msg_body_dict[max(msg_body_dict.keys())]
-                    print(vision_data)
+                    logger.info(vision_data)
                     vision_data_inner = utils.splitStringToList(vision_data, Constants.STRING_SEPARATOR_INNER)
-                    print(vision_data_inner)
+                    logger.info(vision_data_inner)
                     if thread == Constants.TOPIC_HUMAN_DETECTION:
                         # self.agent.visible_person = vision_data
                         # bel = utils.joinStringsBel()
@@ -130,7 +133,7 @@ class DataColletor(WorkerAgent):
 
                         if dist!=-1.0:
                             bels.append([DataColletor._KEY_DIST_DATA, dist])
-                        print("DETECTED DISTANCE IS ", dist)
+                        logger.info("DETECTED DISTANCE IS {}".format(dist))
                     if thread == Constants.TOPIC_OBJECT_DETECTION:
                         for obj in vision_data_inner[1:]:
                             if obj==DataColletor._KEY_VISION_DETECTED_PERSON:
@@ -142,12 +145,12 @@ class DataColletor(WorkerAgent):
                         for em in vision_data_inner[1:]:
                             if not em == DataColletor._KEY_EMOTION_NEUTRAL:
                                 bels.append([Constants.ASL_BEL_DETECTED_EMOTION, em])
-                    print(bels)
+                    logger.info(bels)
                     # beliefs_to_send.append(bel)
                 if sender == Constants.CHATTER_JID:
                     # chatter_data = utils.splitStringToList(msg.body) #replaced by msg_body_dict
                     # last_chatter_data = str(chatter_data[len(chatter_data) - 1])  # e.g., taking only the last one here
-                    print("============chatter data: ", msg_body_dict)
+                    logger.info("============chatter data: {}".format(msg_body_dict))
                     last_chatter_data = msg_body_dict[max(msg_body_dict.keys())]
                     last_chatter_data_split = utils.splitStringToList(last_chatter_data,
                                                                       Constants.STRING_SEPARATOR_INNER)
@@ -159,7 +162,7 @@ class DataColletor(WorkerAgent):
                         last_chatter_data_volume = last_chatter_data_split[1].replace(" ", Constants.ASL_STRING_SEPARATOR)
                         bels.append([Constants.ASL_BEL_SAID, last_chatter_data_sentence, float(last_chatter_data_volume)])
 
-                    print("bels: ", bels)
+                    logger.info("bels: {}".format(bels))
                     # beliefs_to_send.append(bel)
                 if sender == Constants.POSITION_HANDLER_JID:
                     # position_data = utils.splitStringToList(msg.body)
@@ -169,7 +172,7 @@ class DataColletor(WorkerAgent):
                     bels.append([DataColletor._KEY_DIST_DATA, position_data])
                     # print(bels)
 
-                print("adding bels", bels, "to batch")
+                logger.info("adding bels "+ str(bels) +" to batch")
                 await self.agent.addToBatch(self.batch, sender, thread, bels) #n.b. bels is a list of lists
             else:  # if timeout reached
                 # print("Timeout reached")
@@ -196,7 +199,7 @@ class DataColletor(WorkerAgent):
                         # metadata = {Constants.SPADE_MSG_METADATA_KEYS_TYPE: "float"}
                         # msg_body = utils.joinStrings([last_batch_id]+last_batch)
                         # print("data collector: sending data as requested to the bdi")
-                        print("data collector: sending " + str(msg_body))
+                        logger.info("data collector: sending {}".format(str(msg_body)))
                         msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
                         await self.send(msg)
 
@@ -269,7 +272,7 @@ class DataColletor(WorkerAgent):
                     vision_bel_lists = self.work_in_progress_data[batch][Constants.VISION_HANDLER_JID+"-"+thread]
                     for vision_bel_list in vision_bel_lists:
                         if len(vision_bel_list) > 0:
-                            print("vision_bel_list", vision_bel_list)
+                            logger.info("vision_bel_list {}".format(vision_bel_list))
                             # if vision_bel_list[0] == Constants.ASL_BEL_IS_LOOKING:
                             #     # bels_to_add.append(utils.joinStringsBel(vision_bel_list))
                             #     bels_to_add[Constants.ASL_BEL_IS_LOOKING] = vision_bel_list
@@ -280,7 +283,7 @@ class DataColletor(WorkerAgent):
                             if vision_bel_list[0] == DataColletor._KEY_DIST_DATA:
                                 position_data = vision_bel_list[1]
                                 data[Constants.LV_DIST] = position_data
-                                print(data)
+                                logger.info(data)
                             # elif vision_bel_list[0] == Constants.ASL_BEL_VISIBLE:
                             #     # bels_to_add.append(utils.joinStringsBel(vision_bel_list))
                             #     batch_visible_person = vision_bel_list[2]
@@ -291,7 +294,18 @@ class DataColletor(WorkerAgent):
                             #     bels_to_add.append(bel_string)
                             else:
                                 # bels_to_add.append(utils.joinStringsBel(vision_bel_list))
-                                bels_to_add[vision_bel_list[0]] = vision_bel_list
+                                """ the following allows for having multiple beliefs of a kind (e.g., multiple perceived_object beliefs)
+                                 It assumes that in the bdicore the key of these beliefs is not used for anything
+                                 (the key of beliefs that should be singletone instead is used)"""
+                                if vision_bel_list[0] in bels_to_add:
+                                    bel_idx = 1
+                                    key_bel = vision_bel_list[0]+"_"+str(bel_idx)
+                                    while key_bel in bels_to_add:
+                                        bel_idx += 1
+                                        key_bel = vision_bel_list[0] + "_" + str(bel_idx)
+                                    bels_to_add[key_bel] = vision_bel_list
+                                else:
+                                    bels_to_add[vision_bel_list[0]] = vision_bel_list
 
 
             # chatter
@@ -300,23 +314,28 @@ class DataColletor(WorkerAgent):
                     chatter_bel_lists = self.work_in_progress_data[batch][Constants.CHATTER_JID+"-"+thread]
                     for chatter_bel_list in chatter_bel_lists:
                         if len(chatter_bel_list) > 0:
-                            print("chatter bel list", chatter_bel_list)
+                            logger.info("chatter bel list {}".format(chatter_bel_list))
                             if chatter_bel_list[0] == Constants.ASL_BEL_PERSON_NAME:
                                 batch_visible_person = chatter_bel_list[1]
                                 # bels_to_add.append(utils.joinStringsBel(chatter_bel_list))
                                 bels_to_add[chatter_bel_list[0]] = chatter_bel_list
                             else:
-                                chatter_data_sentence = chatter_bel_list[1]
+                                chatter_data_sentence = chatter_bel_list[1].lower()
                                 chatter_data_volume = chatter_bel_list[2]
-                                if chatter_data_sentence.lower() in Constants.POSTURES:
+                                if chatter_data_sentence in Constants.POSTURES:
                                     formed_bel = [Constants.ASL_BEL_SAID,
-                                                  Constants.POSTURES[chatter_data_sentence.lower()],
+                                                  Constants.POSTURES[chatter_data_sentence],
                                                   Constants.ASL_FLUENT_IS_POSTURE]
-                                    # bel_string = utils.joinStringsBel(
-                                    #     ["said", Constants.POSTURES[chatter_data_sentence.lower()],
-                                    #      "is_posture"])
-                                elif "bye" in chatter_data_sentence.lower():
+                                elif chatter_data_sentence in Constants.ANIMATIONS:
+                                    formed_bel = [Constants.ASL_BEL_SAID,
+                                                  Constants.ANIMATIONS[chatter_data_sentence],
+                                                  Constants.ASL_FLUENT_IS_ANIMAATION]
+                                elif len([i for i in Constants.VOCABULARY_BYE_BYE if
+                                            i in chatter_data_sentence]) > 0:
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_BYE]
+                                elif len([i for i in Constants.VOCABULARY_WHAT_IS_THIS if
+                                          i==chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR, " ")]) > 0: #note here I'm checking if it's equal
+                                    formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_YOU_SEE]
                                 else:
                                     # bel_string = utils.joinStringsBel([Constants.ASL_BEL_SAID, chatter_data_sentence])
                                     formed_bel = [Constants.ASL_BEL_SAID, chatter_data_sentence]
@@ -360,7 +379,7 @@ class DataColletor(WorkerAgent):
                 #
                 for fsi_input in self.fsi.fuzzyRuleBase.inputs:
                     if not fsi_input in data:
-                        print(fsi_input, "not in data")
+                        logger.info(str(fsi_input) + " not in data")
                         # print(fsi_input)
                         # print(self.fsi.fuzzyRuleBase.ling_vars_dict)
                         # print(self.fsi.fuzzyRuleBase.ling_vars_dict[fsi_input])
@@ -372,9 +391,9 @@ class DataColletor(WorkerAgent):
                             data[fsi_input] = input_min_val
                         else:
                             data[fsi_input] = input_default_val
-                print("data: " + str(data))
+                logger.info("data: {}".format(str(data)))
                 social_values, best_social_interpr = self.fsi.getBestSocialInterpretation(data)
-                print(social_values, "best is ", best_social_interpr)
+                logger.info("{}, best is {}".format(social_values, best_social_interpr))
 
             if (not best_social_interpr is None):
                 # print("best social interpretation: " + str(best_social_interpr))
@@ -397,12 +416,12 @@ class DataColletor(WorkerAgent):
                     # for d in data:
                     #     msg_to_norm_adapter.extend([str(d), str(data[d])])
                     send_msg_to_norm_adapter = self.SendMsgToBehaviour(Constants.NORM_ADAPTER_JID, msg_to_norm_adapter)
-                    print("DATACOLLECTOR: Created new sendmsgtoBehavior at " + str(time.time()))
-                    print(msg_to_norm_adapter)
+                    logger.info("DATACOLLECTOR: Created new sendmsgtoBehavior at {}".format(str(time.time())))
+                    logger.info(msg_to_norm_adapter)
                     self.add_behaviour(send_msg_to_norm_adapter)
 
             if (not social_values is None):
-                print("social_values: " + str(social_values))
+                logger.info("social_values: {}".format(str(social_values)))
                 # I also create another belief with the current values of social interpretation
                 # sev = []
                 # for s in social_values:
@@ -430,7 +449,7 @@ class DataColletor(WorkerAgent):
                 self.data_to_send[batch] = bels_to_add
                 self.last_batch_in_data_to_send = batch
                 # self.data_to_send.extend(bels_to_add)
-                print("Batch", batch," is ", bels_to_add)
+                logger.info("Batch {} is {}".format(batch, bels_to_add))
 
             del self.work_in_progress_data[batch]
 

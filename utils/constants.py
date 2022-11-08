@@ -10,16 +10,15 @@ MQTT_CLIENT_TYPE_LISTENER = "MQTT_CLIENT_TYPE_LISTENER"
 MQTT_CLIENT_TYPE_PUBLISHER = "MQTT_CLIENT_TYPE_PUBLISHER"
 
 TOPIC_GROUP_VISION = "NAO_TOPIC_GROUP_VISION/"
-TOPIC_HUMAN_DETECTION = TOPIC_GROUP_VISION+"NAO_TOPIC_HUMAN_DETECTED"
-TOPIC_HEAD_TRACKER = TOPIC_GROUP_VISION+"NAO_TOPIC_HEAD_TRACKER"
-TOPIC_IMAGE = TOPIC_GROUP_VISION+"NAO_TOPIC_IMAGE"
-TOPIC_OBJECT_DETECTION = TOPIC_GROUP_VISION+"NAO_TOPIC_OBJECT_DETECTION"
-TOPIC_EMOTION_DETECTION = TOPIC_GROUP_VISION+"NAO_TOPIC_EMOTION_DETECTION"
-
+TOPIC_HUMAN_DETECTION = TOPIC_GROUP_VISION + "NAO_TOPIC_HUMAN_DETECTED"
+TOPIC_HEAD_TRACKER = TOPIC_GROUP_VISION + "NAO_TOPIC_HEAD_TRACKER"
+TOPIC_IMAGE = TOPIC_GROUP_VISION + "NAO_TOPIC_IMAGE"
+TOPIC_OBJECT_DETECTION = TOPIC_GROUP_VISION + "NAO_TOPIC_OBJECT_DETECTION"
+TOPIC_EMOTION_DETECTION = TOPIC_GROUP_VISION + "NAO_TOPIC_EMOTION_DETECTION"
 
 TOPIC_GROUP_SOUND = "NAO_TOPIC_GROUP_SOUND/"
-TOPIC_SPEECH = TOPIC_GROUP_SOUND+"NAO_TOPIC_SPEECH"
-TOPIC_MICENERGY = TOPIC_GROUP_SOUND+"NAO_TOPIC_MICENERGY"
+TOPIC_SPEECH = TOPIC_GROUP_SOUND + "NAO_TOPIC_SPEECH"
+TOPIC_MICENERGY = TOPIC_GROUP_SOUND + "NAO_TOPIC_MICENERGY"
 
 TOPIC_DISTANCE = "NAO_TOPIC_DISTANCE"
 TOPIC_DIRECTIVE = "NAO_TOPIC_DIRECTIVE"
@@ -55,13 +54,15 @@ ASL_FLUENT_TOP_DIRECTION = "top"
 ASL_FLUENT_BOTTOM_DIRECTION = "bottom"
 ASL_FLUENT_RIGHT_DIRECTION = "right"
 ASL_FLUENT_LEFT_DIRECTION = "left"
-ASL_FLUENT_TOP_RIGHT_DIRECTION = ASL_FLUENT_TOP_DIRECTION+"_"+ASL_FLUENT_RIGHT_DIRECTION
-ASL_FLUENT_TOP_LEFT_DIRECTION = ASL_FLUENT_TOP_DIRECTION+"_"+ASL_FLUENT_LEFT_DIRECTION
-ASL_FLUENT_BOTTOM_RIGHT_DIRECTION = ASL_FLUENT_BOTTOM_DIRECTION+"_"+ASL_FLUENT_RIGHT_DIRECTION
-ASL_FLUENT_BOTTOM_LEFT_DIRECTION = ASL_FLUENT_BOTTOM_DIRECTION+"_"+ASL_FLUENT_LEFT_DIRECTION
+ASL_FLUENT_TOP_RIGHT_DIRECTION = ASL_FLUENT_TOP_DIRECTION + "_" + ASL_FLUENT_RIGHT_DIRECTION
+ASL_FLUENT_TOP_LEFT_DIRECTION = ASL_FLUENT_TOP_DIRECTION + "_" + ASL_FLUENT_LEFT_DIRECTION
+ASL_FLUENT_BOTTOM_RIGHT_DIRECTION = ASL_FLUENT_BOTTOM_DIRECTION + "_" + ASL_FLUENT_RIGHT_DIRECTION
+ASL_FLUENT_BOTTOM_LEFT_DIRECTION = ASL_FLUENT_BOTTOM_DIRECTION + "_" + ASL_FLUENT_LEFT_DIRECTION
 ASL_FLUENT_FACE = "face"
 ASL_FLUENT_IS_POSTURE = "is_posture"
+ASL_FLUENT_IS_ANIMAATION = "is_animation"
 ASL_FLUENT_BYE = "bye_bye"
+ASL_FLUENT_WHAT_YOU_SEE = "tell_what_you_see"
 
 ASL_BEL_PERSON_NAME = "person_name"
 ASL_BEL_IS_ADMIN = "is_admin"
@@ -73,6 +74,7 @@ ASL_BEL_PERCEIVED_OBJECT = "perceived_object"
 ASL_BEL_DETECTED_EMOTION = "detected_emotion"
 ASL_BEL_SAID = "said"
 ASL_BEL_PERFORM_REASONING = "perform_reasoning"
+ASL_BEL_PREPARE_FOR_NEXT_CYCLE = "prepare_for_next_cycle"
 ASL_BEL_ADD_SPONT_CONV_GOAL = "add_spontaneous_conversation_goal"
 
 ASL_BEL_PROHIBITED_GOAL = "prohibited_goal"
@@ -83,7 +85,6 @@ ASL_BEL_PROHIBITIONS_OBLIGATIONS = [ASL_BEL_PROHIBITED_GOAL,
                                     ASL_BEL_PROHIBITED_ACTION,
                                     ASL_BEL_OBLIGED_GOAL,
                                     ASL_BEL_OBLIGED_ACTION]
-
 
 ASL_BEL_MOVED_HEAD_PREFIX = "moved_head_"
 ASL_BEL_ESTABLISHED_TRUST = "established_trust"
@@ -115,20 +116,34 @@ LV_VOLUME = "VOLUME"
 LV_MOVEMENTS = "MOVEMENTS"
 
 VOCABULARY_PERSONAL_CONVERSATION = {"personal", "private", "secret", "confidential", "classified",
-                                                                    "keep it for yourself", "keep it to yourself",
-                                                                    "keep for yourself", "keep to yourself",
-                                                                    "don't tell anyone", "do not tell anyone", "do not tell anybody", "don't tell anybody"}
+                                    "keep it for yourself", "keep it to yourself",
+                                    "keep for yourself", "keep to yourself",
+                                    "don't tell anyone", "do not tell anyone",
+                                    "do not tell anybody", "don't tell anybody"}
+
+VOCABULARY_BYE_BYE = {"goodbye", "bye", "bye-bye", "see you later", "see you soon",
+                      "adios", "adieu", "talk to you later", "goodnight", "catch you later"}
+
+VOCABULARY_WHAT_IS_THIS = {"what is this", "what's this", "can you see this", "do you see this", "what can you see",
+                           "what do you see", "do you know what is this",
+                           "do you know what this is",
+                           "do you know what is this thing", "do you know what is this object",
+                           "can you tell me what is this", "can you tell me what this is",
+                           "can you tell me what is this object",
+                           "can you tell me what you see", "tell me what you see", "tell me what you can see",
+                           "tell me what is this", "tell me what is this object", "tell me what is this thing"}
+
 LV_VOC_PERSONAL = "PERSONAL_VOCABULARY"
 
 SOCIAL_INTERPRETATIONS = [
-    LV_DUTY,            # D
-    LV_INTELLECT,       # I
-    LV_ADVERSITY,       # A
-    LV_MATING,          # M
-    LV_POSITIVITY,      # O
-    LV_NEGATIVITY,      # N
-    LV_DECEPTION,       # D
-    LV_SOCIALITY,       # S
+    LV_DUTY,  # D
+    LV_INTELLECT,  # I
+    LV_ADVERSITY,  # A
+    LV_MATING,  # M
+    LV_POSITIVITY,  # O
+    LV_NEGATIVITY,  # N
+    LV_DECEPTION,  # D
+    LV_SOCIALITY,  # S
     LV_SOCIAL,
     LV_PERSONAL,
     LV_PUBLIC,
@@ -167,35 +182,35 @@ LV_UNIVERSITY = "UNIVERSITY"
 LV_BAR = "BAR"
 
 LV_SOCIAL_CUES = [LV_FAMILY,
-LV_MATE,
-LV_FRIENDS,
-LV_COHABITANTS,
-LV_COLLEAGUES,
-LV_ALONE,
-LV_SPORTS,
-LV_EXAM,
-LV_FOOD,
-LV_EATING,
-LV_DRINKING,
-LV_COMMUNICATING,
-LV_TV,
-LV_COMMUTING,
-LV_COMPUTER,
-LV_VIDEOGAMES,
-LV_READING,
-LV_WORKING,
-LV_SHOPPING,
-LV_GROOMING,
-LV_WAITING,
-LV_SLEEP,
-LV_MUSIC,
-LV_TELEPHONE,
-LV_HOME,
-LV_BATHROOM,
-LV_KITCHEN,
-LV_BED,
-LV_UNIVERSITY,
-LV_BAR]
+                  LV_MATE,
+                  LV_FRIENDS,
+                  LV_COHABITANTS,
+                  LV_COLLEAGUES,
+                  LV_ALONE,
+                  LV_SPORTS,
+                  LV_EXAM,
+                  LV_FOOD,
+                  LV_EATING,
+                  LV_DRINKING,
+                  LV_COMMUNICATING,
+                  LV_TV,
+                  LV_COMMUTING,
+                  LV_COMPUTER,
+                  LV_VIDEOGAMES,
+                  LV_READING,
+                  LV_WORKING,
+                  LV_SHOPPING,
+                  LV_GROOMING,
+                  LV_WAITING,
+                  LV_SLEEP,
+                  LV_MUSIC,
+                  LV_TELEPHONE,
+                  LV_HOME,
+                  LV_BATHROOM,
+                  LV_KITCHEN,
+                  LV_BED,
+                  LV_UNIVERSITY,
+                  LV_BAR]
 
 STATIC_LV = LV_SOCIAL_CUES
 DYNAMIC_LV = [LV_DIST, LV_VOLUME, LV_MOVEMENTS]
@@ -210,9 +225,6 @@ ACTUATION_ASPECTS = [
     ACTUATION_ASPECT_POSITION,
     ACTUATION_ASPECT_POSTURE
 ]
-
-
-
 
 PERFORMATIVE_INFORM = "inform"
 PERFORMATIVE_REQUEST = "request"
@@ -232,8 +244,9 @@ DIRECTIVE_SAY_IN_RESPONSE = "say_in_response"
 DIRECTIVE_BEGIN_GREETING = "begin_greeting_procedure"
 DIRECTIVE_CONTINUE_CONVERSATION = "continue_conversation"
 DIRECTIVE_TURN_CONVERSATION = "turn_conversation"
-DIRECTIVE_REPLY_TO = "reply_to"
-DIRECTIVE_REPLY_TO_WITH_ROLE = "reply_to_with_role"
+DIRECTIVE_REPLY_TO_REACTIVE = "reply_to"
+DIRECTIVE_REPLY_TO_PROACTIVE = "reply_to_proactive"
+DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY = "set_user_input_processed_no_reply"
 DIRECTIVE_GOTOPOSTURE = "go_to_posture"
 DIRECTIVE_MOVEHEAD = "move_head"
 DIRECTIVE_PLAYANIMATION = "play_animation"
@@ -242,15 +255,13 @@ DIRECTIVE_UPDATE_TOPIC_INTEREST = "update_topic_interest"
 DIRECTIVE_LED_CHANGE_COLOR = "change_led_color"
 DIRECTIVE_LED_SET_COLOR = "set_led_color"
 
-
-SPEECH_KEYWORDS_AFFIRMATIVE =  ["yes", "yeah", "correct", "exactly", "yep", "bravo", "ok"]
+SPEECH_KEYWORDS_AFFIRMATIVE = ["yes", "yeah", "correct", "exactly", "yep", "bravo", "ok"]
 SPEECH_KEYWORDS_NEGATIVE = ["no", "nope", "wrong", "not", "yep", "incorrect", "nu", "but"]
 
 COLORS_BLUE = "blue"
 COLORS_WHITE = "white"
 COLORS_GREEN = "green"
 COLORS_RED = "red"
-
 
 POSTURE_SIT = "Sit"
 POSTURE_CROUCH = "Crouch"
@@ -268,13 +279,45 @@ POSTURES = {"sit": POSTURE_SIT,
 
 ANIMATION_ESTABLISH_TRUST = "establish_trust"
 ANIMATION_YES_SIR = "yes_sir"
+ANIMATION_FEAR = "fear"
+ANIMATION_JOY = "joy"
+ANIMATION_LOVE = "love"
+ANIMATION_SADNESS = "sadness"
+ANIMATION_SURPRISE = "surprise"
+ANIMATION_LOOK_BOTTOM = "look_bottom"
+ANIMATION_LOOK_BOTTOM_LEFT = "look_bottom_left"
+ANIMATION_LOOK_BOTTOM_RIGHT = "look_bottom_right"
+ANIMATION_LOOK_LEFT = "look_left"
+ANIMATION_LOOK_RIGHT = "look_right"
+ANIMATION_LOOK_TOP = "look_top"
+ANIMATION_LOOK_TOP_LEFT = "look_top_left"
+ANIMATION_LOOK_TOP_RIGHT = "look_top_right"
+
+ANIMATIONS = {ASL_STRING_SEPARATOR.join(["play", "yes", "sir"]): ANIMATION_YES_SIR,
+              ASL_STRING_SEPARATOR.join(["play", "establish", "trust"]): ANIMATION_ESTABLISH_TRUST,
+              ASL_STRING_SEPARATOR.join(["play", "fear"]): ANIMATION_FEAR,
+              ASL_STRING_SEPARATOR.join(["play", "joy"]): ANIMATION_JOY,
+              ASL_STRING_SEPARATOR.join(["play", "love"]): ANIMATION_LOVE,
+              ASL_STRING_SEPARATOR.join(["play", "sadness"]): ANIMATION_SADNESS,
+              ASL_STRING_SEPARATOR.join(["play", "surprise"]): ANIMATION_SURPRISE,
+              ASL_STRING_SEPARATOR.join(["look", "bottom"]): ANIMATION_LOOK_BOTTOM,
+              ASL_STRING_SEPARATOR.join(["look", "down"]): ANIMATION_LOOK_BOTTOM,
+              ASL_STRING_SEPARATOR.join(["look", "bottom", "left"]): ANIMATION_LOOK_BOTTOM_LEFT,
+              ASL_STRING_SEPARATOR.join(["look", "bottom", "right"]): ANIMATION_LOOK_BOTTOM_RIGHT,
+              ASL_STRING_SEPARATOR.join(["look", "left"]): ANIMATION_LOOK_LEFT,
+              ASL_STRING_SEPARATOR.join(["look", "right"]): ANIMATION_LOOK_RIGHT,
+              ASL_STRING_SEPARATOR.join(["look", "top"]): ANIMATION_LOOK_TOP,
+              ASL_STRING_SEPARATOR.join(["look", "up"]): ANIMATION_LOOK_TOP,
+              ASL_STRING_SEPARATOR.join(["look", "top", "left"]): ANIMATION_LOOK_TOP_LEFT,
+              ASL_STRING_SEPARATOR.join(["look", "top", "right"]): ANIMATION_LOOK_TOP_RIGHT
+              }
 
 FS_TRIANGULAR_MF = "triangular_mf"
 FS_TRAPEZOIDAL_MF = "trapezoidal_mf"
 FS_GAUSSIAN_MF = "gaussian_mf"
 
-FS_POSITIVE_INTERPRETATION_VALUES = ["hpc", "vhpc", "appc", "ppc", "high"]  # todo note "high" should be removed and this should also be checked in general conceptually
-
+FS_POSITIVE_INTERPRETATION_VALUES = ["hpc", "vhpc", "appc", "ppc",
+                                     "high"]  # todo note "high" should be removed and this should also be checked in general conceptually
 
 NSGA2 = "NSGA2"
 RNSGA2 = "RNSGA2"
@@ -285,8 +328,6 @@ DE = "DE"
 
 PHI_INTERPRETABILITY_INDEX = "PHI"
 AVG_COVERAGE_INDEX = "COVERAGE"
-
-
 
 BDI_CORE_NAME = "nosar_bdicore"
 BDI_CORE_JID = "nosar_bdicore@localhost"
@@ -314,7 +355,7 @@ NORM_ADAPTER_JID = "nosar_norm_adapter@localhost"
 NORM_ADAPTER_PWD = "nosar_norm_adapter"
 
 XMPP_AGENTS_DETAILS = {
-    BDI_CORE_NAME: { "jid": BDI_CORE_JID, "pwd": BDI_CORE_PWD, },
+    BDI_CORE_NAME: {"jid": BDI_CORE_JID, "pwd": BDI_CORE_PWD, },
     CHATTER_NAME: {"jid": CHATTER_JID, "pwd": CHATTER_PWD},
     DATA_COLLECTOR_NAME: {"jid": BDI_CORE_JID, "pwd": BDI_CORE_PWD},
     SYSTEM_HANDLER_NAME: {"jid": SYSTEM_HANDLER_JID, "pwd": SYSTEM_HANDLER_PWD},

@@ -32,6 +32,8 @@ from utils import utils
 import numpy as np
 import utils.constants as Constants
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.worker.normadapter")
 
 class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
 
@@ -47,8 +49,8 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
             if (not ling_var in self.agent.curr_adaptation) or self.agent.curr_adaptation[ling_var] == 0:
                 self.agent.curr_adaptation[ling_var] = 0
                 return False
-            print("-------Revision of ", ling_var, self.agent.curr_adaptation[ling_var], ":", dissimilarity,
-                  self.getMaxDissimilarityForCurrentAdaptation(self.agent.curr_adaptation[ling_var]))
+            logging.info("-------Revision of {} {} : {} {}".format(ling_var, self.agent.curr_adaptation[ling_var], dissimilarity,
+                  self.getMaxDissimilarityForCurrentAdaptation(self.agent.curr_adaptation[ling_var])))
             return dissimilarity > self.getMaxDissimilarityForCurrentAdaptation(
                 self.agent.curr_adaptation[ling_var])  # if it is bigger return true, i.e., it is tooDifferent
 
@@ -61,9 +63,9 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
             lvs = rulebase.getLVSFromRulesContainingHighValuesOf(
                 social_int)  # returns a dictionary rule: list of linguistic variables (strings) in rule
             # print("\tData point is: ", str(dp))
-            print("\tSocial interpretation is " + str(social_int))
-            print("\tRules (and associated ling. var) containing '", str(social_int), "IS high (or similar)' are ",
-                  str(lvs))
+            logging.info("\tSocial interpretation is " + str(social_int))
+            logging.info("\tRules (and associated ling. var) containing '{} IS high (or similar)' are {}".format(str(social_int),
+                  str(lvs)))
 
             adapted_lingVar = []
             for r in lvs.keys():  # for all rules
@@ -94,25 +96,25 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
 
                             # data_width = 2*data_stdev_value # width of interval [mu-stdev, mu+stdev] = (mu+stedv)-(mu-stdev) = 2stdev
                             data_width = data_stdev_value  # we chose to aim at a with of the trapezoid large as 1 stdev
-                            print("\tdata mean value of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(
+                            logging.info("\tdata mean value of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(
                                 data_mean_value))
-                            print("\tdata stdev value of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(
+                            logging.info("\tdata stdev value of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(
                                 data_stdev_value))
-                            print(
+                            logging.info(
                                 "\tdata min value of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(
                                     data_min_value))
-                            print("\tdata max value of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(
+                            logging.info("\tdata max value of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(
                                 data_max_value))
 
                             if data_stdev_value>0 and data_min_value!=data_max_value:
                                 """ I want to first scale the universe and all variables, if necessary """
                                 curr_uni = current_fuzzy_ling_var.ling_var._universe_of_discourse
-                                print("\tcurrent universe of " + str(current_fuzzy_ling_var) + ": " + str(curr_uni))
+                                logging.info("\tcurrent universe of " + str(current_fuzzy_ling_var) + ": " + str(curr_uni))
                                 new_universe = linearScaleUniverseToA1B1(current_fuzzy_ling_var.ling_var,
                                                                          self.var_maxmin[lv]["min"],
                                                                          self.var_maxmin[lv]["max"])
                                 current_fuzzy_ling_var.universe_of_discourse = new_universe
-                                print("\tnew universe of " + str(current_fuzzy_ling_var) + ": " + str(
+                                logging.info("\tnew universe of " + str(current_fuzzy_ling_var) + ": " + str(
                                     current_fuzzy_ling_var.universe_of_discourse))
                                 # for fs in partition:
                                 #     new_mfs = fs.scaleLinear(curr_uni[0], curr_uni[1], data_min_value, data_max_value)
@@ -128,14 +130,14 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
                                 curr_mid_value = (curr_cu + curr_cl) / 2.0  # todo assuming for now it is trapezoid
                                 curr_width = (curr_cu - curr_cl)
 
-                                print(
+                                logging.info(
                                     "\tcurr cor pos of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(curr_mid_value))
-                                print("\tcurr width of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(curr_width))
-                                print(curr_mfs)
+                                logging.info("\tcurr width of " + str(lv) + " " + str(fuzzy_set.term) + ": " + str(curr_width))
+                                logging.info(curr_mfs)
 
                                 # compute the error between the mid value in the fuzzy set and the value in the collected knowledge
                                 error_core_position = curr_mid_value - data_mean_value
-                                print("\terror core pos:" + str(error_core_position))
+                                logging.info("\terror core pos:" + str(error_core_position))
                                 if error_core_position >= 0:  # then change will be <0 -> we are moving left, so we want to compute the ratio w.r.t. the left part
                                     den = (curr_cl - curr_sl) if (curr_cl - curr_sl) > 0 else 1.0
                                     error_core_position = min(1.0, error_core_position / den)
@@ -144,7 +146,7 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
                                     den = (curr_su - curr_cu) if (curr_su - curr_cu) > 0 else 1.0
                                     error_core_position = max(-1.0, error_core_position / den)
                                     # error_core_position = max(-1.0, error_core_position)
-                                print("\tNORMALIZED error core pos:" + str(error_core_position))
+                                logging.info("\tNORMALIZED error core pos:" + str(error_core_position))
                                 # perform inference with the self.FS to determine the change
                                 # self.FS.set_variable(self.error_name, error_core_position)
                                 # fs_output = self.FS.Mamdani_inference()
@@ -152,11 +154,11 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
                                 change_core_position = -1 * error_core_position
                                 # """ instead of using an inference system I just take the inverse of the error """
                                 # change_core_position = error_core_position*-1
-                                print("\tcomputed K_CP, change param for core position:" + str(change_core_position))
+                                logging.info("\tcomputed K_CP, change param for core position:" + str(change_core_position))
 
                                 # compute the error between the mid value in the fuzzy set and the value in the collected knowledge
                                 error_core_width = curr_width - data_width
-                                print("\terror core width:" + str(error_core_width))
+                                logging.info("\terror core width:" + str(error_core_width))
 
                                 # if k_CW < 0:
                                 #     self._funpointer._b = b + (w * (a - b) * k_CW)
@@ -180,7 +182,7 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
                                     error_ratio_b = error_core_width / den_b
                                     error_ratio_c = error_core_width / den_c
                                     error_core_width = max(-1.0, error_ratio_b, error_ratio_c)
-                                print("\tNORMALIZED error core width:" + str(error_core_width))
+                                logging.info("\tNORMALIZED error core width:" + str(error_core_width))
                                 # perform inference with the self.FS to determine the change
                                 # self.FS.set_variable(self.error_name, error_core_width)
                                 # fs_output = self.FS.Mamdani_inference()
@@ -188,39 +190,39 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
                                 change_core_with = -1 * error_core_width
                                 # """ instead of using an inference system I just take the inverse of the error """
                                 # change_core_with = error_core_width * -1
-                                print("\tcomputed K_CW, change param for core width:" + str(change_core_with))
+                                logging.info("\tcomputed K_CW, change param for core width:" + str(change_core_with))
 
                                 # once I computed the error and the consequent change for the particular fuzzy set,
                                 # then I want to apply the changes to all sets in the partition
 
                                 for fs in partition:  # fs is a DynamicTrapezoidFuzzySet
-                                    print(fs)
+                                    logging.info(fs)
                                     curr_params_dict = fs.get_params_dict()
                                     """ First applying core-position modifier """
                                     c_mfs = fs.get_params()  # c_mfs is actually a TUPLE of all parameters of the fuzzyset
-                                    print("\tcurrent mfs:" + str(c_mfs))
+                                    logging.info("\tcurrent mfs:" + str(c_mfs))
                                     new_mfs = fs.modifyCorePosition(
                                         change_core_position)  # new_mfs should be a dictionary, and the function should DIRECTLY MODIFY THE MEMBERSHIP FUNCTION
-                                    print("\tnew mfs:" + str(fs.get_params()))
-                                    print(new_mfs)
+                                    logging.info("\tnew mfs:" + str(fs.get_params()))
+                                    logging.info(new_mfs)
                                     rulebase.updateMFParams(fs._term,
                                                             new_mfs)  # this should create a new trapezoidfuzzyset and update it
                                     """ Then applying core-width modifier """
                                     c_mfs = fs.get_params()  # c_mfs is actually a TUPLE of all parameters of the fuzzyset
-                                    print("\tcurrent mfs:" + str(c_mfs))
+                                    logging.info("\tcurrent mfs:" + str(c_mfs))
                                     new_mfs = fs.modifyCoreWidth(
                                         change_core_with)  # new_mfs should be a dictionary, and the function should DIRECTLY MODIFY THE MEMBERSHIP FUNCTION
-                                    print("\tnew mfs:" + str(fs.get_params()))
-                                    print(new_mfs)
+                                    logging.info("\tnew mfs:" + str(fs.get_params()))
+                                    logging.info(new_mfs)
                                     rulebase.updateMFParams(fs._term,
                                                             new_mfs)  # this should create a new trapezoidfuzzyset and update it
 
                                     if self.agent.optim_param["consider_past_experience"]:
                                         if self.tooDifferent(new_universe, new_mfs, curr_params_dict, str(lv)):
-                                            # if it is too different I reverting back
+                                            # if it is too different I revert
                                             fs.set_params_dict(curr_params_dict)
                                             rulebase.updateMFParams(fs._term, curr_params_dict)
-                                            print("\ttoo different, correct the to  mfs:" + str(curr_params_dict))
+                                            logging.info("\ttoo different, correct the to  mfs:" + str(curr_params_dict))
                                 adapted_lingVar.append(str(lv))
             if len(adapted_lingVar) > 0:
                 for lv in adapted_lingVar:
@@ -244,14 +246,14 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
             """
                                 I first perform adaptation of the core position of the FuzzySets based on the averaged knowledge collected
                                 """
-            print("Adaptation of the fuzzy sets...")
+            logging.info("Adaptation of the fuzzy sets...")
             for social_int in self.aggr_knowledge.keys():
-                print(social_int)
+                logging.info(social_int)
                 dp = self.aggr_knowledge[social_int]
                 # print("social interpreter")
                 # self.adaptRuleBase(self.agent.fsi, dp, self.data, self.agent.curr_adaptation)
                 for fsq in self.agent.fsq:
-                    print("social qualifier " + str(fsq))
+                    logging.info("social qualifier " + str(fsq))
                     self.adaptRuleBase(self.agent.fsq[fsq], dp, self.data, self.agent.curr_adaptation)
 
             self.agent.adapting = False
@@ -260,13 +262,13 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
         def __init__(self, period, start_at):
             super().__init__(period, start_at)
             self.timeout_data_source = period
-            print("this is the behavior to startr")
+            logging.info("this is the behavior to startr")
 
         async def run(self):
-            print("I hould be running the behavior of norma adapt")
-            print("collected knowledge")
-            print(self.agent.collected_knowledge)
-            print(self.agent.adapting)
+            logging.info("I hould be running the behavior of norma adapt")
+            logging.info("collected knowledge")
+            logging.info(self.agent.collected_knowledge)
+            logging.info(self.agent.adapting)
             """ Here, this is the actual procedure that will revise the norms.
             What it has to do is the following:
             1. check if the self.agent.collected_knowledge is not empty (i.e., if there is something useful to use for norm adaptation)
@@ -354,8 +356,8 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
                                 self.agent.var_maxmin[var]["max"] = self.agent.variables_maxmin[social_int][var]["max"]
                                 self.agent.var_maxmin[var]["min"] = self.agent.variables_maxmin[social_int][var]["min"]
 
-                            print("Avg and Stdev (and min and max) of ", var, "for ", social_int, avg, stdev, data_min,
-                                  data_max)
+                            logging.info("Avg and Stdev (and min and max) of {} for {}: {}, {} ({}, {})".format(var, social_int, avg, stdev, data_min,
+                                  data_max))
                             aggr_knowledge[social_int][var] = [avg, stdev, data_max, data_min]
                 # now in averaged_knowledge I should have all collected knowledge but averaged per social interpretation
                 # print("aggr knoeldge")
@@ -369,7 +371,7 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
 
     async def setup(self):
         await super().setup()
-        print("starting up norm adapter")
+        logging.info("starting up norm adapter")
 
         self.curr_adaptation = {}
         self.curr_adaptation_all = 0
@@ -446,17 +448,16 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
         #         self.optim_param["n_obj_f"] = 2
         #         self.optim_param["algo"] = Constants.NSGA3
 
-        print("setting up the behavior to startr")
+        logging.info("setting up the behavior to startr")
         start_at = datetime.now() + timedelta(seconds=5)
         b = self.AdaptNorms(period=6, start_at=start_at)
         self.add_behaviour(b)
 
 
     async def do_work(self, work_info_dict):
-        print("!!!!!!!!!!!!!!!!!!!!! TO MAKE SURE THAT THE DICTIONARY WORK_INFO IS READ PROPERLY !!!!!!!!!!!!!!!!!!!!!!!")
         """ message is the message from the data collector with all the info
         it is a string which represents a list, where element 0 is the topic of element 1, and element 2 is the topic of element 2, etc."""
-        print("NORMADAPTER received message from data colll: ", work_info_dict)
+        logging.info("NORMADAPTER received message from data coll: {}".format(work_info_dict))
         # work_info_list = utils.splitStringToList(message)
         # nr_pairs = int(len(work_info_list) / 2)  # n.b. it is expected to be always even
         # data_point = {}
@@ -475,9 +476,9 @@ class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
         social_int = work_info_dict[Constants.TOPIC_SOCIAL_INTERPR]
         self.collected_knowledge_per_social_int[social_int].append(work_info_dict)
 
-        print("NORMADAPTER, kowledge:")
-        print(self.collected_knowledge)
-        print(self.collected_knowledge_per_social_int)
+        logging.info("NORMADAPTER, kowledge:")
+        logging.info(self.collected_knowledge)
+        logging.info(self.collected_knowledge_per_social_int)
 
 
 

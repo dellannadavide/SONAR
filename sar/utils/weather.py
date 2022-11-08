@@ -1,5 +1,7 @@
 import requests, json
 
+import logging
+logger = logging.getLogger("nosar.sar.utils.weather")
 
 def getCurrentWeather():
     ret_val = "the weather today"

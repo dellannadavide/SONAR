@@ -7,28 +7,41 @@ from transformers.utils import logging
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-# from sentence_transformers import SentenceTransformer, util
-# import numpy as np
-# model = SentenceTransformer('stsb-mpnet-base-v2')
-# sentence1 = "sit down"
-# sentence2 = "sit down, please"
-# # encode sentences to get their embeddings
-# embedding1 = model.encode(sentence1, convert_to_tensor=True)
-# embedding2 = model.encode(sentence2, convert_to_tensor=True)
-# # compute similarity scores of two embeddings
-# cosine_scores = util.pytorch_cos_sim(embedding1, embedding2)
-# print("Sentence 1:", sentence1)
-# print("Sentence 2:", sentence2)
-# print("Similarity score:", cosine_scores.item())
-# exit()
+from sentence_transformers import SentenceTransformer, util
+import numpy as np
+model = SentenceTransformer('stsb-mpnet-base-v2')
+sentence1 =  "what is this"
+sentence2 =  "can you tell me what is this"
+# encode sentences to get their embeddings
+embedding1 = model.encode(sentence1, convert_to_tensor=True)
+embedding2 = model.encode(sentence2, convert_to_tensor=True)
+# compute similarity scores of two embeddings
+cosine_scores = util.pytorch_cos_sim(embedding1, embedding2)
+print("Sentence 1:", sentence1)
+print("Sentence 2:", sentence2)
+print("Similarity score:", cosine_scores.item())
+exit()
 
-# x = torch.randn(1, 2)
-# print(x)
-# x = torch.cat([x,x], dim=-1)
-# print(x)
-# x = torch.cat([x,x], dim=-1)
-# print(x)
-# exit()
+x = torch.randn(1, 2)
+print(x)
+x = torch.cat([x,x], dim=-1)
+print(x)
+x = torch.cat([x,x], dim=-1)
+print(x)
+exit()
+
+tgenerator = pipeline('text-generation', model="facebook/opt-350m")
+g = tgenerator("A book ", max_length=50,
+                                    do_sample=True,
+                                    top_p=0.92,
+                                    top_k=100,
+                                    temperature=0.75,
+               num_return_sequences=10)
+for i in g:
+    print(i)
+
+exit()
+
 sentences = ["I'm afraid not"
              ]
 

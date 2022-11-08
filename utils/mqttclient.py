@@ -1,6 +1,9 @@
 import paho.mqtt.client as mqtt
 import utils.constants as Constants
 
+import logging
+logger = logging.getLogger("nosar.sar.utils.mqttclient")
+
 class MQTTClient:
     def __init__(self, broker, client_id, client_type, topic, on_message):
         self.mqttBroker = broker
@@ -45,9 +48,9 @@ class MQTTClient:
         self.client.disconnect()
 
     def on_connect(self, client, userdata, flags, rc):
-        print("MQTT Client " + str(self.client_id) + " connecting to " + str(self.mqttBroker) + "...")
-        print("Connection returned " + str(rc))
+        logger.info("MQTT Client " + str(self.client_id) + " connecting to " + str(self.mqttBroker) + "...")
+        logger.info("Connection returned " + str(rc))
 
     def on_disconnect(self, client, userdata, flags, rc):
-        print("MQTT Client "+str(self.client_id)+" disconnecting form "+str(self.mqttBroker)+"...")
-        print("Connection returned " + str(rc))
+        logger.info("MQTT Client "+str(self.client_id)+" disconnecting form "+str(self.mqttBroker)+"...")
+        logger.info("Connection returned " + str(rc))

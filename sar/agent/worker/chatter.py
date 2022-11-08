@@ -26,15 +26,18 @@ from transformers import pipeline
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-from transformers.utils import logging
+from transformers.utils import logging as transformers_logging
 
 from abc import abstractmethod
 import spacy
 from statemachine import StateMachine, State
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.worker.chatter")
 
 class Chatter(WorkerAgent):
     _TASK_CONTINUE_CONVERSATION = "continue_conversation"
+    _TASK_CONTINUE_CONVERSATION_PROACTIVE = "continue_conversation_proactive"
     _TASK_ASK_QUESTION = "ask_question"
     _TASK_CONTINUE_CONVERSATION_SPONTANEOUS = "spontaneous_continuation_conversation"
     _TASK_CONVERSATION_TURN_SPONTANEOUS = "spontaneous_conversation_turn"
@@ -121,8 +124,7 @@ class Chatter(WorkerAgent):
                 to_say = "Nevermind."
                 # self.chatter.converser.addBotResponseToConversation(to_say, True)
                 self.chatter.qualifyAndSendResponse(to_say, {}, True)
-                self.chatter.inputs_being_processed = self.chatter.inputs_being_processed - 1
-                print("---------- INPUTS BEING PROCESSED, AFTER SAYING NEVERMIND ", self.chatter.inputs_being_processed)
+                self.chatter.setOneInputProcessed()
                 self.end_name_retrieval_negative()
 
 
@@ -153,15 +155,14 @@ class Chatter(WorkerAgent):
         def on_end_name_retrieval_positive(self):
             to_say = "Got it! Nice to meet you "+ str(self.name)+"!"
             self.chatter.received_inputs[Constants.TOPIC_NAME_LEARNT].append(str(self.name))
-            # self.chatter.converser.addBotResponseToConversation(to_say, False)
             self.chatter.qualifyAndSendResponse(to_say, {}, False)
-            # self.chatter.inputs_being_processed = self.chatter.inputs_being_processed - 1
+
 
         def process_input(self, rec_m):
             # N.B rec_m may contain other things in addition to the text of the user (e.g., the volume of voice)
             # so I first extract just the text to process
             user_input = (utils.splitStringToList(rec_m, Constants.STRING_SEPARATOR_INNER)[0]).strip()
-            print(user_input)
+            logger.info("Processing input "+ user_input)
 
             # I first do the processing of the input based on the current state:
             # Note, this step is expected not to transition between states
@@ -170,15 +171,15 @@ class Chatter(WorkerAgent):
             # then I transition if necessary, and I update the memory
             if self.is_default:
                 if not state_output is None:
-                    print("something is wrong")
+                    logger.error("Something is wrong. state_output is not None after processing input from default state")
                 else:
                     self.chatter.received_inputs[Constants.TOPIC_SPEECH].append(rec_m)
                     self.chatter.converser.addUserInput(user_input)
-                    self.chatter.inputs_being_processed += 1
+                    self.chatter.addOneInputBeingProcessed()
 
             elif self.is_name_retrieval: #when I'm in states that are not the default, I do not want to send stuff to the data collector (so I do not add to received_inputs), but I still would like to store the conversation
                 self.chatter.converser.addUserInput(user_input) #note I only add to the user input history
-                self.chatter.inputs_being_processed += 1
+                self.chatter.addOneInputBeingProcessed()
 
                 if state_output is not None:  # the output is the name
                     self.temp_name = state_output
@@ -191,7 +192,7 @@ class Chatter(WorkerAgent):
                     self.first_retrieval = False
             elif self.is_name_confirmation:
                 self.chatter.converser.addUserInput(user_input)
-                self.chatter.inputs_being_processed += 1
+                self.chatter.addOneInputBeingProcessed()
 
                 if state_output == "yes":
                     self.name = self.temp_name
@@ -204,8 +205,8 @@ class Chatter(WorkerAgent):
                     # self.chatter.converser.addBotResponseToConversation(to_say, False)
                     self.chatter.qualifyAndSendResponse(to_say, {}, False)
             else:
-                print("WARNING!! I'm in some wrong state ", self.current_state)
-                print("WARNING!! This should actually never happen...")
+                logger.error("I'm in some wrong state {}".format(self.current_state))
+                logger.error("This should actually never happen...")
 
     class Converser:
         def __init__(self, model_name) -> None:
@@ -332,9 +333,9 @@ class Chatter(WorkerAgent):
             # print(self.chat_history_ids)
             for is_user, text in self.getConversation():
                 if is_user:
-                    print("user >> ", text)
+                    logger.info("user >> {}".format(text))
                 else:
-                    print("bot >> ", text)
+                    logger.info("bot >> {}".format(text))
 
         def getConversationString(self, last_n_sentences = None):
             conv_str = ""
@@ -380,8 +381,8 @@ class Chatter(WorkerAgent):
             for topic in self.agent.received_inputs.keys():
                 s_ordered_dict = self.getSentences(topic)
                 if len(s_ordered_dict.keys()) > 0:
-                    print("sending data as requested to the datacollector")
-                    print(s_ordered_dict)
+                    logger.info("sending data as requested to the datacollector")
+                    logger.info(s_ordered_dict)
                     msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, s_ordered_dict, topic, metadata)
                     await self.send(msg)
             # else:
@@ -400,32 +401,39 @@ class Chatter(WorkerAgent):
         is_spontaneous = None
         self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
                                     utils.joinStrings([Constants.DIRECTIVE_LED_SET_COLOR, Constants.COLORS_BLUE]))
-        print("work_info ", work_info_dict)
-        # work_info_list = utils.splitStringToList(work_info)
-        # print("work_info_list", work_info_list)
-        if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_REPLY_TO:
-            # print("Ok BDI told me to reply to "+work_info_list[1])
+        logger.info("work_info {}".format(work_info_dict))
+
+        if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY:
+            logger.info("CHATTER: setting input processed with no reply (adding a fake 'ok' bot response to conversation)")
+            self.converser.addBotResponseToConversation("ok", False)
+            self.setOneInputProcessed()
+
+        if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_REPLY_TO_REACTIVE:
             message = work_info_dict[Constants.SPADE_MSG_SAID].replace(Constants.ASL_STRING_SEPARATOR, " ")
             to_say = self.getTextFor(Chatter._TASK_CONTINUE_CONVERSATION, message, False)
-            print("response to : ", message)
-            print(to_say)
+            logger.info("response to : {}".format(message))
+            logger.info(to_say)
             is_spontaneous = False
-            # self.converser.addBotResponseToConversation(to_say, False)
-            # self.inputs_being_processed = self.inputs_being_processed - 1
+
+        if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_REPLY_TO_PROACTIVE:
+            message = work_info_dict[Constants.SPADE_MSG_SAID].replace(Constants.ASL_STRING_SEPARATOR, " ")
+            to_say = self.getTextFor(Chatter._TASK_CONTINUE_CONVERSATION_PROACTIVE, message, False)
+            logger.info("response to : {}".format(message))
+            logger.info(to_say)
+            is_spontaneous = False
+
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_SPONTANEOUS:
-            print("---------- INPUTS BEING PROCESSED, IN WORK INFO SAY SPONTANEOUS ", self.inputs_being_processed)
-            if self.inputs_being_processed == 0 and self.chatter_state_machine.is_default:
+            logger.info("---------- INPUTS BEING PROCESSED, IN WORK INFO SAY SPONTANEOUS {}".format(self.inputs_being_processed))
+            if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
                 to_say = work_info_dict[Constants.SPADE_MSG_TO_SAY]
                 is_spontaneous = True
-                # self.converser.addBotResponseToConversation(to_say, True)
+
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_IN_RESPONSE:
             to_say = work_info_dict[Constants.SPADE_MSG_TO_SAY]
             is_spontaneous = False
-            # self.converser.addBotResponseToConversation(to_say, False)
-            # self.inputs_being_processed = self.inputs_being_processed - 1
-        elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_BEGIN_GREETING:
 
-            if self.inputs_being_processed == 0 and self.chatter_state_machine.is_default:
+        elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_BEGIN_GREETING:
+            if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
                 name = work_info_dict[Constants.SPADE_MSG_PERSON]
                 if name == Constants.ASL_FLUENT_UNKNOWN_PERSON:
                     to_say = "Hello there! What's your name?"
@@ -437,12 +445,12 @@ class Chatter(WorkerAgent):
 
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_UPDATE_TOPIC_INTEREST:
 
-            if self.inputs_being_processed == 0 and self.chatter_state_machine.is_default:
-                print(work_info_dict)
+            if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
+                logger.info(work_info_dict)
                 self.last_detected_interest = work_info_dict[Constants.SPADE_MSG_OBJECT].replace(Constants.ASL_STRING_SEPARATOR, " ")
                 self.direction_last_detected_interest = work_info_dict[Constants.SPADE_MSG_DIRECTION].replace(Constants.ASL_STRING_SEPARATOR, " ")
-                print(self.last_detected_interest)
-                print(self.direction_last_detected_interest)
+                logger.info(self.last_detected_interest)
+                logger.info(self.direction_last_detected_interest)
                 try:
                     if self.direction_last_detected_interest == Constants.ASL_FLUENT_UNKNOWN_DIRECTION:
                         t2tinput = "You are looking at the " + str(self.last_detected_interest) + ". You know what is a " + str(
@@ -454,21 +462,23 @@ class Chatter(WorkerAgent):
 
                     question = self.getTextFor(Chatter._TASK_ASK_QUESTION, t2tinput, True)
 
-                    print(question)
+                    logger.info(question)
                     resp = question
 
                 except:
-                    print(traceback.format_exc())
+                    logger.error(traceback.format_exc())
                     resp = None
                 to_say = str(resp)
-                print("response: ", to_say)
+                logger.info("response: {}".format(to_say))
                 is_spontaneous = True
                 # self.converser.addBotResponseToConversation(resp, True)
             # print(to_say)
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_TURN_CONVERSATION:
 
-            if self.inputs_being_processed == 0 and self.chatter_state_machine.is_default:
+            if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
                 topic = work_info_dict[Constants.SPADE_MSG_OBJECT].replace(Constants.ASL_STRING_SEPARATOR, " ")
+                logger.info(
+                    "I trigger a spontaneous conversation about the perceived object {}".format(topic))
                 resp = self.getTextFor(Chatter._TASK_CONVERSATION_TURN_SPONTANEOUS, topic, True)
                 to_say = str(resp)
                 is_spontaneous = True
@@ -485,42 +495,30 @@ class Chatter(WorkerAgent):
 
         """ Determining the emotion associated to the text to say """
         emotion_label = None
-        print("determined to say: ", to_say)
+        logger.info("determined to say: {}".format(to_say))
 
-        print("I determine the emotion associated to the text.")
+        logger.info("I determine the emotion associated to the text.")
         emotion = self.temotion_classifier(to_say)[0][0]
         if emotion["score"] > 0.7:
             emotion_label = emotion["label"]
-        print("emotion detected: ", emotion_label)
+        logger.info("emotion detected: {}".format(emotion_label))
         animation_to_perfom = emotion_label
 
         """ Using the fuzzy system to determine the adequate levels of volume, etc., based on the social inputs """
-        # social_qualifier_inputs = {}
-        # if len(work_info_list) > 2 and (work_info_list[
-        #                                     2] == "social_eval"):  # todo at some point we need to clean all this stuff with explicit indeces
-        #     sublist = work_info_list[3:len(work_info_list)]
-        #     print(sublist)
-        #     nr_pairs = int(len(sublist) / 2)
-        #     print(nr_pairs)
-        #     for i in range(nr_pairs):
-        #         key = sublist[i * 2]
-        #         val = sublist[(i * 2) + 1]
-        #         social_qualifier_inputs[key] = float(val)
-
-        print("social qualifier inputs (trying to use the all work_info_dict, instead of the social_qualifier_inputs)")
-        print(work_info_dict)
+        logger.info("social qualifier inputs (trying to use the all work_info_dict, instead of the social_qualifier_inputs)")
+        logger.info(work_info_dict)
 
         volume = "70"
         if not self.fsq is None:
             social_qualification = None
             try:
                 social_qualification = self.fsq[0].getSocialQualification(work_info_dict)  # here this is is only concerning the position but it should actually refer to all possible inputs that we are interested into, maybe the social itnerpreter should be some other worker independent, which will give back info about social intepretation
-                print("volume_qualification")
-                print(social_qualification)
+                logger.info("volume_qualification")
+                logger.info(social_qualification)
             except Exception:
-                print(
-                    "Note: the exception exception is (in some cases) expected. I'm printing the traceback for now for the sake of clarity")
-                print(traceback.format_exc())
+                logger.warning(
+                    "Note: the exception is (in some cases) expected. I'm printing the traceback for now for the sake of clarity")
+                logger.warning(traceback.format_exc())
             if (not social_qualification is None):
                 volume = str(social_qualification[Constants.LV_VOLUME])
 
@@ -553,10 +551,20 @@ class Chatter(WorkerAgent):
         """ Finally, storing the info in the conversation """
         self.converser.addBotResponseToConversation(to_say, is_spontaneous_response)
         if not is_spontaneous_response:
-            self.inputs_being_processed = max(self.inputs_being_processed - 1, 0) # making sure I don't go below 0 in any case
-
-        print("conversation is")
+            self.setOneInputProcessed()
+        logger.info("conversation is")
         self.converser.printConversation()
+
+    def setOneInputProcessed(self):
+        self.inputs_being_processed = max(self.inputs_being_processed - 1, 0) # making sure I don't go below 0 in any case
+    def addOneInputBeingProcessed(self):
+        self.inputs_being_processed += 1
+
+    def areInputsBeingProcessed(self):
+        return self.inputs_being_processed > 0
+
+    def noInputBeingProcessed(self):
+        return self.inputs_being_processed == 0
 
 
     def getQuestion(self, text, topic):
@@ -612,6 +620,8 @@ class Chatter(WorkerAgent):
         #                             utils.joinStrings([Constants.DIRECTIVE_LED_SET_COLOR, Constants.COLORS_BLUE]))
         try:
             if task == Chatter._TASK_CONTINUE_CONVERSATION:
+                resp = self.converser.getResponse(text)
+            elif task == Chatter._TASK_CONTINUE_CONVERSATION_PROACTIVE:
                 """ The default case.
                 Here I just want to use the conversation pipeline to generate a meaningful continuation.
                 N.B. is_spontaneous is assumed False"""
@@ -628,7 +638,7 @@ class Chatter(WorkerAgent):
                         resp = self.converser.getResponse(text)
                 else:
                     resp = self.converser.getResponse(text)
-                if resp == "" or len(resp)<2:
+                if resp == "" or len(resp)<2: # If "the robot doesn't know what to say"
                     resp = self.getSpontaneousQuestion()
 
             if task == Chatter._TASK_ASK_QUESTION:
@@ -650,7 +660,7 @@ class Chatter(WorkerAgent):
                                     top_p=0.92,
                                     top_k=100,
                                     temperature=0.75)
-                print(g)
+                # logger.info(g)
                 resp = self.getQuestion("You know that " + g[0]["generated_text"] + ".", Chatter._QUESTION_TOPIC_TEXT)
         except:
             resp = ""
@@ -664,9 +674,9 @@ class Chatter(WorkerAgent):
 
     def on_message(self, client, userdata, message):
         rec_m = str(message.payload.decode("utf-8"))
-        print("As a chatter I received data " + str(rec_m))
+        logger.info("As a chatter I received data " + str(rec_m))
 
-        if self.inputs_being_processed == 0 or not self.chatter_state_machine.is_default:
+        if self.noInputBeingProcessed() or not self.chatter_state_machine.is_default:
             # if self.gui_queue is None:
             self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
                                         utils.joinStrings([Constants.DIRECTIVE_LED_SET_COLOR, Constants.COLORS_BLUE]))
@@ -674,20 +684,14 @@ class Chatter(WorkerAgent):
             self.chatter_state_machine.process_input(rec_m)
 
         else:
-            print(
+            logger.info(
                 "Note: I ignore this data because there is already one input being processed.")
-            print(self.inputs_being_processed)
-            print(self.chatter_state_machine.is_default)
+            logger.info(self.inputs_being_processed)
+            logger.info(self.chatter_state_machine.is_default)
 
-        # self.received_inputs.append(
-        #     rec_m)  # N.B rec_m may contain other things in addition to the text of the user (e.g., the volume of voice=
-        # user_input = utils.splitStringToList(rec_m, Constants.STRING_SEPARATOR_INNER)[0]
-        # self.converser.addUserInput(user_input)
-        # self.inputs_being_processed = self.inputs_being_processed + 1
 
     def kickstartLMs(self):
-        print("Kickstarting Language Models so to speed up interaction with humans...")
-        # kickstart_conversation_user_inputs = ["Hello!", "You are going to speak with a human, are you ready?", "Let's begin!"]
+        logger.info("Kickstarting Language Models so to speed up interaction with humans...")
         kickstart_conversation_user_inputs = ["Hello!", "You are going to speak with a human, are you ready?", "Let's begin!"] # I do it with three sentences because in some cases the randomness will not initiate the dialogue model
         for s in kickstart_conversation_user_inputs:
             # kickstarting the converser
@@ -704,7 +708,7 @@ class Chatter(WorkerAgent):
             e = self.temotion_classifier(s)
 
     async def setup(self):
-        logging.set_verbosity(40)  # errors
+        transformers_logging.set_verbosity(40)  # errors
 
         # """ I create and train the actual chatter"""
         # self.chatbot = ChatBot('Chatter', logic_adapters=['chatterbot.logic.BestMatch',

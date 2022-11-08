@@ -1,28 +1,28 @@
 # NOSAR: NOrm and Socially Aware Robots
 NOSAR is a Python 3.9 resource intended to be used as the "brain" of a social robot. 
-NOSAR provides decision-making mechanisms for social robots that allow them to account for social norms and social practices in interactions with humans.
+NOSAR provides decision-making mechanisms for social robots that allow them to account for social norms, practices and cues in interactions with humans.
 
 NOSAR is technically a multi-agent system with a hierarchical organization. 
 
-At the top of the hierarchy there is one BDI (Belief-Desires-Intention) agent, which determines and handles the sense-reasoning-acting cycle of the robot following the BDI model.
+At the top of the hierarchy there is one [BDI (Belief-Desires-Intention)](https://en.wikipedia.org/wiki/Belief%E2%80%93desire%E2%80%93intention_software_model) agent, which determines and handles the sense-reasoning-acting cycle of the robot following the BDI model.
 
-Below the BDI agent in the hierarchy there are different worker agents that run in parallel and each of them has particular tasks.
+Below the BDI agent in the hierarchy there are different worker agents that run in parallel, each of them performing specific autonomous tasks.
 
 Some worker agents handle specific aspects of robotic behaviors and sensing.
 For example, the vision handler worker handles aspects related to the vision of the robot.
 The posture handler worker handles aspects related to the movements of the robot.
 The chatter worker handles aspects related to the communication with humans.
 
-Other worker agents perform tasks internal to the multi-agent system (e.g., the data collector worker agent collects data from other worker agents and process them in order to create beliefs to provide to the BDI agent; the norm adapter agent regularly performs norm adaptation based on the data collected over time).
+Other worker agents perform tasks internal to the multi-agent system. For example, the data collector worker collects the most recent data from other worker agents and process them in order to create beliefs to provide to the BDI agent. The norm adapter agent regularly performs norm adaptation based on the data collected over time.
 
 NOSAR is decoupled from any specific implementation of a robot. 
 Commands for and inputs from the robot (or other devices) are given and received via MQTT. [MQTT](https://en.wikipedia.org/wiki/MQTT) is a lightweight method of carrying out messaging using a publish/subscribe model, and the standard messaging protocol for the Internet of Things.
 
 NOSAR can be effectively used to control a [Nao robot](https://www.aldebaran.com/en/nao) by establishing MQTT communication between NOSAR and the [MQTT-Nao-Interface](https://github.com/dellannadavide/MQTT-Nao-Interface).
-Services from both NOSAR and MQTT-Nao-Interface subscribe to or publish messages.
-This allows for decoupling between the specific interface with the robot or other devices (e.g., microphones, cameras. or IoT devices) and NOSAR. 
+Services from both NOSAR and MQTT-Nao-Interface subscribe to or publish messages to an MQTT broker.
+This allows for decoupling between the specific interface with the robot or other devices (e.g., microphones, cameras, or IoT devices) and NOSAR. 
 
-Specifically concerning the MQTT-Nao-Interface, such an interface runs, due to compatibility constraints with the NAOqi Python SDK, on Python 2.7 (which is not well supported anymore as of 2022). 
+Specifically concerning the MQTT-Nao-Interface, such an interface runs, due to compatibility constraints with the NAOqi Python SDK, on Python 2.7 (not well supported anymore as of 2022). 
 Decoupling such an interface from the implementation of NOSAR, facilitates the implementation of several modern features that rely on libraries based on Python 3.x.
 
 
@@ -60,20 +60,20 @@ NOSAR is a python resource that runs on Python 3.9. Therefore the basic requirem
 
 NOSAR makes extensive use of a variety of state-of-the-art libraries for, among others: multi-agent communication; natural language processing, understanding and generation; Fuzzy Inference, Multi-Objective optimization, Belief-Desire-Intention-based inference. 
 For this reason, after having set up the Python environment, a number of Python packages need to be installed. The list of requirements can be found in the ```requirements.txt``` file.
-A standard way to install all required libraries is to run command ```pip install -r /path/to/requirements.txt```. Based on your environment you may adopt the most handy procedure.
+A standard way to install all required packages is to run command ```pip install -r /path/to/requirements.txt```. Based on your environment you may adopt the most handy procedure.
 
 Additionally, as per Section 2, NOSAR relies on XMPP and MQTT services. Follow steps in Section 2 to install them.
 
 >**Notes** 
 > 1. [SPADE](https://pypi.org/project/spade/) depends on some packages that require the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) to be installed.
-> 2. [SPADE](https://pypi.org/project/spade/) depends on some packages that require the ```lxml``` library to be installed. In case of troubles in installing this library on Windows: download the precompiled WHL from [http://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml](http://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml) for your Python and Windows version (e.g., if you are using Python 3.11 on Windows 64 bit, one adequate file is ```lxml‑4.9.0‑cp311‑cp311‑win_amd64.whl```) and install it by running ```pip install C:\path\to\downloaded\file\lxml‑4.5.2‑cp39‑cp39‑win32.whl```.
-> 3. [Tokenizers](https://pypi.org/project/tokenizers/) might require to install a Rust compiler. On Windows, this can be easily installed from [https://rustup.rs/](https://rustup.rs/)
-> 4. NOSAR makes extensive use of pretrained language models, which will be downloaded (if not available already) at the first execution. The whole set of models might require a couple of GB of space on the hard drive.
-> 5. [Spacy](https://spacy.io/usage) requires the model ```en_core_web_sm```. This can be installed by running ```python -m spacy download en_core_web_sm```.
+> 2. [Tokenizers](https://pypi.org/project/tokenizers/) might require to install a Rust compiler. On Windows, this can be easily installed from [https://rustup.rs/](https://rustup.rs/)
+> 3. NOSAR makes extensive use of pretrained language models, which will be downloaded (if not available already) at the first execution. The whole set of models might require a couple of GB of space on the hard drive.
+> 4. [Spacy](https://spacy.io/usage) requires the model ```en_core_web_sm```. This can be installed by running ```python -m spacy download en_core_web_sm```.
 
 ### 3.2. Setup and Run
 #### 3.2.1 Register the agents in the XMPP server
 The first step required in order to allow communication between agents in NOSAR is to register the agents in the XMPP server with a ```jid``` and a ```password```.
+This step only needs to be done once.
 
 Following the [guidelines from the SPADE library](https://spade-mas.readthedocs.io/en/latest/usage.html), the jid (e.g., <agent_name>@<your_xmpp_server>) contains the agent’s name (before the @) and the DNS or IP of the XMPP server (after the @). 
 
@@ -83,7 +83,7 @@ An example of <agent_name> that operates in NOSAR is ```nosar_chatter```. In the
 The list of required agents and XMPP-related information (e.g., name, server, jid, pwd) can be found at the bottom of file ```NOSAR/utils/constants.py```. 
 All agents in the ```XMPP_AGENTS_DETAILS``` data structure should be registered in the XMPP server.
 
-> **Tip.** You can extend or modify such a data structure if you run the agents on a different IP, if you want to give different names to the agents in the XMPP server, or if you want to add additional agents).
+> **Tip.** You can extend or modify such a data structure if you run the agents on a different IP, if you want to give different names to the agents in the XMPP server, or if you want to add additional agents.
 
 To register the required NOSAR agents on Prosody via terminal (see [Prosody guidelines](https://prosody.im/doc/creating_accounts) for more details):
 >1. Start Prosody as per section 2.1.3

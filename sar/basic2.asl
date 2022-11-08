@@ -13,6 +13,41 @@ is(behind_left, frame).
 
 // =========================   Reasoning order, belief propagation rules, and proactive behaviors  ==================================
 //reasoning order
++prepare_for_next_cycle
+<- !remove_previous_norms;
+    !reset_role;
+    -prepare_for_next_cycle.
+
++!remove_previous_norms
+<- !remove_previous_prohibited_goals;
+    !remove_previous_prohibited_actions;
+    !remove_previous_obliged_goals;
+    !remove_previous_obliged_actions.
+
++!remove_previous_prohibited_goals : prohibited_goal(X)
+<- -prohibited_goal(X);
+    !remove_previous_prohibited_goals.
+
++!remove_previous_prohibited_actions : prohibited_action(X)
+<- -prohibited_action(X);
+    !remove_previous_prohibited_actions.
+
++!remove_previous_obliged_goals : obliged_goal(X)
+<- -obliged_goal(X);
+    !remove_previous_obliged_goals.
+
++!remove_previous_obliged_actions : obliged_action(X)
+<- -obliged_action(X);
+    !remove_previous_obliged_actions.
+
++!remove_previous_prohibited_goals <- true.
++!remove_previous_prohibited_actions <- true.
++!remove_previous_obliged_goals <- true.
++!remove_previous_obliged_actions <- true.
+
++!reset_role
+<- -+curr_role(no_role).
+
 +perform_reasoning
 <- !start(reasoning).
 
@@ -35,26 +70,36 @@ is(behind_left, frame).
 //if Something has been said, and the interacting person is Person, then Person said Something
 +said(Something)
 <-  ?interacting_person(Person);
-    -+said(Person, Something).
+    -+said(Person, Something);
+    -said(Something).
 
 //similar thing for other things said
 +said(Posture, is_posture)
 <-  ?interacting_person(Person);
-    -+said(Person, Posture, is_posture).
+    -+said(Person, Posture, is_posture);
+    -said(Posture, is_posture).
+
++said(Animation, is_animation)
+<-  ?interacting_person(Person);
+    -+said(Person, Animation, is_animation);
+    -said(Animation, is_animation).
 
 //and for other things that concern the interacting person
 +is_looking(Direction)
 <-  ?interacting_person(Person);
-    -+is_looking(Person, Direction).
+    -+is_looking(Person, Direction);
+    -is_looking(Direction).
 
 
 +distance(Distance_Type)
 <-  ?interacting_person(Person);
-    -+distance(Person, Distance_Type).
+    -+distance(Person, Distance_Type);
+    -distance(Distance_Type).
 
 +detected_emotion(Emotion)
 <-  ?interacting_person(Person);
-    -+detected_emotion(Person, Emotion).
+    -+detected_emotion(Person, Emotion);
+    -detected_emotion(Emotion).
 
 
 // proactive behaviors
@@ -107,16 +152,21 @@ is(behind_left, frame).
     distance(Person, social)
 <- +obliged_goal(greet, Person).
 
-//a prohibition concerning dialogues:
-//it is inappropriate to change topic of conversation if the person said something
+//norms concerning dialogues:
+//it is not appropriate to change topic of conversation if the person said something
+// also it is not appropriate to just be reactive while having a social conversation, isntead it is appropriate to be proactive
 +!reason_about_general_dialogue_prohibitions:
     said(Person, Something)
 <- +prohibited_action(update_topic_perception);
-    +prohibited_action(update_topic_of_interest).
+    +prohibited_action(update_topic_of_interest);
+    +prohibited_action(reply_to_reactive);
+    +obliged_action(reply_to_proactive).
 
 +!reason_about_dialogue_obligations:
     said(Person, bye_bye)
-<- +obliged_goal(goodbye, Person).
+<- +obliged_goal(goodbye, Person);
+    -said(Person, bye_bye).
+
 
 //default cases
 +!reason_about_permitted_commands <- true.
@@ -149,7 +199,8 @@ is(behind_left, frame).
 +!reason_and_act_about_greeting:
     obliged_goal(greet, Person)  &
     not prohibited_goal(greet)
-<- !greet(Person).
+<- !greet(Person);
+    -obliged_goal(greet, Person).
 
 +!reason_and_act_about_greeting:
     visible(face, Person) &
@@ -160,7 +211,8 @@ is(behind_left, frame).
 +!reason_and_act_about_greeting:
     obliged_goal(goodbye, Person) &
     not prohibited_goal(goodbye)
-<- !goodbye(Person).
+<- !goodbye(Person);
+    -obliged_goal(goodbye, Person).
 
 // executes action .greet (from python)
 // and adds belief greeted
@@ -210,8 +262,21 @@ is(behind_left, frame).
 +!tell_beliefs(X)
 <- .tell_beliefs(X).
 
++!reason_and_act_about_commands:
+    said(Person, tell_what_you_see) &
+    not prohibited_goal(tell_what_you_see)
+<- -said(Person, tell_what_you_see);
+    !tell_what_you_see.
 
-// Go to posture
++!reason_and_act_about_commands:
+    said(Person, tell_what_you_see) &
+    prohibited_goal(tell_what_you_see)
+<- -said(Person, tell_what_you_see).
+
++!tell_what_you_see
+<- .tell_what_you_see.
+
+// Go to posture or animations
 +!reason_and_act_about_posture:
     said(Person, Posture, is_posture) &
     not prohibited_goal(go_to_posture)
@@ -221,6 +286,16 @@ is(behind_left, frame).
     said(Person, Posture, is_posture) &
     prohibited_goal(go_to_posture)
  <- -said(Person, Posture, is_posture).
+
+ +!reason_and_act_about_posture:
+    said(Person, Animation, is_animation) &
+    not prohibited_goal(play_animation)
+ <- .play_animation(Animation);
+   -said(Person, Animation, is_animation).
++!reason_and_act_about_posture:
+    said(Person, Animation, is_animation) &
+    prohibited_goal(play_animation)
+ <- -said(Person, Animation, is_animation).
 
 // === Rules about context awareness
 +!reason_and_act_about_perceived_objects:
@@ -254,15 +329,24 @@ is(behind_left, frame).
 <- .establish_trust(Person).
 //note the last rule does not delete the "said" belief, so the next can still apply
 
-// === Rules to just reply ===
+
+// === Rules to reply in a proactive way ===
 +!reason_and_act_about_speech:
     said(Person, Something) &
-    not prohibited_goal(reply_to)
- <- .reply_to(Person, Something);
+    obliged_action(reply_to_proactive) &
+    not prohibited_action(reply_to_proactive)
+<- .reply_to_proactive(Person, Something);
    -said(Person, Something).
+
+// === rules to just reply ===
 +!reason_and_act_about_speech:
+    said(Person, Something) &
+    not prohibited_action(reply_to_reactive)
+ <- .reply_to_reactive(Person, Something);
+   -said(Person, Something).
++!reason_and_act_about_speech: //default case, just ignoring
     said(Person, Something)  &
-    prohibited_goal(reply_to)
+    prohibited_action(reply_to_reactive)
  <- -said(Person, Something).
 
 //default cases

@@ -14,6 +14,9 @@ import utils.constants as Constants
 import utils.utils as utils
 from sar.norm.normativereasoner import NormativeReasoner
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.bdicore")
+
 class BDICore(BDIAgent):
     def add_custom_actions(self, actions):
         @actions.add(".greet", 1)
@@ -33,7 +36,9 @@ class BDICore(BDIAgent):
         @actions.add(".goodbye", 1)
         def _goodbye(agent, term, intention):
             x = str(agentspeak.grounded(term.args[0], intention.scope))
-            to_say = random.choice(["Bye bye "+("" if x==Constants.ASL_FLUENT_UNKNOWN_PERSON else x)+"!", "Dooi Dooi!", "See you another time "+("" if x==Constants.ASL_FLUENT_UNKNOWN_PERSON else x)+"!"])
+            to_say = random.choice(
+                ["Bye bye " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "!", "Dooi Dooi!",
+                 "See you another time " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "!"])
 
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
@@ -48,7 +53,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".shut_down", 1)
         def _turn_off(agent, term, intention):
-            print("As instructed by " + str(
+            logger.info("As instructed by " + str(
                 agentspeak.grounded(term.args[0], intention.scope)) + ", I will start procedure to shut down")
 
             msg_body_dict = {**{
@@ -58,8 +63,15 @@ class BDICore(BDIAgent):
 
             b = self.SendMessageBehaviour(Constants.SYSTEM_HANDLER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
             self.add_behaviour(b)
-            # msg = utils.prepareMessage(Constants.SYSTEM_HANDLER_JID, Constants.PERFORMATIVE_REQUEST, Constants.DIRECTIVE_SHUT_DOWN)
-            # await self.send(msg)
+
+            # since the user input was a command, no reply is necessary, so I notify the chatter
+            msg_body_dict_chatter = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+            }, **self.curr_social_interp}
+            b_ch = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict_chatter)
+            self.add_behaviour(b_ch)
+
             yield
 
         @actions.add(".set_role", 1)
@@ -67,39 +79,34 @@ class BDICore(BDIAgent):
             self.setRole(str(agentspeak.grounded(term.args[0], intention.scope)))
             yield
 
-        @actions.add(".reply_to", 2)
-        def _reply_to(agent, term, intention):
-            # print("As instructed by " + str(
-            #     agentspeak.grounded(term.args[0], intention.scope)) + ", I will start procedure to shut down")
-            print("in action .reply_to")
-            print("self.curr_social_interp is ",self.curr_social_interp)
-
-            msg_body_dict =   {**{
-                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_TO,
+        @actions.add(".reply_to_reactive", 2)
+        def _reply_to_reactive(agent, term, intention):
+            logger.info("in action .reply_to_reactive")
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_TO_REACTIVE,
                 Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
                 Constants.SPADE_MSG_NAO_ROLE: self.curr_role
             }, **self.curr_social_interp}
-
-            # msg = [Constants.DIRECTIVE_REPLY_TO,
-            #        str(agentspeak.grounded(term.args[1], intention.scope))] + self.curr_social_interp
-            # print("msg is ", msg)
-
-            # if not self.curr_role is None:
-            #     msg_body_dict[Constants.SPADE_MSG_NAO_ROLE] = self.curr_role
-            # print("!!!!!!!!!!!!! DAVIDE REMEMBER TO REINTRODUCE THE YES SIR ANIMATION (FIND THIS COMMENT FOR THE CODE), BUT FROM THE CHATTER !!!!!!!!!!")
-                #     b1 = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
-                #                                   [Constants.DIRECTIVE_PLAYANIMATION, "yes_sir"] + self.curr_social_interp)
-                #     self.add_behaviour(b1)
-
             b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
             self.add_behaviour(b)
+            yield
 
+        @actions.add(".reply_to_proactive", 2)
+        def _reply_to_proactive(agent, term, intention):
+            logger.info("in action .reply_to_proactive")
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_TO_PROACTIVE,
+                Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+            }, **self.curr_social_interp}
+            b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
+            self.add_behaviour(b)
             yield
 
         @actions.add(".go_to_posture", 1)
         def _go_to_posture(agent, term, intention):
             posture = str(agentspeak.grounded(term.args[0], intention.scope))
-            print("PERFORMING ACTION go to posture ", posture)
+            logger.info("PERFORMING ACTION go to posture {}".format(posture))
 
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_GOTOPOSTURE,
@@ -110,13 +117,46 @@ class BDICore(BDIAgent):
             b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
             self.add_behaviour(b)
 
+            # since the user input was a command, no reply is necessary, so I notify the chatter
+            msg_body_dict_chatter = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+            }, **self.curr_social_interp}
+            b_ch = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
+                                             msg_body_dict_chatter)
+            self.add_behaviour(b_ch)
+            yield
+
+        @actions.add(".play_animation", 1)
+        def _play_animation(agent, term, intention):
+            animation = str(agentspeak.grounded(term.args[0], intention.scope))
+            logger.info("PERFORMING ACTION play_animation {}".format(animation))
+
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_PLAYANIMATION,
+                Constants.SPADE_MSG_POSTURE: animation,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+            }, **self.curr_social_interp}
+
+            b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
+            self.add_behaviour(b)
+
+            # since the user input was a command, no reply is necessary, so I notify the chatter
+            msg_body_dict_chatter = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+            }, **self.curr_social_interp}
+            b_ch = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
+                                             msg_body_dict_chatter)
+            self.add_behaviour(b_ch)
             yield
 
         @actions.add(".move_head", 1)
         def _move_head(agent, term, intention):
             direction = str(agentspeak.grounded(term.args[0], intention.scope))
-            if (not direction == Constants.ASL_FLUENT_CENTER_DIRECTION) and (not self.isInRecentMemory(Constants.ASL_BEL_MOVED_HEAD_PREFIX+direction)):
-                min_last_n_consecutive_batches = 2  #todo this could be changed into seconds instead of times...
+            if (not direction == Constants.ASL_FLUENT_CENTER_DIRECTION) and (
+            not self.isInRecentMemory(Constants.ASL_BEL_MOVED_HEAD_PREFIX + direction)):
+                min_last_n_consecutive_batches = 2  # todo this could be changed into seconds instead of times...
                 if len(self.memory.keys()) >= min_last_n_consecutive_batches:
                     reverse_order_mem = self.getOrderedMemoryFromYoungestToOldest()
                     n_last_consec_batches_is_looking = 0
@@ -124,23 +164,25 @@ class BDICore(BDIAgent):
                         # print(bel_batch)
                         found_in_batch = False
                         for bel in bel_batch:
-                            if ((Constants.ASL_BEL_IS_LOOKING in bel) and (direction in bel)): # if is_looking(Person, Direction) in bel
+                            if ((Constants.ASL_BEL_IS_LOOKING in bel) and (
+                                    direction in bel)):  # if is_looking(Person, Direction) in bel
                                 n_last_consec_batches_is_looking += 1
                                 found_in_batch = True
-                        if ((not found_in_batch) and (n_last_consec_batches_is_looking>0)) or (n_last_consec_batches_is_looking >= min_last_n_consecutive_batches):
-                            break # I stop at the first occurrence on not having is_looking in the direction counting from the first occurrence
+                        if ((not found_in_batch) and (n_last_consec_batches_is_looking > 0)) or (
+                                n_last_consec_batches_is_looking >= min_last_n_consecutive_batches):
+                            break  # I stop at the first occurrence on not having is_looking in the direction counting from the first occurrence
 
                     if n_last_consec_batches_is_looking >= min_last_n_consecutive_batches:
-
                         msg_body_dict = {**{
                             Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_MOVEHEAD,
                             Constants.SPADE_MSG_POSTURE: direction,
                             Constants.SPADE_MSG_NAO_ROLE: self.curr_role
                         }, **self.curr_social_interp}
 
-                        b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
+                        b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
+                                                      msg_body_dict)
                         self.add_behaviour(b)
-                        self.setBelief(time.time(), [Constants.ASL_BEL_MOVED_HEAD_PREFIX+direction])
+                        self.setBelief(time.time(), [Constants.ASL_BEL_MOVED_HEAD_PREFIX + direction])
                 # else:
                 #     print("actually NOT PERFORMING ACTION move head because the person was looking ", direction, " for less than ", min_last_n_consecutive_batches, " times (",n_last_consec_batches_is_looking,") in recent memory")
 
@@ -149,7 +191,7 @@ class BDICore(BDIAgent):
         @actions.add(".establish_trust", 1)
         def _establish_trust(agent, term, intention):
             if not self.isInRecentMemory(Constants.ASL_BEL_ESTABLISHED_TRUST):
-                print("action establish trust")
+                logger.info("action establish trust")
                 x = str(agentspeak.grounded(term.args[0], intention.scope))
                 if x == Constants.ASL_FLUENT_UNKNOWN_PERSON:
                     to_say = "Oh, I see. Thank you for trusting me."
@@ -166,12 +208,13 @@ class BDICore(BDIAgent):
                 self.add_behaviour(b)
 
                 msg_body_dict_posture = {**{
-                                    Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_PLAYANIMATION,
-                                    Constants.SPADE_MSG_POSTURE: Constants.ANIMATION_ESTABLISH_TRUST,
-                                    Constants.SPADE_MSG_NAO_ROLE: self.curr_role
-                                }, **self.curr_social_interp}
+                    Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_PLAYANIMATION,
+                    Constants.SPADE_MSG_POSTURE: Constants.ANIMATION_ESTABLISH_TRUST,
+                    Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+                }, **self.curr_social_interp}
 
-                b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict_posture)
+                b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
+                                              msg_body_dict_posture)
                 self.add_behaviour(b)
 
                 self.setBelief(time.time(), [Constants.ASL_BEL_ESTABLISHED_TRUST, x])
@@ -186,11 +229,11 @@ class BDICore(BDIAgent):
                 object = str(agentspeak.grounded(term.args[1], intention.scope))
                 direction = str(agentspeak.grounded(term.args[2], intention.scope))
                 msg_body_dict = {**{
-                                    Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_UPDATE_TOPIC_INTEREST,
-                                    Constants.SPADE_MSG_PERSON: person,
-                                    Constants.SPADE_MSG_OBJECT: object,
-                                    Constants.SPADE_MSG_DIRECTION: direction,
-                                    Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+                    Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_UPDATE_TOPIC_INTEREST,
+                    Constants.SPADE_MSG_PERSON: person,
+                    Constants.SPADE_MSG_OBJECT: object,
+                    Constants.SPADE_MSG_DIRECTION: direction,
+                    Constants.SPADE_MSG_NAO_ROLE: self.curr_role
                 }, **self.curr_social_interp}
 
                 b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
@@ -202,12 +245,12 @@ class BDICore(BDIAgent):
 
         @actions.add(".execute_action", 1)
         def _execute_action(agent, term, intention):
-            print(" I should PERFORM ACTION ", str(agentspeak.grounded(term.args[0], intention.scope)))
+            logger.error("I should PERFORM ACTION (not doing anything actually at the moment) {}".format(str(agentspeak.grounded(term.args[0], intention.scope))))
             yield
 
         @actions.add(".trigger_spontaneous_conversation", 0)
         def _trigger_spontaneous_conversation(agent, term, intention):
-            print(" I should trigger a spontaneous conversation if needed ")
+            logger.info("I should trigger a spontaneous conversation if needed ")
             """ What I want to do is the following:
             1. check if in the memory tehre is some "said", if yes then do nothing
             2. if not, then communicate to the chatter to Constants.DIRECTIVE_CONTINUE_CONVERSATION"""
@@ -218,7 +261,7 @@ class BDICore(BDIAgent):
             #             said_sth_recently = True
             #             break
             # if not said_sth_recently:
-            if not self.isInRecentMemory(Constants.ASL_BEL_SAID): # if nothing said something recently
+            if not self.isInRecentMemory(Constants.ASL_BEL_SAID):  # if nothing said something recently
                 msg_body_dict = {**{
                     Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_CONTINUE_CONVERSATION,
                     Constants.SPADE_MSG_NAO_ROLE: self.curr_role
@@ -248,9 +291,6 @@ class BDICore(BDIAgent):
                 #             times_perceived_object_recently += 1
                 # if times_perceived_object_recently <= 1:
                 if self.countInRecentMemory([Constants.ASL_BEL_PERCEIVED_OBJECT, object_perceived]) <= 1:
-                    print(
-                        " I trigger a spontaneous conversation about the perceived object ", object_perceived)
-
                     msg_body_dict = {**{
                         Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_TURN_CONVERSATION,
                         Constants.SPADE_MSG_OBJECT: object_perceived,
@@ -262,9 +302,54 @@ class BDICore(BDIAgent):
                     self.setBelief(time.time(), [Constants.ASL_BEL_UPDATED_TOPIC_PERC, object_perceived])
             yield
 
+        @actions.add(".tell_what_you_see", 0)
+        def _tell_what_you_see(agent, term, intention):
+            # print("BDI: telling what I see")
+            visible_things = []
+            # print("BDI: ", self.bdi_agent.beliefs)
+            for beliefs in self.bdi_agent.beliefs:
+                for i in range(len(list(self.bdi_agent.beliefs[beliefs]))):
+                    try:
+                        rb = str(list(self.bdi_agent.beliefs[beliefs])[i])
+                        # print("BDI: ",rb)
+                        new_b = rb
+                        if Constants.ASL_SOURCE_PERCEPT_SUFFIX in rb:
+                            new_b = rb.replace(Constants.ASL_SOURCE_PERCEPT_SUFFIX, "")
+                        b_terms_vs_rest = new_b.split("(")
+                        b_term = b_terms_vs_rest[0]
+                        b_arg_list = []
+                        try:
+                            b_arg_list = (b_terms_vs_rest[1].replace(")", "")).split(",")
+                        except:
+                            pass
+                        if b_term.startswith(Constants.ASL_BEL_PERCEIVED_OBJECT):
+                            visible_things.append(str(b_arg_list[0]).replace("_", " "))
+                    except IndexError:
+                        pass
+            # print("BDI: visible things: ", visible_things)
+            to_say = ""
+            if len(visible_things) > 1:
+                to_say = "Either a "
+                for vt_i in range(len(visible_things)):
+                    to_say = to_say + visible_things[vt_i] + ("" if vt_i == len(visible_things) - 1 else " or a ")
+            elif len(visible_things) == 1:
+                to_say = "A " + visible_things[0] + ", I think."
+            else:
+                to_say = "Nothing really."
+
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
+                Constants.SPADE_MSG_TO_SAY: to_say,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role
+            }, **self.curr_social_interp}
+
+            self.add_behaviour(
+                self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
+            yield
+
         @actions.add(".tell_beliefs", 1)
         def _tell_beliefs(agent, term, intention):
-            print("telling beliefs, commanded by ", str(agentspeak.grounded(term.args[0], intention.scope)))
+            logger.info("telling beliefs, commanded by {}".format(str(agentspeak.grounded(term.args[0], intention.scope))))
             belief_list = []
             # print(self.bdi_agent.beliefs)
             for beliefs in self.bdi_agent.beliefs:
@@ -328,7 +413,8 @@ class BDICore(BDIAgent):
                 Constants.SPADE_MSG_NAO_ROLE: self.curr_role
             }, **self.curr_social_interp}
 
-            self.add_behaviour(self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
+            self.add_behaviour(
+                self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
             yield
 
         # @actions.add(".my_action", 1)
@@ -347,7 +433,8 @@ class BDICore(BDIAgent):
             self.message_body_dict = message_body_dict
 
         async def run(self):
-            msg = utils.prepareMessage(self.agent.jid, self.receiver, self.performative, self.message_body_dict, self.thread, self.metadata)
+            msg = utils.prepareMessage(self.agent.jid, self.receiver, self.performative, self.message_body_dict,
+                                       self.thread, self.metadata)
             # print("sending message ", msg, "to ", self.receiver)
             await self.send(msg)
 
@@ -393,12 +480,13 @@ class BDICore(BDIAgent):
                     # print("Bel ", bel, " is older than ", self.memory_size_seconds, " seconds. Removing it...")
                     self.agent.bdi.remove_belief(*self.agent.getListFromBeliefString(str(bel)))
 
-            print("Memory at the end of run: ")
-            print(self.agent.memory)
+            logger.info("Memory at the end of run: ")
+            logger.info(self.agent.memory)
 
     class SpontaneousConversationBehaviour(PeriodicBehaviour):
         """ A periodic behavior that is run every period seconds and triggers a spontaneoous conversation
         which could be (or not) triggered and pursued based on the current status of conversation """
+
         def __init__(self, period, start_at):
             super().__init__(period, start_at)
 
@@ -417,71 +505,53 @@ class BDICore(BDIAgent):
             request_msg_from_data_collector = utils.prepareMessage(self.agent.jid,
                                                                    Constants.DATA_COLLECTOR_JID,
                                                                    Constants.PERFORMATIVE_REQUEST,
-                                                                    msg_body={})
+                                                                   msg_body={})
             # print("BDI: Sending Message to DATACOLLECTOR at "+ str(time.time()))
             await self.send(request_msg_from_data_collector)
             # print("BDI Message Sent to DATACOLLECTOR at "+ str(time.time()))
             # print("BDI: waiting for chatter response")
             msg = await self.receive(timeout=0.1)  # wait for a response message for x seconds
             if msg:
-                # print("BDI: Message received from DATACOLLECTOR at "+ str(time.time()))
-                # print("BDI: Message received with content: {}".format(msg.body))
-                # if msg.get_metadata("performative") == Constants.PERFORMATIVE_NEW_BELIEF: #todo never used
-                #     belief = utils.splitStringBelToList(msg.body)
-                #     self.agent.bdi.set_belief(belief[0], belief[1], belief[2])
-                #     """ here I want then to check the resulting beliefs and see if there are directives
-                #     in that case, send to the robot, i.e., send the directive to the social actuator which will write them in a file that will be read by the robot"""
-                #     print(self.agent.bdi.get_belief("directive"))
                 if msg.get_metadata(Constants.SPADE_MSG_METADATA_PERFORMATIVE) == Constants.PERFORMATIVE_INFORM:
-                    if str(msg.sender) == Constants.CHATTER_JID:  # in case the chatter contacts directly the bdi for some reason
-                        # # print("Chatter told me "+str(msg.body))
-                        # msg_body = utils.splitStringToList(msg.body)
-                        # # print("As a BDI, I instruct chatter to reply only to the last message in the list")
-                        # response = utils.prepareMessage(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
-                        #                                 ["reply_to", msg_body[len(msg_body) - 1]])
-                        # await self.send(response)
-                        print("!!!!!!!!!!!!!!!!!!this case should never happen and should be removed")
-                        # print("Message sent to Chatter!")
                     if str(msg.sender) == Constants.DATA_COLLECTOR_JID:
-                        print("Data Collector told me " + str(msg.body))
-                        #msg.body is a json in theory
-
-                        # print(msg.body)
-                        # msg_body = utils.splitStringToList(msg.body)
+                        logger.info("Data Collector told me {}".format(str(msg.body)))
                         msg_body = utils.readMessage(msg.body, msg.metadata)
                         self.reasonAndAct(msg_body)
-
-                        # print(self.agent.bdi.get_beliefs())
-                        # print(self.agent.bdi.get_belief("said"))
-                        # print("As a BDI, I instruct chatter to reply only to the last message in the list")
-                        # response = utils.prepareMessage(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, ["reply_to", msg_body[len(msg_body)-1]])
-                        # await self.send(response)
-                        # print("Message sent to Chatter!")
+                    else:
+                        logger.error("Received a message from {}. Currently not supported".format(str(msg.sender)))
                 else:
-                    print("As a BDI I received a message I don't understand", msg.sender, msg.body)
+                    logger.error("As a BDI I received a message from {} that I don't understand: {}".format(str(msg.sender), str(msg.body)))
+
             # print("BDI: Ending one cycle of SENSEREASONACT at " + str(time.time()))
 
         def reasonAndAct(self, batch_of_beliefs_dict):
+            # print("BDI: entering reason and act")
             self.prepareForNextCycle()  # this should remove all outdated beliefs
-            self.addNewBeliefs(batch_of_beliefs_dict)  # this should add all new beliefs received by the data collector, without triggering the reasoning yet
+            self.addNewBeliefs(
+                batch_of_beliefs_dict)  # this should add all new beliefs received by the data collector, without triggering the reasoning yet
             self.performReasoning()  # start the reasoning (normative and non)
 
         def prepareForNextCycle(self):
-            self.removePrevNorms()
-            self.agent.setRole(None)
+            # print("BDI: preparing for next cycle")
+            self.agent.bdi.set_belief(Constants.ASL_BEL_PREPARE_FOR_NEXT_CYCLE)
+            # self.removePrevNorms()
+            self.agent.setRole(Constants.ASL_FLUENT_ROLE_NONE)
             # self.removeBeliefsWithKey("perceived_object")
             # self.removeBeliefsWithKey("distance")
             # self.removeBeliefsWithKey("is_looking")
             # self.removeBeliefsWithKey("saw")
 
         def addNewBeliefs(self, batch_of_beliefs_dict):
+            # print("BDI: adding new beliefs")
+
             batch = batch_of_beliefs_dict[Constants.SPADE_MSG_BATCH_ID]
 
             """ I first set possible beliefs about the name of the person.
             In this way later inference will be able to use this info"""
             for key, bel in batch_of_beliefs_dict.items():
-                if key==Constants.ASL_BEL_PERSON_NAME or key==Constants.ASL_BEL_VISIBLE:
-                    self.agent.setBelief(batch, bel) #IT IS ASSUMED THAT BEL IS A LIST
+                if key == Constants.ASL_BEL_PERSON_NAME or key == Constants.ASL_BEL_VISIBLE:  # note for these it is assumed that there is only one possible belief, so the key is checked to be ==
+                    # print("BDI: setting belief ", bel, "for batch ", batch)
+                    self.agent.setBelief(batch, bel)  # IT IS ASSUMED THAT BEL IS A LIST
             # for b in new_bel_list:
             #     bel = utils.splitStringBelToList(b)
             #     if ("person_name" in bel) or ("visible" in bel):
@@ -491,11 +561,13 @@ class BDICore(BDIAgent):
             for key, bel in batch_of_beliefs_dict.items():
                 if key == Constants.SPADE_MSG_BATCH_ID:
                     continue
-                elif key==Constants.SPADE_MSG_SOCIAL_EVAL:
+                elif key == Constants.SPADE_MSG_SOCIAL_EVAL:
                     self.agent.curr_social_interp = bel
-                    print("new social interp is ", self.agent.curr_social_interp)
-                else:
-                    self.agent.setBelief(batch, bel) #note I may set again the beliefs above, but they will just be replaced (little waste here)
+                    # print("BDI: new social interp is ", self.agent.curr_social_interp)
+                else:  # I am actually not using this key
+                    # print("BDI: setting belief ", bel, "for batch ", batch)
+                    self.agent.setBelief(batch,
+                                         bel)  # note I may set again the beliefs above, but they will just be replaced (little waste here)
 
             # for b in new_bel_list:
             #     bel = utils.splitStringBelToList(b)
@@ -507,6 +579,8 @@ class BDICore(BDIAgent):
             #         self.agent.setBelief(batch, bel)
 
         def performReasoning(self):
+            # print("BDI: performing reasoning")
+
             # N.B. I could also perform some "external" (normative) reasoning
             # external to agentsopeak
             # by invoking some other functions and then setting/removing the opportune beliefs/goals
@@ -598,11 +672,11 @@ class BDICore(BDIAgent):
         for beliefs in self.bdi_agent.beliefs:
             bel_list = list(self.bdi_agent.beliefs[beliefs])
             for i in range(len(bel_list)):
-                print(bel_list[i])
+                logger.info(bel_list[i])
 
     def setRole(self, role):
         self.curr_role = role
-        self.bdi.set_belief(Constants.ASL_BEL_CURR_ROLE, self.curr_role)
+        # self.bdi.set_belief(Constants.ASL_BEL_CURR_ROLE, self.curr_role)
 
     def isInRecentMemory(self, text):
         for k in list(self.memory.keys()):
@@ -627,8 +701,6 @@ class BDICore(BDIAgent):
     def getOrderedMemoryFromYoungestToOldest(self):
         od = collections.OrderedDict(reversed(sorted(self.memory.items())))
         return od
-
-
 
     async def setup(self):
         self.memory = {}

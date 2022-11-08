@@ -1,6 +1,9 @@
 import numpy as np
 import skfuzzy as fuzz
 
+import logging
+logger = logging.getLogger("nosar.sar.utils.skfsutils")
+
 def convertFSTOSkFuzzy(partition_universe_boundaries, simpful_fuzzyset):
     """ Assuming trapezoid """
     x = np.arange(partition_universe_boundaries[0], partition_universe_boundaries[1]+0.000001, 0.05)

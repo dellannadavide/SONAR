@@ -28,6 +28,9 @@ from abc import abstractmethod
 import utils.utils as utils
 import json
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.workeragent")
+
 class WorkerAgent(Agent):
 
     def __init__(self, jid: str, password: str, verify_security: bool = False, fsi=None, fsq=None, gui_queue=None):
@@ -46,8 +49,8 @@ class WorkerAgent(Agent):
                 elif performative == Constants.PERFORMATIVE_INFORM:
                     await self.agent.do_work(utils.readMessage(msg.body, msg.metadata))
                 else:
-                    print(str(msg.sender)+", you are telling me something I don't understand...")
-                    print(msg.body)
+                    logger.info(str(msg.sender)+", you are telling me something I don't understand...")
+                    logger.info(msg.body)
 
 
         # async def on_end(self):

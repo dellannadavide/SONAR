@@ -9,6 +9,9 @@ from utils.mqttclient import MQTTClient
 
 import utils.utils as utils
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.worker.visionhandler")
+
 class VisionHandler(WorkerAgent):
     class SendMsgToBehaviour(OneShotBehaviour):
         """
@@ -48,8 +51,8 @@ class VisionHandler(WorkerAgent):
             for topic in self.agent.received_inputs.keys():
                 s_ordered_dict = self.getVisionInfo(topic)
                 if len(s_ordered_dict.keys()) > 0:
-                    print("sending data as requested to the datacollector")
-                    print(s_ordered_dict)
+                    logger.info("sending data as requested to the datacollector")
+                    logger.info(s_ordered_dict)
                     msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, s_ordered_dict, topic, metadata)
                     await self.send(msg)
         #
@@ -101,15 +104,15 @@ class VisionHandler(WorkerAgent):
             for obj_list_str in split_m:
                 self.received_inputs[Constants.TOPIC_OBJECT_DETECTION].append(
                     utils.joinStrings([Constants.TOPIC_OBJECT_DETECTION, obj_list_str], Constants.STRING_SEPARATOR_INNER))
-                print("detected objects: ", utils.splitStringToList(obj_list_str, separator=Constants.STRING_SEPARATOR_INNER))
+                logger.info("detected objects: {}".format(utils.splitStringToList(obj_list_str, separator=Constants.STRING_SEPARATOR_INNER)))
         elif message.topic == Constants.TOPIC_EMOTION_DETECTION:
             split_m = utils.splitStringToList(rec_m)
             for em in split_m:
                 self.received_inputs[Constants.TOPIC_EMOTION_DETECTION].append(
                     utils.joinStrings([Constants.TOPIC_EMOTION_DETECTION, em],
                                       Constants.STRING_SEPARATOR_INNER))
-                print("detected emotion: ",
-                      utils.splitStringToList(em, separator=Constants.STRING_SEPARATOR_INNER))
+                logger.info("detected emotion: {}".format(
+                      utils.splitStringToList(em, separator=Constants.STRING_SEPARATOR_INNER)))
         else:
             pass
         # print("received message: ", str(message.payload.decode("utf-8")))

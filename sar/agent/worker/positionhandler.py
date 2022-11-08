@@ -9,6 +9,9 @@ from utils.mqttclient import MQTTClient
 
 import utils.utils as utils
 
+import logging
+logger = logging.getLogger("nosar.sar.agent.worker.positionhandler")
+
 class PositionHandler(WorkerAgent):
     class SendMsgToBehaviour(OneShotBehaviour):
         """

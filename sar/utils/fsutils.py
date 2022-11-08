@@ -10,6 +10,8 @@ import numpy as np
 from sar.utils.moea import getContextualizedFS
 from sar.utils.skfsutils import createSKFuzzyMFandGetDissimilarity
 
+import logging
+logger = logging.getLogger("nosar.sar.utils.fsutils")
 
 def scaleFrom01ToAB(x, a, b, lambd, k_SF):
     if x <= lambd:
@@ -84,26 +86,26 @@ class SARFuzzySet:
     def createSimpfulFuzzySet(self):
         if self.type == Constants.FS_TRIANGULAR_MF:
             if (not "a" in self.param) or (not "b" in self.param) or (not "c" in self.param):
-                print("dict 'param' must specify param a,b and c for defining a triangular mf")
+                logger.error("dict 'param' must specify param a,b and c for defining a triangular mf")
                 return None
             else:
                 return sf.FuzzySet(function=Triangular_MF(a=self.param["a"], b=self.param["b"], c=self.param["c"]),
                                    term=self.term)
         elif self.type == Constants.FS_TRAPEZOIDAL_MF:
             if (not "a" in self.param) or (not "b" in self.param) or (not "c" in self.param) or (not "d" in self.param):
-                print("dict 'param' must specify param a,b,c,d for defining a trapezoidal mf")
+                logger.error("dict 'param' must specify param a,b,c,d for defining a trapezoidal mf")
                 return None
             else:
                 return DynamicTrapezoidFuzzySet(function=DynamicTrapezoidal_MF(a=self.param["a"], b=self.param["b"], c=self.param["c"], d=self.param["d"]),
                                    term=self.term)
         elif self.type == Constants.FS_GAUSSIAN_MF:
             if (not "a" in self.param) or (not "b" in self.param):
-                print("dict 'param' must specify param a,b for defining a gaussian mf")
+                logger.error("dict 'param' must specify param a,b for defining a gaussian mf")
                 return None
             else:
                 return sf.GaussianFuzzySet(mu=self.param["a"], sigma=self.param["b"], term=self.term)
         else:
-            print("Type of MF (" + self.type + ") not supported yet")
+            logger.error("Type of MF (" + self.type + ") not supported yet")
             return None
 
     def getMF(self):
@@ -112,25 +114,25 @@ class SARFuzzySet:
     def updateMF(self, new_param):
         if self.type == Constants.FS_TRIANGULAR_MF:
             if (not "a" in new_param) or (not "b" in new_param) or (not "c" in new_param):
-                print("the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
+                logger.error("the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
             else:
                 self.param = new_param
                 self.fuzzy_set = self.createSimpfulFuzzySet()
         elif self.type == Constants.FS_TRAPEZOIDAL_MF:
             if (not "a" in new_param) or (not "b" in new_param) or (not "c" in new_param) or (not "d" in new_param):
-                print("the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
+                logger.error("the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
             else:
                 self.param = new_param
                 self.fuzzy_set = self.createSimpfulFuzzySet()
         elif self.type == Constants.FS_GAUSSIAN_MF:
             if (not "a" in new_param) or (not "b" in new_param):
-                print("dict 'param' must specify param a,b for defining a gaussian mf")
+                logger.error("dict 'param' must specify param a,b for defining a gaussian mf")
                 return None
             else:
                 self.param = new_param
                 self.fuzzy_set = self.createSimpfulFuzzySet()
         else:
-            print("Type of MF (" + self.type + ") not supported yet")
+            logger.error("Type of MF (" + self.type + ") not supported yet")
 
 
 class SARFuzzyRuleBase:
@@ -146,7 +148,7 @@ class SARFuzzyRuleBase:
 
         # print(self.fuzzy_sets_dict)
         # print(self.ling_vars_dict)
-        print(self.rules)
+        logger.info(self.rules)
 
 
         self.fs = self.createFuzzySystem()
@@ -296,10 +298,10 @@ class SARFuzzyRuleBase:
             # print(parsed_consequent)
             for ling_var in ling_vars_dict.keys():
                 # print(ling_var)
-                if ling_var in parsed_antecedent:
+                if ling_var+" IS" in parsed_antecedent:
                     # print("-> is in input")
                     inputs.add(ling_var)
-                if ling_var in parsed_consequent:
+                if ling_var+" IS" in parsed_consequent:
                     # print("-> is in output")
                     outputs.add(ling_var)
         return inputs,outputs
@@ -320,11 +322,11 @@ class SARFuzzyRuleBase:
                     datapoint["outputs"][output_var] = dp[output_var]
                 fs_specific_dataset.append(datapoint)
             except:
-                print("Skipping data point with no sufficient data for adapting the current FS.")
-                print(dp)
-                print("Required inputs and outputs")
-                print(self.inputs)
-                print(self.outputs)
+                logger.info("Skipping data point with no sufficient data for adapting the current FS.")
+                logger.info(dp)
+                logger.info("Required inputs and outputs")
+                logger.info(self.inputs)
+                logger.info(self.outputs)
 
         if (len(fs_specific_dataset)>0) and (len(self.dynamic_ling_var)>0):
             # print("get the contextualized fs based on data", str(fs_specific_dataset))

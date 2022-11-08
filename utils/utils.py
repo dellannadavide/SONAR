@@ -4,6 +4,8 @@ from spade.message import Message
 import utils.constants as Constants
 import json
 
+import logging
+logger = logging.getLogger("nosar.sar.utils.utils")
 
 def prepareMessage(sender_jid, received_jid, performative, msg_body, thread=None, metadata=None):
     msg = Message(received_jid)  # Instantiate the message
@@ -14,7 +16,7 @@ def prepareMessage(sender_jid, received_jid, performative, msg_body, thread=None
                 msg.set_metadata(k, v)
 
     if not isinstance(msg_body, dict):
-        print("ERROR IN THE PREPARATION OF MESSAGE FROM ",sender_jid," TO ", received_jid, "with content", msg_body)
+        logger.critical("ERROR IN THE PREPARATION OF MESSAGE FROM {} TO {} with content {}".format(sender_jid, received_jid, msg_body))
         sys.exit()
     else:
         msg.body = json.dumps(msg_body)

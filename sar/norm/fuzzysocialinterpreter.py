@@ -6,6 +6,8 @@ import random
 import utils.constants as Constants
 from sar.utils.fsutils import SARFuzzyRuleBase
 
+import logging
+logger = logging.getLogger("nosar.sar.norm.fuzzysocialinterpreter")
 
 class FuzzySocialInterpreter:
         def __init__(self, fuzzy_sets_file, ling_var_file, rules_file, min_certainty) -> None:
@@ -33,7 +35,7 @@ class FuzzySocialInterpreter:
                 # print(fs_output)
                 # print("----------end of inference")
             except Exception:
-                print(traceback.format_exc())
+                logger.exception(traceback.format_exc())
                 pass
             self.lock.release()
             return fs_output
@@ -57,7 +59,7 @@ class FuzzySocialInterpreter:
                 else:
                     return fs_output, "UNKNOWN"
             else:
-                print("The inputs "+str(inputs)+" are currently not supported")
+                logger.info("The inputs "+str(inputs)+" are currently not supported")
                 best_social_interpr = "UNKNOWN"
                 social_values = {}
                 for o in self.fuzzyRuleBase.outputs:

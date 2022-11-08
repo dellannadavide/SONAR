@@ -37,6 +37,8 @@ import scipy.integrate as integrate
 
 from sar.utils.skfsutils import convertFSTOSkFuzzy, getDissimilaritySKFuzzyMF
 
+import logging
+logger = logging.getLogger("nosar.sar.utils.moea")
 
 def f(xy, *fuzzy_sets):
     """ To determine the intersection between two functions """
@@ -717,10 +719,10 @@ def getContextualizedFS(FS, ling_var_to_adapt, dataset, optim_param):
                        seed=1,
                        save_history=False,
                        verbose=True)
-        print("Best solution found: \nBest_Chromosome = %s\nOptimal E = %s" % (res.X, res.F))
+        logger.info("Best solution found: \nBest_Chromosome = %s\nOptimal E = %s" % (res.X, res.F))
         if optim_param["n_obj_f"]==2:
             return getControllerFromChromosome(FS, ling_var_to_adapt, optim_param, (res.X)[0].tolist())
         return getControllerFromChromosome(FS, ling_var_to_adapt, optim_param, res.X.tolist())
     else:
-        print("No algorithm specified, returning the original Fuzzy System")
+        logger.error("No algorithm specified, returning the original Fuzzy System")
     return FS

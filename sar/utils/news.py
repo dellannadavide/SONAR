@@ -2,6 +2,8 @@ import random
 
 import requests
 
+import logging
+logger = logging.getLogger("nosar.sar.utils.news")
 
 def getRandomNewsFromBBC():
     choice = "the weather today"
