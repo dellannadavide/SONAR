@@ -9,6 +9,8 @@ from utils.mqttclient import MQTTClient
 
 import utils.utils as utils
 
+from itertools import groupby
+
 import logging
 logger = logging.getLogger("nosar.sar.agent.worker.visionhandler")
 
@@ -51,8 +53,8 @@ class VisionHandler(WorkerAgent):
             for topic in self.agent.received_inputs.keys():
                 s_ordered_dict = self.getVisionInfo(topic)
                 if len(s_ordered_dict.keys()) > 0:
-                    logger.info("sending data as requested to the datacollector")
-                    logger.info(s_ordered_dict)
+                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "sending data as requested to the datacollector")
+                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, s_ordered_dict)
                     msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, s_ordered_dict, topic, metadata)
                     await self.send(msg)
         #
@@ -108,16 +110,35 @@ class VisionHandler(WorkerAgent):
         elif message.topic == Constants.TOPIC_EMOTION_DETECTION:
             split_m = utils.splitStringToList(rec_m)
             for em in split_m:
-                self.received_inputs[Constants.TOPIC_EMOTION_DETECTION].append(
+                self.to_process_received_inputs[Constants.TOPIC_EMOTION_DETECTION].append(
                     utils.joinStrings([Constants.TOPIC_EMOTION_DETECTION, em],
                                       Constants.STRING_SEPARATOR_INNER))
                 logger.info("detected emotion: {}".format(
                       utils.splitStringToList(em, separator=Constants.STRING_SEPARATOR_INNER)))
+                self.processReceivedInputs()
         else:
             pass
         # print("received message: ", str(message.payload.decode("utf-8")))
         # self.received_inputs.append(message)
 
+    def processReceivedInputs(self):
+        for topic in self.to_process_received_inputs.keys():
+            num_received_inputs_topic = len(self.to_process_received_inputs[topic])
+            if num_received_inputs_topic > 0:
+                if topic==Constants.TOPIC_EMOTION_DETECTION:
+                    # I actually report to the data collector a particular emotion only if
+                    # 1. I collected at least self.emotions_min_number data points
+                    # 2. there is one emotion among the collected data points that appears more than self.main_emotion_min_ratio % of times
+                    if num_received_inputs_topic >= self.emotions_min_number:
+                        dict_count_emotions = {key: len(list(group)) for key, group in groupby(sorted(self.to_process_received_inputs[topic]))}
+                        actually_detected_emotion = False
+                        for em in dict_count_emotions.keys():
+                            if (dict_count_emotions[em] / num_received_inputs_topic)>= self.main_emotion_min_ratio:
+                                self.received_inputs[topic].append(em)
+                                actually_detected_emotion = True
+                                break
+                        if actually_detected_emotion: #if I added an emotion I erase everything from to_process, so new data will need to be collected
+                            self.to_process_received_inputs[topic] = []
     async def setup(self):
         self.received_inputs = {
             Constants.TOPIC_HUMAN_DETECTION: [],
@@ -125,6 +146,15 @@ class VisionHandler(WorkerAgent):
             Constants.TOPIC_OBJECT_DETECTION: [],
             Constants.TOPIC_EMOTION_DETECTION: []
         }
+
+        self.to_process_received_inputs = {
+            Constants.TOPIC_HUMAN_DETECTION: [],
+            Constants.TOPIC_HEAD_TRACKER: [],
+            Constants.TOPIC_OBJECT_DETECTION: [],
+            Constants.TOPIC_EMOTION_DETECTION: []
+        }
+        self.emotions_min_number = 60
+        self.main_emotion_min_ratio = 0.8
         """ This will listen to the sensors collecting data """
         # self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_VisionHandler_Listener", Constants.MQTT_CLIENT_TYPE_LISTENER, Constants.TOPIC_HUMAN_DETECTION, self.on_message)
         self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_VisionHandler_Listener", Constants.MQTT_CLIENT_TYPE_LISTENER, Constants.TOPIC_GROUP_VISION+"#", self.on_message)

@@ -6,6 +6,7 @@ import multiprocessing as mp
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
 mpl.use('TkAgg')
 import matplotlib.colors as mcolors
 
@@ -13,6 +14,7 @@ import utils.constants as Constants
 
 from datetime import datetime
 import logging
+
 #
 # def worker(q):
 #     candidates = ["macosx", "qt5agg", "gtk3agg", "tkagg", "wxagg"]
@@ -120,7 +122,6 @@ import logging
 #
 
 
-
 if __name__ == '__main__':
     # parser = argparse.ArgumentParser(description='spade bdi basic example')
     # parser.add_argument('--server', type=str, default="localhost", help='XMPP server address.')
@@ -128,18 +129,20 @@ if __name__ == '__main__':
     # parser.add_argument('--password', type=str, default="bdicore", help='XMPP password for the agent.')
     # args = parser.parse_args()
 
-
     now = datetime.now()
     exec_timestamp = str(now.strftime("%Y%m%d%H%M%S"))
     log_folder = "./log/"
     log_path_name = log_folder + "nosar_" + exec_timestamp + ".log"
 
-    logging.basicConfig(level=logging.INFO,
+    logging.addLevelName(Constants.LOGGING_LV_DEBUG_NOSAR, Constants.LOGGING_LV_DEBUG_NOSAR_NAME)
+
+    logging.basicConfig(level=Constants.LOGGING_LV_DEBUG_NOSAR_NAME,
                         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
                         handlers=[
                             logging.FileHandler(log_path_name, mode="a+"),
                             logging.StreamHandler(sys.stdout)
-                        ])
+                        ],
+                        )
 
     logger = logging.getLogger("nosar")
 

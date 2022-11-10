@@ -20,5 +20,5 @@ class SystemHandler(WorkerAgent):
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SHUT_DOWN:
             self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE, Constants.DIRECTIVE_SHUT_DOWN)
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_EXEC_BEHAVIOR:
-            logger.info("sending directive to execute behavior")
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "sending directive to execute behavior")
             self.mqtt_client.publish(Constants.TOPIC_BEHAVIOR, Constants.DIRECTIVE_EXEC_BEHAVIOR)

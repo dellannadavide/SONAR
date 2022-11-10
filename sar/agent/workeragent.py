@@ -49,8 +49,8 @@ class WorkerAgent(Agent):
                 elif performative == Constants.PERFORMATIVE_INFORM:
                     await self.agent.do_work(utils.readMessage(msg.body, msg.metadata))
                 else:
-                    logger.info(str(msg.sender)+", you are telling me something I don't understand...")
-                    logger.info(msg.body)
+                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, str(msg.sender)+", you are telling me something I don't understand...")
+                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, msg.body)
 
 
         # async def on_end(self):

@@ -1,4 +1,7 @@
 """ Constants to be used for utilities """
+LOGGING_LV_DEBUG_NOSAR = 15
+LOGGING_LV_DEBUG_NOSAR_NAME = "DEBUG_NOSAR"
+
 VERBOSE_FALSE = 0
 VERBOSE_VERY_LOW = 0.5
 VERBOSE_BASIC = 1
@@ -40,6 +43,7 @@ SPADE_MSG_OBJECT = "SPADE_MSG_OBJECT"
 SPADE_MSG_TO_SAY = "SPADE_MSG_TO_SAY"
 SPADE_MSG_SAID = "SPADE_MSG_SAID"
 SPADE_MSG_NAO_ROLE = "SPADE_MSG_NAO_ROLE"
+SPADE_MSG_HUMAN_EMOTION = "SPADE_MSG_HUMAN_EMOTION"
 SPADE_MSG_POSTURE = "SPADE_MSG_POSTURE"
 SPADE_MSG_DIRECTION = "SPADE_MSG_DIRECTION"
 SPADE_MSG_BATCH_ID = "SPADE_MSG_BATCH_ID"
@@ -47,6 +51,7 @@ SPADE_MSG_SOCIAL_EVAL = "social_eval"
 
 ASL_FLUENT_ROLE_SUBORDINATE = "subordinate"
 ASL_FLUENT_ROLE_NONE = "no_role"
+ASL_FLUENT_EMOTION_NEUTRAL = "neutral_emotion"
 ASL_FLUENT_UNKNOWN_PERSON = "unknown"
 ASL_FLUENT_UNKNOWN_DIRECTION = "unknown"
 ASL_FLUENT_CENTER_DIRECTION = "center"
@@ -132,6 +137,8 @@ VOCABULARY_WHAT_IS_THIS = {"what is this", "what's this", "can you see this", "d
                            "can you tell me what is this object",
                            "can you tell me what you see", "tell me what you see", "tell me what you can see",
                            "tell me what is this", "tell me what is this object", "tell me what is this thing"}
+
+
 
 LV_VOC_PERSONAL = "PERSONAL_VOCABULARY"
 
@@ -254,6 +261,7 @@ DIRECTIVE_EXEC_BEHAVIOR = "exec_behavior"
 DIRECTIVE_UPDATE_TOPIC_INTEREST = "update_topic_interest"
 DIRECTIVE_LED_CHANGE_COLOR = "change_led_color"
 DIRECTIVE_LED_SET_COLOR = "set_led_color"
+DIRECTIVE_LED_SET_THINKING = "set_led_thinking_color"
 
 SPEECH_KEYWORDS_AFFIRMATIVE = ["yes", "yeah", "correct", "exactly", "yep", "bravo", "ok"]
 SPEECH_KEYWORDS_NEGATIVE = ["no", "nope", "wrong", "not", "yep", "incorrect", "nu", "but"]
@@ -364,3 +372,4 @@ XMPP_AGENTS_DETAILS = {
     POSTURE_HANDLER_NAME: {"jid": POSTURE_HANDLER_JID, "pwd": POSTURE_HANDLER_PWD},
     NORM_ADAPTER_NAME: {"jid": NORM_ADAPTER_JID, "pwd": NORM_ADAPTER_PWD}
 }
+

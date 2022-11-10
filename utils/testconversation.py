@@ -7,38 +7,70 @@ from transformers.utils import logging
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-from sentence_transformers import SentenceTransformer, util
-import numpy as np
-model = SentenceTransformer('stsb-mpnet-base-v2')
-sentence1 =  "what is this"
-sentence2 =  "can you tell me what is this"
-# encode sentences to get their embeddings
-embedding1 = model.encode(sentence1, convert_to_tensor=True)
-embedding2 = model.encode(sentence2, convert_to_tensor=True)
-# compute similarity scores of two embeddings
-cosine_scores = util.pytorch_cos_sim(embedding1, embedding2)
-print("Sentence 1:", sentence1)
-print("Sentence 2:", sentence2)
-print("Similarity score:", cosine_scores.item())
-exit()
+import constants as Constants
 
-x = torch.randn(1, 2)
-print(x)
-x = torch.cat([x,x], dim=-1)
-print(x)
-x = torch.cat([x,x], dim=-1)
-print(x)
-exit()
+# from sentence_transformers import SentenceTransformer, util
+# import numpy as np
+# model = SentenceTransformer('stsb-mpnet-base-v2')
+# sentence1 =  "what is this"
+# sentence2 =  "can you tell me what is this"
+# # encode sentences to get their embeddings
+# embedding1 = model.encode(sentence1, convert_to_tensor=True)
+# embedding2 = model.encode(sentence2, convert_to_tensor=True)
+# # compute similarity scores of two embeddings
+# cosine_scores = util.pytorch_cos_sim(embedding1, embedding2)
+# print("Sentence 1:", sentence1)
+# print("Sentence 2:", sentence2)
+# print("Similarity score:", cosine_scores.item())
+# exit()
+#
+# x = torch.randn(1, 2)
+# print(x)
+# x = torch.cat([x,x], dim=-1)
+# print(x)
+# x = torch.cat([x,x], dim=-1)
+# print(x)
+# exit()
 
 tgenerator = pipeline('text-generation', model="facebook/opt-350m")
-g = tgenerator("A book ", max_length=50,
+# for emotion in Constants.EMOTIONS_RELATED_QUESTIONS.keys():
+#     g = tgenerator("Today you look "+emotion+". Is it because", max_length=50,
+#                                         do_sample=True,
+#                                         top_p=0.92,
+#                                         top_k=100,
+#                                         temperature=0.75,
+#                    num_return_sequences=10)
+#     for i in g:
+#         print(i['generated_text'].split("?")[0]+"?")
+
+# for obje in ["cellphone", "teddybear", "cup", "airplane", "clock", "toothbrush"]:
+#     types_of_questions = ["Did you know that a "+obje,
+#                           "What kind of "+obje,
+#                           "Is that a "+obje,
+#                           "I noticed a "+obje+". Is it"]
+#     for toq in types_of_questions:
+#         g = tgenerator(toq, max_length=50,
+#                                             do_sample=True,
+#                                             top_p=0.92,
+#                                             top_k=100,
+#                                             temperature=0.75,
+#                        num_return_sequences=10)
+#         for i in g:
+#             print(i['generated_text'].split("?")[0]+"?")
+
+
+
+conversation = "Hi. Good to meet you! Did you just arrive here? Yeah, We arrived last week. How do you like it? It’s exciting! It’s much busier than the last city we lived in. I was working in Seattle for the last 3 years. It really is very busy. I moved here from Tokyo 5 years ago and I still have trouble sometimes. Did you move here with your wife? Actually, I’m not married. I moved here with my dog, Charles. We are very close. Oh. I see. What about you? Yes, I am married and I have two children. How old are they? 6 and 8 years old Oh, great. That age is a lot of fun. But it is exhausting. I understand. My brother has kids the same age. Every time we visit he falls asleep on the sofa. Must be nice. We don’t have time to sleep, we have to drink a lot of coffee."
+# conversation = "Hello there,  What's your name,  Sir, , hey name is David, Your name is David, correct, , yes that's correct, Got it,  Nice to meet you David, , nice to meet you how are you today, Sir, I'm good thanks,  Sir, , what's your favourite colour, The colour of the sky, you're so romantic, Sir, I try Sir, , what is love, david, thank you for trusting me with this,  That's so sweet of you, yes but do you know what is it, Sir, It's a lie Sir, , so you're not very romantic, Sir, I'm sorry, but I'm afraid I'm not very romantic, , ok nevermind then, you're not very romantic, instead I think I am, That's nice, , 10cc, Sir, Oh no, that's too many,  Sir, , what you say, What do you say when you're not speaking, , nothing, Sir, What do you say when you're not speaking,  Sir, , you say nothing if you're not speaking, No, Sir, you say nothing, , tell me what you see, Nothing really, , why is that, because im not listening, can you see with your ears you see with your eyes, I can see with my ears, yes, , you're super funny, Sir, Thanks :D Sir"
+g = tgenerator(conversation+". Can you tell me more about ", max_length=50,
                                     do_sample=True,
                                     top_p=0.92,
                                     top_k=100,
                                     temperature=0.75,
                num_return_sequences=10)
 for i in g:
-    print(i)
+    print(i['generated_text'].split("?")[0]+"?")
+
 
 exit()
 

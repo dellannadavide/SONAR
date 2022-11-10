@@ -148,7 +148,7 @@ class SARFuzzyRuleBase:
 
         # print(self.fuzzy_sets_dict)
         # print(self.ling_vars_dict)
-        logger.info(self.rules)
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.rules)
 
 
         self.fs = self.createFuzzySystem()
@@ -322,11 +322,11 @@ class SARFuzzyRuleBase:
                     datapoint["outputs"][output_var] = dp[output_var]
                 fs_specific_dataset.append(datapoint)
             except:
-                logger.info("Skipping data point with no sufficient data for adapting the current FS.")
-                logger.info(dp)
-                logger.info("Required inputs and outputs")
-                logger.info(self.inputs)
-                logger.info(self.outputs)
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Skipping data point with no sufficient data for adapting the current FS.")
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, dp)
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Required inputs and outputs")
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.inputs)
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.outputs)
 
         if (len(fs_specific_dataset)>0) and (len(self.dynamic_ling_var)>0):
             # print("get the contextualized fs based on data", str(fs_specific_dataset))

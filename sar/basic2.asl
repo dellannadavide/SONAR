@@ -125,9 +125,11 @@ is(behind_left, frame).
 +!start(normative_reasoning)
 <- !reason_about_permitted_commands;
     !reason_about_roles;
+    !reason_about_human_emotions;
     !reason_about_greeting_norms;
-    !reason_about_general_dialogue_prohibitions;
-    !reason_about_dialogue_obligations.
+    !reason_about_dialogue_obligations;
+    !reason_about_dialogue_prohibitions;
+    !reason_about_dialogue_start_conversation_prohibitions.
 
 // a prohibition concerning shutting down the robot
 // if the person who gave the command is not an admin
@@ -137,8 +139,12 @@ is(behind_left, frame).
 <- +prohibited_goal(to_shut_down).
 
 +!reason_about_roles:
-    perceived_object(cup)
+    perceived_object(hat)
 <- .set_role(subordinate).
+
++!reason_about_human_emotions:
+    detected_emotion(X)
+<- .set_human_emotion(X).
 
 //obligations about greeting
 // v1 (sociality)
@@ -153,27 +159,37 @@ is(behind_left, frame).
 <- +obliged_goal(greet, Person).
 
 //norms concerning dialogues:
-//it is not appropriate to change topic of conversation if the person said something
-// also it is not appropriate to just be reactive while having a social conversation, isntead it is appropriate to be proactive
-+!reason_about_general_dialogue_prohibitions:
-    said(Person, Something)
-<- +prohibited_action(update_topic_perception);
-    +prohibited_action(update_topic_of_interest);
-    +prohibited_action(reply_to_reactive);
-    +obliged_action(reply_to_proactive).
 
 +!reason_about_dialogue_obligations:
     said(Person, bye_bye)
 <- +obliged_goal(goodbye, Person);
     -said(Person, bye_bye).
 
+//it is not appropriate to change topic of conversation if the person said something
+// also it is not appropriate to just be reactive while having a social conversation, instead it is appropriate to be proactive
++!reason_about_dialogue_prohibitions:
+    said(Person, Something)
+<- +prohibited_action(update_topic_perception);
+    +prohibited_action(update_topic_of_interest);
+    +prohibited_action(reply_to_reactive).
+
+// it is not appropriate, if it's the beginning of the conversation, to directly jump a particular topic before greeting
++!reason_about_dialogue_start_conversation_prohibitions:
+    obliged_goal(greet, Person) &
+    not greeted(Person)
+<- +prohibited_action(update_topic_perception);
+    +prohibited_action(update_topic_of_interest).
+
 
 //default cases
 +!reason_about_permitted_commands <- true.
-+!reason_about_greeting_norms <- true.
-+!reason_about_general_dialogue_prohibitions <- true.
-+!reason_about_dialogue_obligations <- true.
++!reason_about_human_emotions <- true.
 +!reason_about_roles <- true.
++!reason_about_greeting_norms <- true.
++!reason_about_dialogue_prohibitions <- true.
++!reason_about_dialogue_obligations <- true.
++!reason_about_dialogue_start_conversation_prohibitions <- true.
+
 
 //=========================   Rules of behavior   ==================================
 
@@ -330,23 +346,23 @@ is(behind_left, frame).
 //note the last rule does not delete the "said" belief, so the next can still apply
 
 
-// === Rules to reply in a proactive way ===
-+!reason_and_act_about_speech:
-    said(Person, Something) &
-    obliged_action(reply_to_proactive) &
-    not prohibited_action(reply_to_proactive)
-<- .reply_to_proactive(Person, Something);
-   -said(Person, Something).
-
 // === rules to just reply ===
 +!reason_and_act_about_speech:
     said(Person, Something) &
     not prohibited_action(reply_to_reactive)
  <- .reply_to_reactive(Person, Something);
    -said(Person, Something).
-+!reason_and_act_about_speech: //default case, just ignoring
-    said(Person, Something)  &
-    prohibited_action(reply_to_reactive)
+
+// === Rules to reply in a proactive way ===
++!reason_and_act_about_speech:
+    said(Person, Something) &
+    not prohibited_action(reply_to_proactive)
+<- .reply_to_proactive(Person, Something);
+   -said(Person, Something).
+
+//default cases, just ignoring what has been said
++!reason_and_act_about_speech:
+    said(Person, Something)
  <- -said(Person, Something).
 
 //default cases

@@ -59,7 +59,7 @@ class FuzzySocialInterpreter:
                 else:
                     return fs_output, "UNKNOWN"
             else:
-                logger.info("The inputs "+str(inputs)+" are currently not supported")
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The inputs "+str(inputs)+" are currently not supported")
                 best_social_interpr = "UNKNOWN"
                 social_values = {}
                 for o in self.fuzzyRuleBase.outputs:
