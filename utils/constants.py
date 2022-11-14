@@ -68,6 +68,8 @@ ASL_FLUENT_IS_POSTURE = "is_posture"
 ASL_FLUENT_IS_ANIMAATION = "is_animation"
 ASL_FLUENT_BYE = "bye_bye"
 ASL_FLUENT_WHAT_YOU_SEE = "tell_what_you_see"
+ASL_FLUENT_WHAT_USER_SAID = "tell_what_user_said"
+ASL_FLUENT_WHAT_ROBOT_SAID = "tell_what_you_said"
 
 ASL_BEL_PERSON_NAME = "person_name"
 ASL_BEL_IS_ADMIN = "is_admin"
@@ -137,6 +139,19 @@ VOCABULARY_WHAT_IS_THIS = {"what is this", "what's this", "can you see this", "d
                            "can you tell me what is this object",
                            "can you tell me what you see", "tell me what you see", "tell me what you can see",
                            "tell me what is this", "tell me what is this object", "tell me what is this thing"}
+
+VOCABULARY_WHAT_USER_SAID = {"what did i say", "what did i just say", "tell me what did i say",
+                             "tell me what i said", "tell me what i just said", "can you tell me what did i say",
+                             "can you tell me what i said", "can you tell me what i just said", "can you tell me what i said",
+                             "what did i ask", "what did i ask you", "what did i just ask", "tell me what did i ask",
+                             "tell me what i asked", "tell me what i just asked you", "tell me what i asked",
+                             "can you tell me what did i ask you",
+                             "can you tell me what i asked", "can you tell me what i just asked",
+                             "can you tell me what i asked"
+                             }
+
+VOCABULARY_WHAT_ROBOT_SAID = {"what did you say", "can you repeat", "can you repeat please", "can you repeat what you said",
+                              "can you repeat what you just said"}
 
 
 
@@ -248,6 +263,8 @@ DIRECTIVE_SHUT_DOWN = "shut_down"
 DIRECTIVE_SAY = "say"
 DIRECTIVE_SAY_SPONTANEOUS = "say_spontaneous"
 DIRECTIVE_SAY_IN_RESPONSE = "say_in_response"
+DIRECTIVE_SAY_WHAT_USER_SAID = "say_what_user_said"
+DIRECTIVE_SAY_WHAT_BOT_SAID = "say_what_bot_said"
 DIRECTIVE_BEGIN_GREETING = "begin_greeting_procedure"
 DIRECTIVE_CONTINUE_CONVERSATION = "continue_conversation"
 DIRECTIVE_TURN_CONVERSATION = "turn_conversation"

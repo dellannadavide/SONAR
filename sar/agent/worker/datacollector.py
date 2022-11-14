@@ -11,9 +11,10 @@ from sar.agent.workeragent import WorkerAgent
 import utils.utils as utils
 import utils.constants as Constants
 
-
 import logging
+
 logger = logging.getLogger("nosar.sar.agent.worker.datacollector")
+
 
 class DataColletor(WorkerAgent):
     """
@@ -63,6 +64,7 @@ class DataColletor(WorkerAgent):
     class WaitForMessageBehaviour(OneShotBehaviour):
         """ This is the behavior that receives and store data from all the workers.
         Another behavior will later process them and create beliefs to send to the bdi"""
+
         def __init__(self, timeout_data_source, batch):
             super().__init__()
             self.timeout_data_source = timeout_data_source
@@ -78,10 +80,12 @@ class DataColletor(WorkerAgent):
                 thread = str(msg.thread)
                 msg_body_dict = utils.readMessage(msg.body, msg.metadata)
                 # if not msg.body == Constants.NO_DATA: #not sure where
-                    # await self.agent.addToBatch(self.batch, sender, [])
+                # await self.agent.addToBatch(self.batch, sender, [])
                 # else:
 
-                logger.info("DataCollector (batch "+str(self.batch)+"): Message received from "+sender+"-"+thread+" with content: {}".format(msg.body))
+                logger.info("DataCollector (batch " + str(
+                    self.batch) + "): Message received from " + sender + "-" + thread + " with content: {}".format(
+                    msg.body))
                 if sender == Constants.VISION_HANDLER_JID:
                     # print(msg.body)
                     # vision_data = utils.splitStringToList(msg.body)
@@ -95,9 +99,10 @@ class DataColletor(WorkerAgent):
                         # self.agent.visible_person = vision_data
                         # bel = utils.joinStringsBel()
                         face = vision_data_inner[1]
-                        if not face==Constants.ASL_FLUENT_UNKNOWN_PERSON:
+                        if not face == Constants.ASL_FLUENT_UNKNOWN_PERSON:
                             self.agent.interacting_person = face
-                        bels.append([Constants.ASL_BEL_VISIBLE, Constants.ASL_FLUENT_FACE, self.agent.interacting_person])
+                        bels.append(
+                            [Constants.ASL_BEL_VISIBLE, Constants.ASL_FLUENT_FACE, self.agent.interacting_person])
                         self.already_added_visible_belief = True
                     if thread == Constants.TOPIC_HEAD_TRACKER:
                         direction = Constants.ASL_FLUENT_UNKNOWN_DIRECTION
@@ -108,37 +113,38 @@ class DataColletor(WorkerAgent):
                         dist = float(vision_data_inner[8])
 
                         direction_yaw = ""
-                        if yaw < 0-epsilon:
+                        if yaw < 0 - epsilon:
                             direction_yaw = Constants.ASL_FLUENT_RIGHT_DIRECTION
-                        elif yaw > 0+epsilon:
+                        elif yaw > 0 + epsilon:
                             direction_yaw = Constants.ASL_FLUENT_LEFT_DIRECTION
                         direction_pitch = ""
-                        if pitch  < 0-epsilon:
+                        if pitch < 0 - epsilon:
                             direction_pitch = Constants.ASL_FLUENT_BOTTOM_DIRECTION
-                        elif pitch > 0+epsilon:
+                        elif pitch > 0 + epsilon:
                             direction_pitch = Constants.ASL_FLUENT_TOP_DIRECTION
 
-                        if direction_yaw=="":
-                            if direction_pitch=="":
+                        if direction_yaw == "":
+                            if direction_pitch == "":
                                 direction = Constants.ASL_FLUENT_CENTER_DIRECTION
                             else:
                                 direction = direction_pitch
                         else:
-                            if direction_pitch=="":
+                            if direction_pitch == "":
                                 direction = direction_yaw
                             else:
-                                direction = direction_pitch+"_"+direction_yaw
+                                direction = direction_pitch + "_" + direction_yaw
 
                         bels.append([Constants.ASL_BEL_IS_LOOKING, direction])
 
-                        if dist!=-1.0:
+                        if dist != -1.0:
                             bels.append([DataColletor._KEY_DIST_DATA, dist])
                         logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "DETECTED DISTANCE IS {}".format(dist))
                     if thread == Constants.TOPIC_OBJECT_DETECTION:
                         for obj in vision_data_inner[1:]:
-                            if obj==DataColletor._KEY_VISION_DETECTED_PERSON:
+                            if obj == DataColletor._KEY_VISION_DETECTED_PERSON:
                                 if not self.already_added_visible_belief:
-                                    bels.append([Constants.ASL_BEL_VISIBLE, Constants.ASL_FLUENT_FACE, self.agent.interacting_person])
+                                    bels.append([Constants.ASL_BEL_VISIBLE, Constants.ASL_FLUENT_FACE,
+                                                 self.agent.interacting_person])
                             else:
                                 bels.append([Constants.ASL_BEL_PERCEIVED_OBJECT, obj])
                     if thread == Constants.TOPIC_EMOTION_DETECTION:
@@ -158,9 +164,12 @@ class DataColletor(WorkerAgent):
                         self.agent.interacting_person = last_chatter_data_split[0].lower()
                         bels.append([Constants.ASL_BEL_PERSON_NAME, self.agent.interacting_person])
                     if thread == Constants.TOPIC_SPEECH:
-                        last_chatter_data_sentence = last_chatter_data_split[0].replace(" ", Constants.ASL_STRING_SEPARATOR)
-                        last_chatter_data_volume = last_chatter_data_split[1].replace(" ", Constants.ASL_STRING_SEPARATOR)
-                        bels.append([Constants.ASL_BEL_SAID, last_chatter_data_sentence, float(last_chatter_data_volume)])
+                        last_chatter_data_sentence = last_chatter_data_split[0].replace(" ",
+                                                                                        Constants.ASL_STRING_SEPARATOR)
+                        last_chatter_data_volume = last_chatter_data_split[1].replace(" ",
+                                                                                      Constants.ASL_STRING_SEPARATOR)
+                        bels.append(
+                            [Constants.ASL_BEL_SAID, last_chatter_data_sentence, float(last_chatter_data_volume)])
 
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "bels: {}".format(bels))
                     # beliefs_to_send.append(bel)
@@ -172,12 +181,13 @@ class DataColletor(WorkerAgent):
                     bels.append([DataColletor._KEY_DIST_DATA, position_data])
                     # print(bels)
 
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "adding bels "+ str(bels) +" to batch")
-                await self.agent.addToBatch(self.batch, sender, thread, bels) #n.b. bels is a list of lists
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "adding bels " + str(bels) + " to batch")
+                await self.agent.addToBatch(self.batch, sender, thread, bels)  # n.b. bels is a list of lists
             else:  # if timeout reached
                 # print("Timeout reached")
-                #in this case i still add an empty list to the batch so the batch is considered completed
-                await self.agent.addToBatch(self.batch, utils.getStringFromJID(self.template.sender), str(self.template.thread), [])
+                # in this case i still add an empty list to the batch so the batch is considered completed
+                await self.agent.addToBatch(self.batch, utils.getStringFromJID(self.template.sender),
+                                            str(self.template.thread), [])
 
     class SendMsgToBehaviour(OneShotBehaviour):
         def __init__(self, receiver, content):
@@ -200,12 +210,13 @@ class DataColletor(WorkerAgent):
                         # msg_body = utils.joinStrings([last_batch_id]+last_batch)
                         # print("data collector: sending data as requested to the bdi")
                         logger.info("data collector: sending to bdi {}".format(str(msg_body)))
-                        msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
+                        msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM,
+                                                   msg_body)
                         await self.send(msg)
 
                         # print("deleting all data collected before the batch just sent")
                         for k in list(self.agent.data_to_send.keys()):
-                            if float(k)<=float(last_batch_id):
+                            if float(k) <= float(last_batch_id):
                                 del self.agent.data_to_send[k]
 
                 # Commenting the following, before it was sending only one belief at a time
@@ -241,13 +252,11 @@ class DataColletor(WorkerAgent):
         if not batch in self.work_in_progress_data:
             self.work_in_progress_data[batch] = {}
 
-        sender_thread = sender+"-"+thread
+        sender_thread = sender + "-" + thread
         if not sender_thread in self.work_in_progress_data[batch]:
             self.work_in_progress_data[batch][sender_thread] = []
 
         self.work_in_progress_data[batch][sender_thread].extend(list_of_bel_lists)
-
-
 
         # if I completed the batch
         if len(self.work_in_progress_data[batch].keys()) == self.required_nr_data_for_batch:
@@ -269,7 +278,7 @@ class DataColletor(WorkerAgent):
             # vision
             if Constants.VISION_HANDLER_JID in self.workers_data_sources_threads.keys():
                 for thread in self.workers_data_sources_threads[Constants.VISION_HANDLER_JID]:
-                    vision_bel_lists = self.work_in_progress_data[batch][Constants.VISION_HANDLER_JID+"-"+thread]
+                    vision_bel_lists = self.work_in_progress_data[batch][Constants.VISION_HANDLER_JID + "-" + thread]
                     for vision_bel_list in vision_bel_lists:
                         if len(vision_bel_list) > 0:
                             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "vision_bel_list {}".format(vision_bel_list))
@@ -299,7 +308,7 @@ class DataColletor(WorkerAgent):
                                  (the key of beliefs that should be singletone instead is used)"""
                                 if vision_bel_list[0] in bels_to_add:
                                     bel_idx = 1
-                                    key_bel = vision_bel_list[0]+"_"+str(bel_idx)
+                                    key_bel = vision_bel_list[0] + "_" + str(bel_idx)
                                     while key_bel in bels_to_add:
                                         bel_idx += 1
                                         key_bel = vision_bel_list[0] + "_" + str(bel_idx)
@@ -307,11 +316,10 @@ class DataColletor(WorkerAgent):
                                 else:
                                     bels_to_add[vision_bel_list[0]] = vision_bel_list
 
-
             # chatter
             if Constants.CHATTER_JID in self.workers_data_sources_threads.keys():
                 for thread in self.workers_data_sources_threads[Constants.CHATTER_JID]:
-                    chatter_bel_lists = self.work_in_progress_data[batch][Constants.CHATTER_JID+"-"+thread]
+                    chatter_bel_lists = self.work_in_progress_data[batch][Constants.CHATTER_JID + "-" + thread]
                     for chatter_bel_list in chatter_bel_lists:
                         if len(chatter_bel_list) > 0:
                             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "chatter bel list {}".format(chatter_bel_list))
@@ -331,17 +339,26 @@ class DataColletor(WorkerAgent):
                                                   Constants.ANIMATIONS[chatter_data_sentence],
                                                   Constants.ASL_FLUENT_IS_ANIMAATION]
                                 elif len([i for i in Constants.VOCABULARY_BYE_BYE if
-                                            i in chatter_data_sentence]) > 0:
+                                          i.lower() in chatter_data_sentence]) > 0:
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_BYE]
                                 elif len([i for i in Constants.VOCABULARY_WHAT_IS_THIS if
-                                          i==chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR, " ")]) > 0: #note here I'm checking if it's equal
+                                          i.lower() == chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
+                                                                                     " ")]) > 0:  # note here I'm checking if it's equal
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_YOU_SEE]
+                                elif len([i for i in Constants.VOCABULARY_WHAT_USER_SAID if
+                                          i.lower() == chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
+                                                                                     " ")]) > 0:  # same here
+                                    formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_USER_SAID]
+                                elif len([i for i in Constants.VOCABULARY_WHAT_ROBOT_SAID if
+                                          i.lower() == chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
+                                                                                     " ")]) > 0:  # same here
+                                    formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_ROBOT_SAID]
                                 else:
                                     # bel_string = utils.joinStringsBel([Constants.ASL_BEL_SAID, chatter_data_sentence])
                                     formed_bel = [Constants.ASL_BEL_SAID, chatter_data_sentence]
                                 # bels_to_add.append(bel_string)
                                 bels_to_add[Constants.ASL_BEL_SAID] = formed_bel
-                                #here I create the data inputs for the social interpreter.
+                                # here I create the data inputs for the social interpreter.
                                 # these inputs are obtained by both the sensors and the analysis of the words and of the context
                                 data[Constants.LV_COMMUNICATING] = 1.0
                                 data[Constants.LV_VOLUME] = float(chatter_data_volume)
@@ -349,19 +366,19 @@ class DataColletor(WorkerAgent):
                                         i in chatter_data_sentence]) > 0:
                                     data[Constants.LV_VOC_PERSONAL] = 1.0
 
-                            #last_chatter_data_sentence = last_chatter_data_split[0].replace(" ", Constants.ASL_STRING_SEPARATOR)
+                            # last_chatter_data_sentence = last_chatter_data_split[0].replace(" ", Constants.ASL_STRING_SEPARATOR)
                         # else:
                         #     data[Constants.LV_COMMUNICATING] = 0.0
 
             # position
             if Constants.POSITION_HANDLER_JID in self.workers_data_sources_threads.keys():
                 for thread in self.workers_data_sources_threads[Constants.POSITION_HANDLER_JID]:
-                    position_bel_lists = self.work_in_progress_data[batch][Constants.POSITION_HANDLER_JID+"-"+thread]
+                    position_bel_lists = self.work_in_progress_data[batch][
+                        Constants.POSITION_HANDLER_JID + "-" + thread]
                     for position_bel_list in position_bel_lists:
                         if len(position_bel_list) > 0:
                             position_data = position_bel_list[1]
                             data[Constants.LV_DIST] = position_data
-
 
             # alltogether
             """ This next test is very important because it allows to make sure we do not perform inference (social interpretation) if we do not have any data
@@ -371,7 +388,7 @@ class DataColletor(WorkerAgent):
 
             nr_info = len(data)
             # print("nr info", nr_info)
-            if nr_info > 0:
+            if (self.fsi is not None) and (nr_info > 0):
                 # if there is some data, then I fill all the rest with "off" values
                 # for social_cue in Constants.LV_SOCIAL_CUES:
                 #     if not social_cue in data:
@@ -435,15 +452,16 @@ class DataColletor(WorkerAgent):
                     # bel = utils.joinStringsBel(
                     #     ["distance", str(best_social_interpr).lower()])
                     # bels_to_add.append(bel)
-                    bels_to_add[Constants.ASL_BEL_DISTANCE] = [Constants.ASL_BEL_DISTANCE, str(best_social_interpr).lower()]
+                    bels_to_add[Constants.ASL_BEL_DISTANCE] = [Constants.ASL_BEL_DISTANCE,
+                                                               str(best_social_interpr).lower()]
                     # print(bel)
                 if (not self.interacting_person == Constants.ASL_FLUENT_UNKNOWN_PERSON):
                     # bel = utils.joinStringsBel(
                     #     ["person_name", str(self.interacting_person).lower()])
                     # bels_to_add.append(bel)
                     # print(bel)
-                    bels_to_add[Constants.ASL_BEL_PERSON_NAME] = [Constants.ASL_BEL_PERSON_NAME, str(self.interacting_person).lower()]
-
+                    bels_to_add[Constants.ASL_BEL_PERSON_NAME] = [Constants.ASL_BEL_PERSON_NAME,
+                                                                  str(self.interacting_person).lower()]
 
             if (len(bels_to_add.keys()) > 0):
                 self.data_to_send[batch] = bels_to_add
@@ -467,7 +485,8 @@ class DataColletor(WorkerAgent):
         #                              Constants.VISION_HANDLER_JID]  # ... here you can add the others, or remove some
 
         self.workers_data_sources_threads = {Constants.CHATTER_JID: [Constants.TOPIC_NAME_LEARNT,
-                                                                     Constants.TOPIC_SPEECH], #note I'm using the topics as threads but the names could be different (in some cases, actually, they already are)
+                                                                     Constants.TOPIC_SPEECH],
+                                             # note I'm using the topics as threads but the names could be different (in some cases, actually, they already are)
                                              Constants.VISION_HANDLER_JID: [Constants.TOPIC_HUMAN_DETECTION,
                                                                             Constants.TOPIC_HEAD_TRACKER,
                                                                             Constants.TOPIC_OBJECT_DETECTION,
@@ -478,7 +497,6 @@ class DataColletor(WorkerAgent):
         for d in self.workers_data_sources_threads:
             for t in self.workers_data_sources_threads[d]:
                 self.required_nr_data_for_batch += 1
-
 
         start_at = datetime.now() + timedelta(seconds=1)
         b = self.CollectDataBehaviour(period=0.2, start_at=start_at, data_sources=self.workers_data_sources_threads)

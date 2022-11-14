@@ -52,8 +52,7 @@ is(behind_left, frame).
 <- !start(reasoning).
 
 +!start(reasoning)
-<- !start(normative_reasoning);
-    !start(reasoning_and_acting);
+<- !start(reasoning_and_acting);
     -perform_reasoning.
 
 //general belief propagation rules
@@ -100,21 +99,6 @@ is(behind_left, frame).
 <-  ?interacting_person(Person);
     -+detected_emotion(Person, Emotion);
     -detected_emotion(Emotion).
-
-
-// proactive behaviors
-+add_spontaneous_conversation_goal
-<- !start(spontaneous_conversation).
-
-+!start(spontaneous_conversation) :
-    visible(face, Person) &
-    distance(Person, sociality)
-<- .trigger_spontaneous_conversation;
-    -add_spontaneous_conversation_goal.
-
-+!start(spontaneous_conversation)
-<- -add_spontaneous_conversation_goal.
-
 
 
 //=========================   Norms   ==================================
@@ -219,12 +203,6 @@ is(behind_left, frame).
     -obliged_goal(greet, Person).
 
 +!reason_and_act_about_greeting:
-    visible(face, Person) &
-    not greeted(Person) &
-    not prohibited_goal(greet)
-<- !greet(Person).
-
-+!reason_and_act_about_greeting:
     obliged_goal(goodbye, Person) &
     not prohibited_goal(goodbye)
 <- !goodbye(Person);
@@ -238,7 +216,6 @@ is(behind_left, frame).
 
 +!greet(Person) <- true.
 
-
 +!goodbye(Person)
 <- .goodbye(Person).
 
@@ -247,22 +224,6 @@ is(behind_left, frame).
 // === Commands rules ===
 // they create goals based on the commands given by the user
 // and based on the permissions
-
-// Shut down
-+!reason_and_act_about_commands:
-    said(Person, shut__down) &
-    not prohibited_goal(to_shut_down)
- <- !to_shut_down(Person);
-    -said(Person, shut__down).
-
-+!reason_and_act_about_commands:
-    said(Person, shut__down) &
-    prohibited_goal(to_shut_down)
- <- -said(Person, shut__down).
-
-
- +!to_shut_down(Person)
- <- .shut_down(Person).
 
 +!reason_and_act_about_commands:
     said(Person, tell__me__what__you__know) &
@@ -341,37 +302,6 @@ is(behind_left, frame).
     prohibited_goal(play_animation)
  <- -said(Person, Animation, is_animation).
 
-// === Rules about context awareness
-+!reason_and_act_about_perceived_objects:
-    perceived_object(Object) &
-    not prohibited_action(update_topic_perception)
-<- .update_topic_perception(Object).
-
-// === Rules to give social interpretation to inputs and act accordingly
-
-// Change the topic of conversation if interested in something is detected
-+!reason_and_act_about_interest:
-    is_looking(Person, Direction) &
-    not prohibited_action(move_head)
-<- .move_head(Direction).
-
-+!reason_and_act_about_interest:
-    is_looking(Person, Direction) &
-    is(Direction, Object) &
-    not prohibited_action(update_topic_of_interest)
-<- .update_topic_of_interest(Person, Object, Direction).
-
-// establish trust if the person says something that is interpreted as personal
-+!reason_and_act_about_trust:
-    said(Person, Something) &
-    distance(Person, personal)
-<- +is_personal_info(Something, Person).
-
-+is_personal_info(Something, Person):
-    said(Person, Something) &
-    not prohibited_action(establish_trust)
-<- .establish_trust(Person).
-//note the last rule does not delete the "said" belief, so the next can still apply
 
 
 // === rules to just reply ===
@@ -380,18 +310,6 @@ is(behind_left, frame).
     not prohibited_action(reply_to_reactive)
  <- .reply_to_reactive(Person, Something);
    -said(Person, Something).
-
-// === Rules to reply in a proactive way ===
-+!reason_and_act_about_speech:
-    said(Person, Something) &
-    not prohibited_action(reply_to_proactive)
-<- .reply_to_proactive(Person, Something);
-   -said(Person, Something).
-
-//default cases, just ignoring what has been said
-+!reason_and_act_about_speech:
-    said(Person, Something)
- <- -said(Person, Something).
 
 //default cases
 +!reason_and_act_about_greeting <- true.

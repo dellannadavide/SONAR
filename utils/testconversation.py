@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 from transformers import pipeline, Conversation
 
@@ -32,6 +33,15 @@ import constants as Constants
 # print(x)
 # exit()
 
+# summarizer = pipeline("summarization")
+# print(summarizer("An apple a day, keeps the doctor away", min_length=5, max_length=20))
+# exit()
+
+# summarizer = pipeline("summarization")
+# summary= summarizer("I think I will be able to review anything", min_length=5, max_length=20)
+# print(summary)
+# exit()
+
 tgenerator = pipeline('text-generation', model="facebook/opt-350m")
 # for emotion in Constants.EMOTIONS_RELATED_QUESTIONS.keys():
 #     g = tgenerator("Today you look "+emotion+". Is it because", max_length=50,
@@ -58,6 +68,17 @@ tgenerator = pipeline('text-generation', model="facebook/opt-350m")
 #         for i in g:
 #             print(i['generated_text'].split("?")[0]+"?")
 
+time_sent = "It's "+datetime.now().strftime("%H:%M")+"."
+g = tgenerator(time_sent, max_length=30,
+                                    do_sample=True,
+                                    top_p=0.92,
+                                    top_k=100,
+                                    temperature=0.75,
+               num_return_sequences=10)
+for i in g:
+    print((i['generated_text'].split(".")[1]+".").split("?")[0])
+
+exit()
 
 
 conversation = "Hi. Good to meet you! Did you just arrive here? Yeah, We arrived last week. How do you like it? It’s exciting! It’s much busier than the last city we lived in. I was working in Seattle for the last 3 years. It really is very busy. I moved here from Tokyo 5 years ago and I still have trouble sometimes. Did you move here with your wife? Actually, I’m not married. I moved here with my dog, Charles. We are very close. Oh. I see. What about you? Yes, I am married and I have two children. How old are they? 6 and 8 years old Oh, great. That age is a lot of fun. But it is exhausting. I understand. My brother has kids the same age. Every time we visit he falls asleep on the sofa. Must be nice. We don’t have time to sleep, we have to drink a lot of coffee."
@@ -376,7 +397,7 @@ conversation = "Hi. Good to meet you! Did you just arrive here? Yeah, We arrived
 
 
 summarizer = pipeline("summarization")
-summary= summarizer(["Hi.", "Good to meet you!"], min_length=5, max_length=20)
+summary= summarizer(["Ron DeSantis: How the Republican governor conquered Florida"], min_length=5, max_length=100)
 print(summary)
 summary = summary[0]["summary_text"]
 

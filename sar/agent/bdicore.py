@@ -36,6 +36,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".goodbye", 1)
         def _goodbye(agent, term, intention):
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .goodbye")
             x = str(agentspeak.grounded(term.args[0], intention.scope))
             to_say = random.choice(
                 ["Bye bye " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "!", "Dooi Dooi!",
@@ -369,6 +370,30 @@ class BDICore(BDIAgent):
                 self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
             yield
 
+        @actions.add(".tell_what_user_said", 0)
+        def _tell_what_user_said(agent, term, intention):
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "telling what user said")
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_WHAT_USER_SAID,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
+            self.add_behaviour(
+                self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
+            yield
+
+        @actions.add(".tell_what_you_said", 0)
+        def _tell_what_you_said(agent, term, intention):
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "telling what bot said")
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_WHAT_BOT_SAID,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
+            self.add_behaviour(
+                self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
+            yield
+
         @actions.add(".tell_beliefs", 1)
         def _tell_beliefs(agent, term, intention):
             logger.info("telling beliefs, commanded by {}".format(str(agentspeak.grounded(term.args[0], intention.scope))))
@@ -414,10 +439,10 @@ class BDICore(BDIAgent):
                     to_say = to_say + "you were just at a distance that I consider to be" + str(b_arg_list[1]).replace(
                         "_", " ") + "."
                 elif b_term.startswith(Constants.ASL_BEL_PERCEIVED_OBJECT):
-                    to_say = to_say + "I can see a " + str(b_arg_list[0]).replace("_", " ") + " in the room."
+                    to_say = to_say + "I can see a " + str(b_arg_list[0]).replace("_", " ") + " over there."
                 elif b_term.startswith(Constants.ASL_BEL_UPDATED_TOPIC_PERC):
                     to_say = to_say + "I recently said something because I noticed a " + str(b_arg_list[0]).replace("_",
-                                                                                                                    " ") + " in the room."
+                                                                                                                    " ") + " right there."
                 else:
                     to_say = ""
                 if not to_say == "":

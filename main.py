@@ -7,6 +7,8 @@ import multiprocessing as mp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+from sar.sar_baseline import SARBDIAgent_BASELINE
+
 mpl.use('TkAgg')
 import matplotlib.colors as mcolors
 
@@ -164,8 +166,12 @@ if __name__ == '__main__':
         Constants.POSTURE_HANDLER_NAME,
         Constants.DATA_COLLECTOR_NAME
     ]
-    # a = SARBDIAgent(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, gui_queue=gui_queue, workers_to_start=workers_to_start)
+    """ Uncomment one of the following to test the two types of agents"""
+    logger.info("Using the norm and social-aware agent")
     a = SARBDIAgent(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
+    # logger.info("Using the baseline agent")
+    # a = SARBDIAgent_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
+
     future = a.start()
     future.result()
     logger.info("Startup ended")

@@ -6,7 +6,8 @@ import logging
 logger = logging.getLogger("nosar.sar.utils.news")
 
 def getRandomNewsFromBBC():
-    choice = "the weather today"
+    ret_choice = "today"
+    ret_descr = "I think it's a nice day"
     try:
         # BBC news api
         # following query parameters are used
@@ -23,20 +24,22 @@ def getRandomNewsFromBBC():
         open_bbc_page = res.json()
 
         # getting all articles in a string article
-        article = open_bbc_page["articles"]
+        articles = open_bbc_page["articles"]
 
-        # empty list which will
-        # contain all trending news
-        results = []
-
-        for ar in article:
-            results.append(ar["title"])
+        # # empty list which will
+        # # contain all trending news
+        # results = []
+        # results_descr =
+        #
+        # for ar in article:
+        #     results.append(ar["title"])
 
         # print(results)
-
-        choice = random.choice(results)
+        article = random.choice(articles)
+        ret_choice = article["title"]
+        ret_descr = article["description"]
         # print(choice)
     except:
-        choice = "the weather today"
+        return ret_choice, ret_descr
 
-    return choice
+    return ret_choice, ret_descr

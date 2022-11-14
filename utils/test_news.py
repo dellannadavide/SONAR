@@ -1,4 +1,6 @@
 # importing requests package
+import random
+
 import requests
 
 from transformers import pipeline, Conversation
@@ -8,6 +10,15 @@ from transformers.utils import logging
 
 logging.set_verbosity(40) #errors
 
+summarizer_1 = pipeline("summarization")
+qa_model = pipeline("question-answering", model="deepset/roberta-base-squad2", tokenizer="deepset/roberta-base-squad2")
+t2tgenerator = pipeline("text2text-generation", model="valhalla/t5-base-e2e-qg")
+
+print(qa_model(question="What did I say?", context="I said do you think you're free or do you think your servant"))
+print(summarizer_1("You said do you think you're free or do you think your servant")[0][
+                "summary_text"])
+
+exit()
 
 def NewsFromBBC():
     # BBC news api
@@ -29,23 +40,52 @@ def NewsFromBBC():
 
     # empty list which will
     # contain all trending news
-    results = []
-
+    # results = []
+    # descr = []
     for ar in article:
-        results.append(ar["title"])
+        # results.append(ar["title"])
+        # descr.append(ar["description"])
+        news = ar["title"]+ ". " + ar["description"]
+        print("News: "+news)
 
-    for i in range(len(results)):
-        # printing all trending news
-        print(i + 1, results[i])
+        # possible_questions_types = ["You think about ", "You've heard that "]
+        # q_type = random.choice(possible_questions_types)
+
+        generated_q = t2tgenerator("generate questions : "+ news,
+                                        max_length=18,
+                                        do_sample=True,
+                                        top_p=0.92,
+                                        top_k=100,
+                                        temperature=0.75)
+        question = "Anyways. "+ generated_q[0]['generated_text'].split("<sep>")[0]
+        print("Question: "+question)
+
+        answer = qa_model(question=question, context=news)
+        print("Answer: "+str(answer))
+
+
+
+    # summarizer_2 = pipeline("summarization", model="facebook/bart-large-cnn")
+    # summarizer_3 = pipeline("summarization", model="t5-large")
+    # for d in descr:
+    #     print(d)
+    #     print(summarizer_1(d, min_length=5, max_length=20)[0]["summary_text"])
+    #     # print(summarizer_2(d, min_length=5, max_length=20)[0]["summary_text"])
+    #     # print(summarizer_3(d, min_length=5, max_length=20)[0]["summary_text"])
+    #         # print(summary))
+    #
+    # for i in range(len(results)):
+    #     # printing all trending news
+    #     print(i + 1, results[i])
 
     # to read the news out loud for us
     # from win32com.client import Dispatch
     # speak = Dispatch("SAPI.Spvoice")
     # speak.Speak(results)
 
-    t2tpipeline = pipeline("text2text-generation", model="valhalla/t5-base-e2e-qg")
-    for t in results:
-        getTextFor(t2tpipeline, "generate questions", "You think about "+t)
+    # t2tpipeline = pipeline("text2text-generation", model="valhalla/t5-base-e2e-qg")
+    # for t in results:
+    #     getTextFor(t2tpipeline, "generate questions", "You think about "+t)
 
 def getTextFor(t2tpip, task, text):
     if task=="generate questions":

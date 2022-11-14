@@ -2,6 +2,7 @@ import copy
 import random
 import threading
 import traceback
+from datetime import datetime
 
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
@@ -115,10 +116,22 @@ class Chatter(WorkerAgent):
             def process_input(self, user_input):
                 return self.isYesNoUnclearAnswer(user_input)
 
+        class GiveFollowUpAnswerState(ChatterState):
+            def __init__(self, name, value=None, initial=False):
+                super().__init__(name, value, initial)
+                self.follow_up_answer = ""
+
+            def set_follow_up_answer(self, answer):
+                self.follow_up_answer = answer
+
+            def process_input(self, user_input):
+                return self.follow_up_answer
+
         # States
         default = DefaultChatterState('Default', initial=True)
         name_retrieval = NameRetrievalState('Retrieving Person Name')
         name_confirmation = NameConfirmationState('Confirming Person Name')
+        giving_follow_up_answer = GiveFollowUpAnswerState('Give a Follow Up Answer')
 
         end_name_retrieval_negative = name_retrieval.to(default)
 
@@ -153,6 +166,9 @@ class Chatter(WorkerAgent):
             self.chatter.qualifyAndSendResponse(to_say, {}, False)
 
         end_name_retrieval_positive = name_confirmation.to(default)
+
+        start_follow_up_answer = default.to(giving_follow_up_answer)
+        end_follow_up_answer = giving_follow_up_answer.to(default)
 
         def on_end_name_retrieval_positive(self):
             to_say = "Got it! Nice to meet you " + str(self.name) + "!"
@@ -207,6 +223,12 @@ class Chatter(WorkerAgent):
                         self.temp_name) + "?"
                     # self.chatter.converser.addBotResponseToConversation(to_say, False)
                     self.chatter.qualifyAndSendResponse(to_say, {}, False)
+            elif self.is_giving_follow_up_answer:
+                self.chatter.converser.addUserInput(user_input)
+                self.chatter.addOneInputBeingProcessed()
+
+                self.end_follow_up_answer()
+                self.chatter.qualifyAndSendResponse(state_output, {}, False)
             else:
                 logger.error("I'm in some wrong state {}".format(self.current_state))
                 logger.error("This should actually never happen...")
@@ -269,6 +291,13 @@ class Chatter(WorkerAgent):
         def addBotResponse(self, response_text):
             tokenized_response = self.tokenizer.encode(response_text + self.tokenizer.eos_token,
                                                        return_tensors="pt")
+            if self.chat_history_ids is None:
+                tokeinzed_new_input = self.tokenizer.encode("New beginning" + self.tokenizer.eos_token,
+                                                    return_tensors="pt")
+                self.chat_history_ids = tokeinzed_new_input
+                self.input_ids = tokeinzed_new_input
+                self.user_inputs.append(tokeinzed_new_input)
+
             self.chat_history_ids = torch.cat([self.chat_history_ids, tokenized_response], dim=-1)
             self.generated_responses.append(response_text)
             self.first_indeces_steps.append(self.chat_history_ids.shape[-1])
@@ -343,6 +372,24 @@ class Chatter(WorkerAgent):
                 else:
                     logger.info("bot >> {}".format(text))
 
+
+        def getITHToLastUserReponse(self, i):
+            if i>0:
+                if len(self.user_inputs)>i-1:
+                    return self.user_inputs[-i]
+                else:
+                    return None
+            return None
+
+        def getITHToLastBotReponse(self, i):
+            if i > 0:
+                if len(self.generated_responses) > i - 1:
+                    return self.generated_responses[-i]
+                else:
+                    return None
+            return None
+
+
         def getConversationString(self, last_n_sentences=None):
             conv_str = ""
             conv = self.getConversation()
@@ -406,8 +453,8 @@ class Chatter(WorkerAgent):
     async def do_work(self, work_info_dict):
         to_say = None
         is_spontaneous = None
-        self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
-                                    utils.joinStrings([Constants.DIRECTIVE_LED_SET_THINKING, "True"]))
+        # self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
+        #                             utils.joinStrings([Constants.DIRECTIVE_LED_SET_THINKING, "True"]))
         logger.info("work_info {}".format(work_info_dict))
 
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY:
@@ -426,7 +473,8 @@ class Chatter(WorkerAgent):
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_REPLY_TO_PROACTIVE:
             message = work_info_dict[Constants.SPADE_MSG_SAID].replace(Constants.ASL_STRING_SEPARATOR, " ")
             emotion = None
-            if Constants.SPADE_MSG_HUMAN_EMOTION in work_info_dict:
+            if Constants.SPADE_MSG_HUMAN_EMOTION in work_info_dict and \
+                    (not work_info_dict[Constants.SPADE_MSG_HUMAN_EMOTION] == Constants.ASL_FLUENT_EMOTION_NEUTRAL):
                 emotion = work_info_dict[Constants.SPADE_MSG_HUMAN_EMOTION]
             to_say = self.getTextFor(Chatter._TASK_CONTINUE_CONVERSATION_PROACTIVE, message, human_emotion=emotion,
                                      is_spontaneous=False)
@@ -441,6 +489,14 @@ class Chatter(WorkerAgent):
             if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
                 to_say = work_info_dict[Constants.SPADE_MSG_TO_SAY]
                 is_spontaneous = True
+
+        elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_WHAT_USER_SAID:
+            to_say = "You said: "+ self.converser.getITHToLastUserReponse(2)
+            is_spontaneous = False
+
+        elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_WHAT_BOT_SAID:
+            to_say = "I said: "+ self.converser.getITHToLastBotReponse(1)
+            is_spontaneous = False
 
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_IN_RESPONSE:
             to_say = work_info_dict[Constants.SPADE_MSG_TO_SAY]
@@ -507,21 +563,23 @@ class Chatter(WorkerAgent):
     def qualifyAndSendResponse(self, to_say, work_info_dict, is_spontaneous_response):
         """ Function that qualifies the text to say based on the social info"""
         animation_to_perfom = None
-
-        """ Determining the emotion associated to the text to say """
         emotion_label = None
-        logger.info("determined to say: {}".format(to_say))
 
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "I determine the emotion associated to the text.")
-        emotion = self.temotion_classifier(to_say)[0][0]
-        if emotion["score"] > 0.7:
-            emotion_label = emotion["label"]
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "emotion detected: {}".format(emotion_label))
-        animation_to_perfom = emotion_label
-
-        """ Using the fuzzy system to determine the adequate levels of volume, etc., based on the social inputs """
         volume = "70"
-        if not self.fsq is None:
+        if not self.fsq is None: #THIS TESTS IF THE CHATTER HAS SOCIAL AND NORM-AWARENESS CAPABILITIES ENABLED
+            """ Determining the emotion associated to the text to say """
+
+            logger.info("determined to say: {}".format(to_say))
+
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "I determine the emotion associated to the text.")
+            emotion = self.temotion_classifier(to_say)[0][0]
+            if emotion["score"] > 0.7:
+                emotion_label = emotion["label"]
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "emotion detected: {}".format(emotion_label))
+            animation_to_perfom = emotion_label
+
+            """ Using the fuzzy system to determine the adequate levels of volume, etc., based on the social inputs """
+
             social_qualification = None
             try:
                 social_qualification = self.fsq[0].getSocialQualification(
@@ -535,25 +593,27 @@ class Chatter(WorkerAgent):
             if (not social_qualification is None):
                 volume = str(social_qualification[Constants.LV_VOLUME])
 
-        """ Qualifying the behavior based on the role of the agent w.r.t. the person """
-        if Constants.SPADE_MSG_NAO_ROLE in work_info_dict:
-            if work_info_dict[Constants.SPADE_MSG_NAO_ROLE] == Constants.ASL_FLUENT_ROLE_SUBORDINATE:
-                # changing what to say
-                to_say = "Sir, " + to_say + " Sir!"
-                # and also executing a certain animation
-                # self.mqtt_publisher.publish(Constants.TOPIC_POSTURE,
-                #                             utils.joinStrings([Constants.DIRECTIVE_PLAYANIMATION,
-                #                                                Constants.ANIMATION_YES_SIR]))
-                animation_to_perfom = Constants.ANIMATION_YES_SIR  # I override the animation with a more specific one for the role
+            """ Qualifying the behavior based on the role of the agent w.r.t. the person """
+            if Constants.SPADE_MSG_NAO_ROLE in work_info_dict:
+                if work_info_dict[Constants.SPADE_MSG_NAO_ROLE] == Constants.ASL_FLUENT_ROLE_SUBORDINATE:
+                    # changing what to say
+                    to_say = "Sir, " + to_say + " Sir!"
+                    # and also executing a certain animation
+                    # self.mqtt_publisher.publish(Constants.TOPIC_POSTURE,
+                    #                             utils.joinStrings([Constants.DIRECTIVE_PLAYANIMATION,
+                    #                                                Constants.ANIMATION_YES_SIR]))
+                    animation_to_perfom = Constants.ANIMATION_YES_SIR  # I override the animation with a more specific one for the role
 
         """ Doing the actual work i.e., send directive to nao """
         if not animation_to_perfom is None:
             self.mqtt_publisher.publish(Constants.TOPIC_POSTURE,
                                         utils.joinStrings([Constants.DIRECTIVE_PLAYANIMATION, animation_to_perfom]))
 
-        self.mqtt_publisher.publish(Constants.TOPIC_DIRECTIVE,
-                                    utils.joinStrings([Constants.DIRECTIVE_SAY, to_say, "volume", volume]))
-        # "say" + Constants.STRING_SEPARATOR + to_say + Constants.STRING_SEPARATOR + "volume" + Constants.STRING_SEPARATOR + volume)
+        message_to_say_list = [Constants.DIRECTIVE_SAY, to_say, "volume", volume]
+        if not emotion_label is None:
+            message_to_say_list.extend(["emotion", str(emotion_label)])
+
+        self.mqtt_publisher.publish(Constants.TOPIC_DIRECTIVE, utils.joinStrings(message_to_say_list))
 
         """ Storing the info in the conversation """
         self.converser.addBotResponseToConversation(to_say, is_spontaneous_response)
@@ -562,16 +622,17 @@ class Chatter(WorkerAgent):
         logger.info("conversation is")
         self.converser.printConversation()
 
-        """ Finally, if nothing is being processed (concerning the text, I reset the led color to default) """
-        if len(self.received_inputs[
-                   Constants.TOPIC_SPEECH]) == 0:  # IN THIS CASE I SEE THERE ARE NO RECEIVED INPUT UNPROCESSED SO I ALSO CHANGE THE COLOR OF NAO'S CHEST
-            self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
-                                        utils.joinStrings(
-                                            [Constants.DIRECTIVE_LED_SET_THINKING, "False"]))
+
 
     def setOneInputProcessed(self):
         self.inputs_being_processed = max(self.inputs_being_processed - 1,
                                           0)  # making sure I don't go below 0 in any case
+
+        """ If nothing is being processed (concerning the text, I reset the led color to default) """
+        if self.noInputBeingProcessed():  # IN THIS CASE I SEE THERE ARE NO RECEIVED INPUT UNPROCESSED SO I ALSO CHANGE THE COLOR OF NAO'S CHEST
+            self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
+                                        utils.joinStrings(
+                                            [Constants.DIRECTIVE_LED_SET_THINKING, "False"]))
 
     def addOneInputBeingProcessed(self):
         self.inputs_being_processed += 1
@@ -604,11 +665,32 @@ class Chatter(WorkerAgent):
             # print(summary)
             resp = self.getQuestion("You can tell me more about " + summary, Chatter._QUESTION_TOPIC_TEXT)
         if topic == Chatter._QUESTION_TOPIC_NEWS:
-            resp = "Anyways. " + self.getQuestion("You think about " + getRandomNewsFromBBC(),
+
+            one_news_title, one_news_description = getRandomNewsFromBBC()
+            news = one_news_title+". "+one_news_description
+
+            # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "news title = {}, descript= {}".format(one_news_title, one_news_description))
+            # possible_questions_types = ["You think about ", "You've heard that "]
+            # q_type = random.choice(possible_questions_types)
+            # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "selected question type = {}".format(q_type))
+            resp = "Anyways. " + self.getQuestion(news,
                                                   Chatter._QUESTION_TOPIC_TEXT)
+
+            if self.chatter_state_machine.is_default:
+                self.chatter_state_machine.start_follow_up_answer()
+                self.chatter_state_machine.giving_follow_up_answer.set_follow_up_answer(self.question_answerer(question=resp, context=news)["answer"])
+
         if topic == Chatter._QUESTION_TOPIC_WEATHER:
-            resp = "Anyways. " + self.getQuestion("You think about " + getCurrentWeather(),
+            weather = getCurrentWeather()
+
+            possible_questions_types = ["You think about ", "You like ", "You are enjoying "]
+            q_type = random.choice(possible_questions_types)
+            resp = "Anyways. " + self.getQuestion(q_type + weather,
                                                   Chatter._QUESTION_TOPIC_TEXT)
+
+            if self.chatter_state_machine.is_default:
+                self.chatter_state_machine.start_follow_up_answer()
+                self.chatter_state_machine.giving_follow_up_answer.set_follow_up_answer(self.question_answerer(question=resp, context=weather)["answer"])
 
         if topic == Chatter._QUESTION_TOPIC_EMOTIONS:
             g = self.tgenerator("Today you look " + text + ". Is it because", max_length=50,
@@ -620,11 +702,13 @@ class Chatter(WorkerAgent):
             resp = g[0]['generated_text'].split("?")[0] + "?"
 
         if topic == Chatter._QUESTION_TOPIC_RANDOM:
-            possible_topics = [Chatter._QUESTION_TOPIC_TEXT] * 15 + \
+            possible_topics = [Chatter._QUESTION_TOPIC_TEXT] * 14 + \
                               [Chatter._QUESTION_TOPIC_SUMMARY] * 3 + \
-                              [Chatter._QUESTION_TOPIC_NEWS,
-                               Chatter._QUESTION_TOPIC_WEATHER]  # by doing so I'm reducing (in a very rudimental way) the chances to ask about the news (so it doesn't happen often)
-            resp = self.getQuestion(text, possible_topics[random.randint(0, len(possible_topics) - 1)])
+                              [Chatter._QUESTION_TOPIC_NEWS] * 2 + \
+                              [Chatter._QUESTION_TOPIC_WEATHER] * 1  # by doing so I'm reducing (in a very rudimental way) the chances to ask about the news (so it doesn't happen often)
+            selected_topic = possible_topics[random.randint(0, len(possible_topics) - 1)]
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Selected topic is "+str(selected_topic))
+            resp = self.getQuestion(text, selected_topic)
         return resp
 
     def isQuestion(self, text):
@@ -656,16 +740,22 @@ class Chatter(WorkerAgent):
                 Here I just want to use the conversation pipeline to generate a meaningful continuation.
                 N.B. is_spontaneous is assumed False"""
                 if not self.isQuestion(text):
+                    # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The user did not ask a question, so I try to reply in a more interesting way")
                     if random.random() > 0.7:  # in 30% of cases I ask a question, so I don't always just reply
                         if (not human_emotion is None) and (not self.asked_about_emotions):
                             resp = self.getQuestion(human_emotion, Chatter._QUESTION_TOPIC_EMOTIONS)
                             self.asked_about_emotions = True #I do it only once in every interaction (i.e., run of code)
                         else:
+                            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "I'm going to ask a question about a random topic")
                             resp = self.getQuestion(text, Chatter._QUESTION_TOPIC_RANDOM)
                     else:
                         resp = self.converser.getResponse(text)
                 else:  # if it's a question I just try to answer
-                    resp = self.converser.getResponse(text)
+                    if "what time is it" in text.lower():
+                        current_time = datetime.now().strftime("%H:%M")
+                        resp = "It's "+current_time+"." + (random.choice(["Why do you ask?", "Why?", "How does this make you feel?"]) if random.random()>0.5 else "")
+                    else:
+                        resp = self.converser.getResponse(text)
 
                 if resp == "" or len(resp) < 2:  # If "the robot doesn't know what to say"
                     resp = self.getSpontaneousQuestion()
@@ -709,7 +799,7 @@ class Chatter(WorkerAgent):
             resp = ""
 
         if (resp == "") or len(resp) < 2:
-            self.converser.initializeVariables()
+            # self.converser.initializeVariables()
             resp = "Sorry, can you repeat, please?"
             # self.conversation.generated_responses[len(self.conversation.generated_responses) - 1] = resp
 
@@ -776,6 +866,8 @@ class Chatter(WorkerAgent):
         #                        "data.chatter.custom")
         self.converser = self.Converser("microsoft/DialoGPT-medium")
         self.t2tgenerator = pipeline("text2text-generation", model="valhalla/t5-base-e2e-qg")
+        self.question_answerer = pipeline("question-answering", model="deepset/roberta-base-squad2",
+                            tokenizer="deepset/roberta-base-squad2")
         self.summarizer = pipeline("summarization")
         self.tgenerator = pipeline('text-generation', model="facebook/opt-350m")
         self.temotion_classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion',
