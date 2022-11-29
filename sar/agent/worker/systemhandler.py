@@ -18,7 +18,9 @@ class SystemHandler(WorkerAgent):
 
     async def do_work(self, work_info_dict):
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SHUT_DOWN:
-            self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE, Constants.DIRECTIVE_SHUT_DOWN)
+            self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE_SYSTEM, Constants.DIRECTIVE_SHUT_DOWN)
+        if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SLEEP:
+            self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE_SYSTEM, Constants.DIRECTIVE_SLEEP)
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_EXEC_BEHAVIOR:
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "sending directive to execute behavior")
             self.mqtt_client.publish(Constants.TOPIC_BEHAVIOR, Constants.DIRECTIVE_EXEC_BEHAVIOR)

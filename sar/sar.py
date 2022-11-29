@@ -1,4 +1,3 @@
-import argparse
 import logging
 import time
 import asyncio
@@ -6,23 +5,19 @@ import asyncio
 
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
-from spade_bdi.bdi import BDIAgent
 
 from sar.agent.worker.datacollector import DataColletor
 from sar.agent.bdicore import BDICore
 from sar.agent.worker.chatter import Chatter
-from sar.agent.worker.normadapter import NormAdapter
-from sar.agent.worker.normadapter2 import NormAdapter2
 from sar.agent.worker.normadapter2SIMnoagent_AGENTIFIED import NormAdapter2SIMnoagent_AGENTIFIED
-from sar.agent.worker.normadapterMOEA import NormAdapterMOEA
 from sar.agent.worker.positionhandler import PositionHandler
-from sar.agent.worker.positionhandlerSIM import PositionHandlerSim
+from sar.agent.worker.stuff.positionhandlerSIM import PositionHandlerSim
 from sar.agent.worker.posturehandler import PostureHandler
 from sar.agent.worker.systemhandler import SystemHandler
 
 import utils.constants as Constants
 from sar.agent.worker.visionhandler import VisionHandler
-from sar.agent.worker.visionhandlerSIM import VisionHandlerSim
+from sar.agent.worker.stuff.visionhandlerSIM import VisionHandlerSim
 # from sar.gui.gui_normadaptivity import GUI_NormAdaptivity
 from sar.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
 from sar.norm.fuzzysocialqualifier import FuzzySocialQualifier

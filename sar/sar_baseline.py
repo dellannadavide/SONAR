@@ -1,4 +1,3 @@
-import argparse
 import logging
 import time
 import asyncio
@@ -6,26 +5,19 @@ import asyncio
 
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
-from spade_bdi.bdi import BDIAgent
 
 from sar.agent.worker.datacollector import DataColletor
 from sar.agent.bdicore import BDICore
 from sar.agent.worker.chatter import Chatter
-from sar.agent.worker.normadapter import NormAdapter
-from sar.agent.worker.normadapter2 import NormAdapter2
-from sar.agent.worker.normadapter2SIMnoagent_AGENTIFIED import NormAdapter2SIMnoagent_AGENTIFIED
-from sar.agent.worker.normadapterMOEA import NormAdapterMOEA
 from sar.agent.worker.positionhandler import PositionHandler
-from sar.agent.worker.positionhandlerSIM import PositionHandlerSim
+from sar.agent.worker.stuff.positionhandlerSIM import PositionHandlerSim
 from sar.agent.worker.posturehandler import PostureHandler
 from sar.agent.worker.systemhandler import SystemHandler
 
 import utils.constants as Constants
 from sar.agent.worker.visionhandler import VisionHandler
-from sar.agent.worker.visionhandlerSIM import VisionHandlerSim
+from sar.agent.worker.stuff.visionhandlerSIM import VisionHandlerSim
 # from sar.gui.gui_normadaptivity import GUI_NormAdaptivity
-from sar.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
-from sar.norm.fuzzysocialqualifier import FuzzySocialQualifier
 
 logger = logging.getLogger("nosar.sar.sar")
 
@@ -147,7 +139,7 @@ class SARBDIAgent_BASELINE(Agent):
             # await self.norm_adapter.start(auto_register=True)
 
         logger.info("Starting the agent's BDI core ...")
-        bdicore_asl = "sar/basic_baseline.asl"
+        bdicore_asl = "sar/basic_minimal_baseline.asl"
         self.bdi_core = BDICore(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, bdicore_asl)
         await self.bdi_core.start()
 

@@ -23,13 +23,15 @@ class FuzzySocialQualifier:
             fs_output = None
             self.lock.acquire()
             try:
-                for i in input:
-                    if i in self.fuzzyRuleBase.inputs:
-                        try:
-                            self.fuzzyRuleBase.fs.set_variable(i, input[i])
+                for i in self.fuzzyRuleBase.inputs:
+                    if i in input.keys():
+                        # try:
+                        self.fuzzyRuleBase.fs.set_variable(i, input[i])
                             # print("Set val "+str(input[i])+" to var "+str(i))
-                        except:
-                            logger.info("Variable "+str(i)+" not in the fuzzyRuleBase, skipping.")
+                        # except:
+                        #     logger.info("Variable "+str(i)+" not in the fuzzyRuleBase, skipping.")
+                    else:
+                        self.fuzzyRuleBase.fs.set_variable(i, self.fuzzyRuleBase.ling_vars_dict[i].getDefaultVal())
                 fs_output = self.fuzzyRuleBase.fs.Mamdani_inference(verbose=False)
                 # output_val = max(fs_output, key=fs_output.get)
             except Exception:

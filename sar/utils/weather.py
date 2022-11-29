@@ -21,7 +21,7 @@ def getCurrentWeather():
             # store the value of "main"
             # key in variable y
             y = x["main"]
-            current_temperature = round(float(y["temp"])-273.15,0)
+            current_temperature = int(round(float(y["temp"])-273.15,0))
             # current_pressure = y["pressure"]
             current_humidity = float(y["humidity"])
             if current_humidity > 60:

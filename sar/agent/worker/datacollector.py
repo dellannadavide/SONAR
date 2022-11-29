@@ -163,6 +163,9 @@ class DataColletor(WorkerAgent):
                     if thread == Constants.TOPIC_NAME_LEARNT:
                         self.agent.interacting_person = last_chatter_data_split[0].lower()
                         bels.append([Constants.ASL_BEL_PERSON_NAME, self.agent.interacting_person])
+                    if thread == Constants.TOPIC_INTERNAL_COMMUNICATIONS:
+                        internal_comm = last_chatter_data_split[0].lower()
+                        bels.append([Constants.ASL_BEL_INTERNAL, internal_comm])
                     if thread == Constants.TOPIC_SPEECH:
                         last_chatter_data_sentence = last_chatter_data_split[0].replace(" ",
                                                                                         Constants.ASL_STRING_SEPARATOR)
@@ -327,9 +330,14 @@ class DataColletor(WorkerAgent):
                                 batch_visible_person = chatter_bel_list[1]
                                 # bels_to_add.append(utils.joinStringsBel(chatter_bel_list))
                                 bels_to_add[chatter_bel_list[0]] = chatter_bel_list
+                            elif chatter_bel_list[0] == Constants.ASL_BEL_INTERNAL:
+                                internal_comm = chatter_bel_list[1]
+                                # bels_to_add.append(utils.joinStringsBel(chatter_bel_list))
+                                bels_to_add[chatter_bel_list[0]] = [internal_comm]
                             else:
                                 chatter_data_sentence = chatter_bel_list[1].lower()
                                 chatter_data_volume = chatter_bel_list[2]
+                                #TODO I think all the following ifs could be generalized, so that it is possible to add some without changing the data collector
                                 if chatter_data_sentence in Constants.POSTURES:
                                     formed_bel = [Constants.ASL_BEL_SAID,
                                                   Constants.POSTURES[chatter_data_sentence],
@@ -341,6 +349,10 @@ class DataColletor(WorkerAgent):
                                 elif len([i for i in Constants.VOCABULARY_BYE_BYE if
                                           i.lower() in chatter_data_sentence]) > 0:
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_BYE]
+                                elif len([i for i in Constants.VOCABULARY_TELL_ROBOT_NAME if
+                                          i.lower() in chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
+                                                                                     " ")]) > 0:
+                                    formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_TELL_ROBOT_NAME]
                                 elif len([i for i in Constants.VOCABULARY_WHAT_IS_THIS if
                                           i.lower() == chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
                                                                                      " ")]) > 0:  # note here I'm checking if it's equal
@@ -485,7 +497,8 @@ class DataColletor(WorkerAgent):
         #                              Constants.VISION_HANDLER_JID]  # ... here you can add the others, or remove some
 
         self.workers_data_sources_threads = {Constants.CHATTER_JID: [Constants.TOPIC_NAME_LEARNT,
-                                                                     Constants.TOPIC_SPEECH],
+                                                                     Constants.TOPIC_SPEECH,
+                                                                     Constants.TOPIC_INTERNAL_COMMUNICATIONS],
                                              # note I'm using the topics as threads but the names could be different (in some cases, actually, they already are)
                                              Constants.VISION_HANDLER_JID: [Constants.TOPIC_HUMAN_DETECTION,
                                                                             Constants.TOPIC_HEAD_TRACKER,

@@ -10,14 +10,17 @@ from sar.utils.moea import PHI_Q
 pd.set_option('display.max_columns', None)
 
 aggregated_final_results = pd.DataFrame()
-res_folder = "20220918/exp_exp_20220905195629/"
-res_folder = "exp_exp_20220928153233/"
+# res_folder = "20220918/exp_exp_20220905195629/"
+res_folder = "final/exp_exp_20220929110809/" #G1
+res_folder = "final/exp_exp_20220929110904/" #G2
+res_folder = "final/exp_exp_20220929110937/" #G3
+res_folder = "final/exp_exp_20221115171111/" #G3 missing pt1
 # res_folder = "20220918/exp_exp_20220905195659/"
 for filename in os.listdir(res_folder):
     f = os.path.join(res_folder, filename)
     if os.path.isfile(f) and f.endswith(".csv"):
         dataset_df = pd.read_csv(f)
-        last_row = dataset_df.iloc[-1:]
+        last_row = dataset_df.iloc[-1:] # I'm taking only the last row
         aggregated_final_results = pd.concat([aggregated_final_results, last_row])
 
 

@@ -101,82 +101,123 @@ low_mov_a = fuzz.gaussmf(range_mov,         distributions_averages["Austria"]["l
 mid_mov_a = fuzz.gaussmf(range_mov,         distributions_averages["Austria"]["mid_mov"], distributions_stdevs["Austria"]["mid_mov"])
 high_mov_a = fuzz.gaussmf(range_mov,        distributions_averages["Austria"]["high_mov"], distributions_stdevs["Austria"]["high_mov"])
 
+# low_distance_us_trap_approx = fuzz.trapmf(range_dist, [min(low_distance_us),
+#                                           distributions_averages["US"]["low_distance"] - (
+#                                                                distributions_stdevs["US"]["low_distance"]/2),
+#                                                        distributions_averages["US"]["low_distance"] + (
+#                                                                    distributions_stdevs["US"]["low_distance"] / 2),
+#                                                        max(low_distance_us)])
+# print(min(mid_distance_us))
+# print(distributions_averages["US"]["mid_distance"] - (distributions_stdevs["US"]["mid_distance"]/2))
+# print(distributions_averages["US"]["mid_distance"] + (distributions_stdevs["US"]["mid_distance"]/2))
+# print(max(mid_distance_us))
+# print(mid_distance_us)
+# # mid_distance_us_trap_approx = fuzz.trapmf(range_dist, [min(mid_distance_us),
+# #                                           distributions_averages["US"]["mid_distance"] - (
+# #                                                                distributions_stdevs["US"]["mid_distance"]/2),
+# #                                                        distributions_averages["US"]["mid_distance"] + (
+# #                                                                    distributions_stdevs["US"]["mid_distance"] / 2),
+# #                                                        max(mid_distance_us)])
+#
+# plt.figure(figsize=(12, 8))
+# plt.plot(range_dist, low_distance_us)
+# plt.plot(range_dist, low_distance_us_trap_approx, 'k--')
+# plt.plot(range_dist, mid_distance_us)
+# # plt.plot(range_dist, mid_distance_us_trap_approx, 'k--')
+# plt.show()
+# exit()
 """ Reading one from the results file """
 
-results = pd.read_excel('20220918/exp_exp_20220905195629/aggr_res.xlsx', index_col=0)
-# results = pd.read_excel('20220918/exp_exp_20220905195659/aggr_res.xlsx', index_col=0)
-index_row_to_plot = 488
+# results = pd.read_excel('20220918/exp_exp_20220905195629/aggr_res.xlsx', index_col=0)
+# # results = pd.read_excel('20220918/exp_exp_20220905195659/aggr_res.xlsx', index_col=0)
+# index_row_to_plot = 488
 # index_row_to_plot = 263
 # index_row_to_plot = 14
 # index_row_to_plot = 251
 
-results = pd.read_excel('exp_exp_20220928153233/aggr_res.xlsx', index_col=0)
-index_row_to_plot = 0
+#G1
+results = pd.read_excel('final/exp_exp_20220929110809/aggr_res_g1.xlsx', sheet_name="Sheet1")
+indeces_row_to_plot = [113, 118] #G1, 10k, 100, no past
+indeces_row_to_plot = [63, 68] #G1, 1k, 10, no past
 
-row_to_plot = results.iloc[index_row_to_plot]
-row_society = row_to_plot["society"]
-print(row_to_plot)
-results_mfs = {}
-fsi = "FSQ_position_qualifier"
+#G2
+results = pd.read_excel('final/exp_exp_20220929110904/aggr_res_g2.xlsx', sheet_name="Sheet1")
+indeces_row_to_plot = [113, 118] #G2, 10k, 100, no past
+indeces_row_to_plot = [74, 78] #G2, 1k, 50, no past
+indeces_row_to_plot = [93, 99] #G2, 10k, 10, no past
 
-for dyn_var in mappings.keys():
-    for dyn_var_value in mappings[dyn_var].values():
-        a = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_a"])
-        b = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_b"])
-        c = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_c"])
-        d = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_d"])
-        results_mfs[dyn_var_value] = fuzz.trapmf(mapping_ranges[dyn_var], [a,b,c,d])
-
-print(results_mfs)
+#G3 missing pt 1
+results = pd.read_excel('final/exp_exp_20221115171111/aggr_res_g3_missingpt1.xlsx', sheet_name="Sheet1")
+indeces_row_to_plot = [0, 5] #G3, PHI, 1K, 10, 100, 20
+indeces_row_to_plot = [10, 5] #G3, PHI, 1K, 10, 100, 20
 
 plt.figure(figsize=(12, 8))
-plt.subplot(321)
-plt.plot(range_dist, low_distance_us, 'k--')
-plt.plot(range_dist, mid_distance_us, 'k--')
-plt.plot(range_dist, high_distance_us, 'k--')
-if row_society=="US":
-    plt.plot(range_dist, results_mfs["low_distance"])
-    plt.plot(range_dist, results_mfs["mid_distance"])
-    plt.plot(range_dist, results_mfs["high_distance"])
-plt.subplot(322)
-plt.plot(range_dist, low_distance_a, 'k--')
-plt.plot(range_dist, mid_distance_a, 'k--')
-plt.plot(range_dist, high_distance_a, 'k--')
-if row_society=="Austria":
-    plt.plot(range_dist, results_mfs["low_distance"])
-    plt.plot(range_dist, results_mfs["mid_distance"])
-    plt.plot(range_dist, results_mfs["high_distance"])
-plt.subplot(323)
-plt.plot(range_vol, low_volume_us, 'k--')
-plt.plot(range_vol, mid_volume_us, 'k--')
-plt.plot(range_vol, high_volume_us, 'k--')
-if row_society=="US":
-    plt.plot(range_vol, results_mfs["low_volume"])
-    plt.plot(range_vol, results_mfs["mid_volume"])
-    plt.plot(range_vol, results_mfs["high_volume"])
-plt.subplot(324)
-plt.plot(range_vol, low_volume_a, 'k--')
-plt.plot(range_vol, mid_volume_a, 'k--')
-plt.plot(range_vol, high_volume_a, 'k--')
-if row_society=="Austria":
-    plt.plot(range_vol, results_mfs["low_volume"])
-    plt.plot(range_vol, results_mfs["mid_volume"])
-    plt.plot(range_vol, results_mfs["high_volume"])
-plt.subplot(325)
-plt.plot(range_mov, low_mov_us, 'k--')
-plt.plot(range_mov, mid_mov_us, 'k--')
-plt.plot(range_mov, high_mov_us, 'k--')
-if row_society=="US":
-    plt.plot(range_mov, results_mfs["low_mov"])
-    plt.plot(range_mov, results_mfs["mid_mov"])
-    plt.plot(range_mov, results_mfs["high_mov"])
-plt.subplot(326)
-plt.plot(range_mov, low_mov_a, 'k--')
-plt.plot(range_mov, mid_mov_a, 'k--')
-plt.plot(range_mov, high_mov_a, 'k--')
-if row_society=="Austria":
-    plt.plot(range_mov, results_mfs["low_mov"])
-    plt.plot(range_mov, results_mfs["mid_mov"])
-    plt.plot(range_mov, results_mfs["high_mov"])
+
+for index_row_to_plot in indeces_row_to_plot:
+    row_to_plot = results.iloc[index_row_to_plot]
+    row_society = row_to_plot["society"]
+    print(row_to_plot)
+    results_mfs = {}
+    fsi = "FSQ_position_qualifier"
+
+    for dyn_var in mappings.keys():
+        for dyn_var_value in mappings[dyn_var].values():
+            a = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_a"])
+            b = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_b"])
+            c = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_c"])
+            d = float(row_to_plot[fsi + "_" + dyn_var + "_" + dyn_var_value + "_d"])
+            results_mfs[dyn_var_value] = fuzz.trapmf(mapping_ranges[dyn_var], [a,b,c,d])
+
+    print(results_mfs)
+
+
+    plt.subplot(321)
+    plt.plot(range_dist, low_distance_us, 'k--')
+    plt.plot(range_dist, mid_distance_us, 'k--')
+    plt.plot(range_dist, high_distance_us, 'k--')
+    if row_society=="US":
+        plt.plot(range_dist, results_mfs["low_distance"])
+        plt.plot(range_dist, results_mfs["mid_distance"])
+        plt.plot(range_dist, results_mfs["high_distance"])
+    plt.subplot(322)
+    plt.plot(range_dist, low_distance_a, 'k--')
+    plt.plot(range_dist, mid_distance_a, 'k--')
+    plt.plot(range_dist, high_distance_a, 'k--')
+    if row_society=="Austria":
+        plt.plot(range_dist, results_mfs["low_distance"])
+        plt.plot(range_dist, results_mfs["mid_distance"])
+        plt.plot(range_dist, results_mfs["high_distance"])
+    plt.subplot(323)
+    plt.plot(range_vol, low_volume_us, 'k--')
+    plt.plot(range_vol, mid_volume_us, 'k--')
+    plt.plot(range_vol, high_volume_us, 'k--')
+    if row_society=="US":
+        plt.plot(range_vol, results_mfs["low_volume"])
+        plt.plot(range_vol, results_mfs["mid_volume"])
+        plt.plot(range_vol, results_mfs["high_volume"])
+    plt.subplot(324)
+    plt.plot(range_vol, low_volume_a, 'k--')
+    plt.plot(range_vol, mid_volume_a, 'k--')
+    plt.plot(range_vol, high_volume_a, 'k--')
+    if row_society=="Austria":
+        plt.plot(range_vol, results_mfs["low_volume"])
+        plt.plot(range_vol, results_mfs["mid_volume"])
+        plt.plot(range_vol, results_mfs["high_volume"])
+    plt.subplot(325)
+    plt.plot(range_mov, low_mov_us, 'k--')
+    plt.plot(range_mov, mid_mov_us, 'k--')
+    plt.plot(range_mov, high_mov_us, 'k--')
+    if row_society=="US":
+        plt.plot(range_mov, results_mfs["low_mov"])
+        plt.plot(range_mov, results_mfs["mid_mov"])
+        plt.plot(range_mov, results_mfs["high_mov"])
+    plt.subplot(326)
+    plt.plot(range_mov, low_mov_a, 'k--')
+    plt.plot(range_mov, mid_mov_a, 'k--')
+    plt.plot(range_mov, high_mov_a, 'k--')
+    if row_society=="Austria":
+        plt.plot(range_mov, results_mfs["low_mov"])
+        plt.plot(range_mov, results_mfs["mid_mov"])
+        plt.plot(range_mov, results_mfs["high_mov"])
 
 plt.show()

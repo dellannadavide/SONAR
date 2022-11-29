@@ -37,13 +37,11 @@ class BDICore(BDIAgent):
         @actions.add(".goodbye", 1)
         def _goodbye(agent, term, intention):
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .goodbye")
-            x = str(agentspeak.grounded(term.args[0], intention.scope))
-            to_say = random.choice(
-                ["Bye bye " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "!", "Dooi Dooi!",
-                 "See you another time " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "!"])
+
+            to_say = "Are you leaving?"
 
             msg_body_dict = {**{
-                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_BEGIN_GOODBYE,
                 Constants.SPADE_MSG_TO_SAY: to_say,
                 Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
                 Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
@@ -79,6 +77,46 @@ class BDICore(BDIAgent):
 
             yield
 
+        @actions.add(".sleep", 1)
+        def _sleep(agent, term, intention):
+            logger.info("As instructed by " + str(
+                agentspeak.grounded(term.args[0], intention.scope)) + ", I will start procedure to sleep")
+
+            x = str(agentspeak.grounded(term.args[0], intention.scope))
+            to_say = random.choice(
+                ["Alright! It was very nice talking to you! Bye bye " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "! I will take a nap here!",
+                 "Oh, ok! It was very nice talking to you! I will take a nap here then! Dooi Dooi!",
+                 "See you another time " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "! It was very nice talking to you! I will take a nap here in the meantime! Ciao!"])
+
+
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
+                Constants.SPADE_MSG_TO_SAY: to_say,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
+
+            b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
+            self.add_behaviour(b)
+
+            time.sleep(3)
+
+            msg_body_dict_power = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SLEEP
+            }, **self.curr_social_interp}
+
+            bp = self.SendMessageBehaviour(Constants.SYSTEM_HANDLER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict_power)
+            self.add_behaviour(bp)
+
+            self.setBelief(time.time(), [Constants.ASL_BEL_IS_ASLEEP])
+
+            yield
+
+        @actions.add(".wake_up", 1)
+        def _wake_up(agent, term, intention):
+            yield
+
+
         @actions.add(".set_role", 1)
         def _set_role(agent, term, intention):
             self.setRole(str(agentspeak.grounded(term.args[0], intention.scope)))
@@ -107,6 +145,19 @@ class BDICore(BDIAgent):
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .reply_to_proactive")
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_TO_PROACTIVE,
+                Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
+            b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
+            self.add_behaviour(b)
+            yield
+
+        @actions.add(".ignore_last_person_said", 2)
+        def _ignore_last_person_said(agent, term, intention):
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .ignore_last_person_said")
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY,
                 Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
                 Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
                 Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
@@ -171,7 +222,7 @@ class BDICore(BDIAgent):
         def _move_head(agent, term, intention):
             direction = str(agentspeak.grounded(term.args[0], intention.scope))
             if (not direction == Constants.ASL_FLUENT_CENTER_DIRECTION) and (
-            not self.isInRecentMemory(Constants.ASL_BEL_MOVED_HEAD_PREFIX + direction)):
+            not self.isInRecentMemory([Constants.ASL_BEL_MOVED_HEAD_PREFIX + direction])):
                 min_last_n_consecutive_batches = 2  # todo this could be changed into seconds instead of times...
                 if len(self.memory.keys()) >= min_last_n_consecutive_batches:
                     reverse_order_mem = self.getOrderedMemoryFromYoungestToOldest()
@@ -207,13 +258,17 @@ class BDICore(BDIAgent):
 
         @actions.add(".establish_trust", 1)
         def _establish_trust(agent, term, intention):
-            if not self.isInRecentMemory(Constants.ASL_BEL_ESTABLISHED_TRUST):
+            if not self.isInRecentMemory([Constants.ASL_BEL_ESTABLISHED_TRUST]):
                 logger.info("action establish trust")
                 x = str(agentspeak.grounded(term.args[0], intention.scope))
                 if x == Constants.ASL_FLUENT_UNKNOWN_PERSON:
-                    to_say = "Oh, I see. Thank you for trusting me."
+                    possible_answers = ["Oh, I see.", "Oh, ok, tell me more, you can trust me.", "Sure, go ahead", "Go ahead. I know how to keep a secret.",
+                                        "Oh, I see. Thank you for trusting me.", "You can trust me!", "What's bugging you?", "Is everything alright?"]
+                    to_say = random.choice(possible_answers)
                 else:
-                    to_say = str(x) + ", thank you for trusting me with this."
+                    possible_answers = [str(x) +", I see.", str(x) +", tell me more, you can trust me.", "Sure "+str(x) +", go ahead", "Go ahead "+str(x)+". I know how to keep a secret.",
+                                        str(x) + ", thank you for trusting me with this.", "You can trust me "+str(x), "Is everything alright, "+str(x)+"?"]
+                    to_say = random.choice(possible_answers)
 
                 msg_body_dict = {**{
                     Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
@@ -243,7 +298,7 @@ class BDICore(BDIAgent):
         def _update_topic_of_interest(agent, term, intention):
             # print("As instructed by " + str(
             #     agentspeak.grounded(term.args[0], intention.scope)) + ", I will start procedure to shut down")
-            if not self.isInRecentMemory(Constants.ASL_BEL_UPDATED_TOPIC_INTEREST):
+            if not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_INTEREST]):
                 person = str(agentspeak.grounded(term.args[0], intention.scope))
                 object = str(agentspeak.grounded(term.args[1], intention.scope))
                 direction = str(agentspeak.grounded(term.args[2], intention.scope))
@@ -281,7 +336,7 @@ class BDICore(BDIAgent):
             #             said_sth_recently = True
             #             break
             # if not said_sth_recently:
-            if not self.isInRecentMemory(Constants.ASL_BEL_SAID):  # if nothing said something recently
+            if not self.isInRecentMemory([Constants.ASL_BEL_SAID]):  # if nothing said something recently
                 msg_body_dict = {**{
                     Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_CONTINUE_CONVERSATION,
                     Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
@@ -303,7 +358,7 @@ class BDICore(BDIAgent):
             #             already_updated_topic_recently = True
             #             break
             # if not already_updated_topic_recently:
-            if not self.isInRecentMemory(Constants.ASL_BEL_UPDATED_TOPIC_PERC):
+            if not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_PERC, object_perceived]): #if I did not recently updated the topic about the perceived object
                 # times_perceived_object_recently = self.countInRecentMemory(["perceived_object", object])
                 # times_perceived_object_recently = 0
                 # for k in list(self.memory.keys()):
@@ -311,7 +366,7 @@ class BDICore(BDIAgent):
                 #         if ("perceived_object" in b and (object in b)):
                 #             times_perceived_object_recently += 1
                 # if times_perceived_object_recently <= 1:
-                if self.countInRecentMemory([Constants.ASL_BEL_PERCEIVED_OBJECT, object_perceived]) <= 1:
+                if self.countInRecentMemory([Constants.ASL_BEL_PERCEIVED_OBJECT, object_perceived]) <= 1: #and if it has not been visible already for long time (maybe I updated it, then it remained visible from that moment on, I don't want to repeat)
                     msg_body_dict = {**{
                         Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_TURN_CONVERSATION,
                         Constants.SPADE_MSG_OBJECT: object_perceived,
@@ -393,6 +448,23 @@ class BDICore(BDIAgent):
             self.add_behaviour(
                 self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
             yield
+
+        @actions.add(".tell_robot_name", 0)
+        def _tell_robot_name(agent, term, intention):
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "telling robot name")
+            possible_answers_prefix = ["My name is ", "I'm ", "It's ", "You can call me ", "They call me "]
+            to_say = random.choice(possible_answers_prefix)+Constants.ROBOT_NAME+"!"
+
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
+                Constants.SPADE_MSG_TO_SAY: to_say,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
+            self.add_behaviour(
+                self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
+            yield
+
 
         @actions.add(".tell_beliefs", 1)
         def _tell_beliefs(agent, term, intention):
@@ -613,7 +685,7 @@ class BDICore(BDIAgent):
                     self.agent.curr_social_interp = bel
                     # print("BDI: new social interp is ", self.agent.curr_social_interp)
                 else:  # I am actually not using this key
-                    # print("BDI: setting belief ", bel, "for batch ", batch)
+                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "setting belief {} for batch {}".format(bel, batch))
                     self.agent.setBelief(batch,
                                          bel)  # note I may set again the beliefs above, but they will just be replaced (little waste here)
 
@@ -730,10 +802,14 @@ class BDICore(BDIAgent):
         self.curr_emotion = emotion
         # self.bdi.set_belief(Constants.ASL_BEL_CURR_ROLE, self.curr_role)
 
-    def isInRecentMemory(self, text):
+    def isInRecentMemory(self, fluents: list):
         for k in list(self.memory.keys()):
             for b in self.memory[k]:
-                if (text in b):
+                all_in = True
+                for f in fluents:
+                    if not f in b:
+                        all_in = False
+                if all_in:
                     return True
         return False
 
@@ -763,12 +839,12 @@ class BDICore(BDIAgent):
         b = self.SenseReasonAct()
         self.add_behaviour(b)
         start_at = datetime.now() + timedelta(seconds=1)
-        beliefs_memory_size = 60  # seconds
+        beliefs_memory_size = 20  # seconds
         long_term_memory_size = 300
         mb = self.ManageMemoryBehaviour(period=beliefs_memory_size, start_at=start_at,
                                         beliefs_memory_size_seconds=beliefs_memory_size,
                                         long_term_memory_size_seconds=long_term_memory_size)
         self.add_behaviour(mb)
-        start_at_sb = datetime.now() + timedelta(seconds=300)
-        sb = self.SpontaneousConversationBehaviour(period=long_term_memory_size, start_at=start_at_sb)
+        start_at_sb = datetime.now() + timedelta(seconds=beliefs_memory_size)
+        sb = self.SpontaneousConversationBehaviour(period=15, start_at=start_at_sb)
         self.add_behaviour(sb)

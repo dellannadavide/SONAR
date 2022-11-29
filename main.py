@@ -167,9 +167,9 @@ if __name__ == '__main__':
         Constants.DATA_COLLECTOR_NAME
     ]
     """ Uncomment one of the following to test the two types of agents"""
-    logger.info("Using the norm and social-aware agent")
+    logger.info("IMPORTANT!!! Using the social and norm aware agent")
     a = SARBDIAgent(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
-    # logger.info("Using the baseline agent")
+    # logger.info("IMPORTANT!!! Using the baseline agent")
     # a = SARBDIAgent_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
 
     future = a.start()

@@ -1,5 +1,5 @@
 import utils.constants as Constants
-from sar.agent.worker.normadapter2SIM import NormAdapter2SIM
+from sar.agent.worker.stuff.normadapter2SIM import NormAdapter2SIM
 from sar.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
 from utils.utils import joinStrings
 

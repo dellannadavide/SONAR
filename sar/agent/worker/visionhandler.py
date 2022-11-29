@@ -153,7 +153,7 @@ class VisionHandler(WorkerAgent):
             Constants.TOPIC_OBJECT_DETECTION: [],
             Constants.TOPIC_EMOTION_DETECTION: []
         }
-        self.emotions_min_number = 60
+        self.emotions_min_number = 30
         self.main_emotion_min_ratio = 0.8
         """ This will listen to the sensors collecting data """
         # self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_VisionHandler_Listener", Constants.MQTT_CLIENT_TYPE_LISTENER, Constants.TOPIC_HUMAN_DETECTION, self.on_message)

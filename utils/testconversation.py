@@ -68,15 +68,21 @@ tgenerator = pipeline('text-generation', model="facebook/opt-350m")
 #         for i in g:
 #             print(i['generated_text'].split("?")[0]+"?")
 
-time_sent = "It's "+datetime.now().strftime("%H:%M")+"."
+time_sent = "Ahh! What a nap!"
 g = tgenerator(time_sent, max_length=30,
                                     do_sample=True,
                                     top_p=0.92,
                                     top_k=100,
-                                    temperature=0.75,
+                                    temperature=0.75
+               ,
                num_return_sequences=10)
 for i in g:
-    print((i['generated_text'].split(".")[1]+".").split("?")[0])
+    print(i['generated_text'])
+    print()
+    # print((i['generated_text'].split(".")[1]+".").split("?")[0])
+
+
+
 
 exit()
 

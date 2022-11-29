@@ -24,7 +24,8 @@ TOPIC_SPEECH = TOPIC_GROUP_SOUND + "NAO_TOPIC_SPEECH"
 TOPIC_MICENERGY = TOPIC_GROUP_SOUND + "NAO_TOPIC_MICENERGY"
 
 TOPIC_DISTANCE = "NAO_TOPIC_DISTANCE"
-TOPIC_DIRECTIVE = "NAO_TOPIC_DIRECTIVE"
+TOPIC_DIRECTIVE_TTS = "NAO_TOPIC_DIRECTIVE_TTS"
+TOPIC_DIRECTIVE_SYSTEM = "NAO_TOPIC_DIRECTIVE_SYSTEM"
 TOPIC_POSTURE = "NAO_TOPIC_POSTURE"
 TOPIC_MOTION = "NAO_TOPIC_MOTION"
 TOPIC_SOCIAL_INTERPR = "NAO_TOPIC_SOCIAL_INTERPR"
@@ -33,6 +34,8 @@ TOPIC_BEHAVIOR = "NAO_TOPIC_BEHAVIOR"
 TOPIC_LEDS = "NAO_TOPIC_LEDS"
 
 TOPIC_NAME_LEARNT = "NAO_TOPIC_NAME_LEARNT"
+
+TOPIC_INTERNAL_COMMUNICATIONS = "NAO_TOPIC_INTERNAL_COMMUNICATIONS"
 
 SPADE_MSG_METADATA_PERFORMATIVE = "performative"
 SPADE_MSG_METADATA_KEYS_TYPE = "keys_type"
@@ -70,6 +73,7 @@ ASL_FLUENT_BYE = "bye_bye"
 ASL_FLUENT_WHAT_YOU_SEE = "tell_what_you_see"
 ASL_FLUENT_WHAT_USER_SAID = "tell_what_user_said"
 ASL_FLUENT_WHAT_ROBOT_SAID = "tell_what_you_said"
+ASL_FLUENT_TELL_ROBOT_NAME = "tell_robot_name"
 
 ASL_BEL_PERSON_NAME = "person_name"
 ASL_BEL_IS_ADMIN = "is_admin"
@@ -83,6 +87,11 @@ ASL_BEL_SAID = "said"
 ASL_BEL_PERFORM_REASONING = "perform_reasoning"
 ASL_BEL_PREPARE_FOR_NEXT_CYCLE = "prepare_for_next_cycle"
 ASL_BEL_ADD_SPONT_CONV_GOAL = "add_spontaneous_conversation_goal"
+ASL_BEL_INTERNAL = "internal"
+
+ASL_BEL_IS_ASLEEP = "is_asleep"
+
+
 
 ASL_BEL_PROHIBITED_GOAL = "prohibited_goal"
 ASL_BEL_PROHIBITED_ACTION = "prohibited_action"
@@ -121,6 +130,9 @@ LV_UNKNOWN = "UNKNOWN"
 LV_DIST = "DIST"
 LV_VOLUME = "VOLUME"
 LV_MOVEMENTS = "MOVEMENTS"
+LV_SPEED_VOICE = "SPEED_VOICE"
+
+LV_ROLE_SUBORDINATE = "ROLE_SUBORDINATE"
 
 VOCABULARY_PERSONAL_CONVERSATION = {"personal", "private", "secret", "confidential", "classified",
                                     "keep it for yourself", "keep it to yourself",
@@ -130,6 +142,13 @@ VOCABULARY_PERSONAL_CONVERSATION = {"personal", "private", "secret", "confidenti
 
 VOCABULARY_BYE_BYE = {"goodbye", "bye", "bye-bye", "see you later", "see you soon",
                       "adios", "adieu", "talk to you later", "goodnight", "catch you later"}
+
+
+VOCABULARY_TELL_ROBOT_NAME = {"what's your name", "what is your name", "what can i call you", "how can i call you",
+                              "how can i address you", "how should i call you", "how should i address you",
+                              "how shall i call you", "how shall i address you", "what are you named",
+                              "what do you call yourself", "may i ask your name", "may i ask what's your name",
+                              "may i ask what is your name"}
 
 VOCABULARY_WHAT_IS_THIS = {"what is this", "what's this", "can you see this", "do you see this", "what can you see",
                            "what do you see", "do you know what is this",
@@ -152,6 +171,44 @@ VOCABULARY_WHAT_USER_SAID = {"what did i say", "what did i just say", "tell me w
 
 VOCABULARY_WHAT_ROBOT_SAID = {"what did you say", "can you repeat", "can you repeat please", "can you repeat what you said",
                               "can you repeat what you just said"}
+
+VOCABULARY_ANYWAYS = ["anyways", "anyway", "anyhow", "in any case", "having said that", "also", "on top of that",
+                      "apart from that", "aside from that", "other than that", "in adition to that", "by the way",
+                      "on another note", "on a related note", "anyhoo", "on a different note"]
+
+SOCIAL_QUESTIONS_EXAMPLES = [
+    "What tv shows are you into?",
+    "What’s your favorite movie?",
+    "What’s your favorite sport?",
+    "What’s your favorite food?",
+    "What's your favourite book?",
+    "I have a question for you. If you could visit anywhere in the world, where would you go?",
+    "What's your favorite activity to do when you have time off?",
+    "What are some fun things to do here in The Netherlands?",
+    "What do you like to do that’s fun and relaxing?",
+    "Do you have friends?",
+    "Question. What''s something you always wanted to try but haven't?",
+    "Can I ask you a question? What makes you unique?",
+    "Tell me a random fun fact about you!",
+    "Would you rather go to the beach or to the mountains?",
+    "Would you rather always be 10 minutes late or always be 20 minutes early?",
+    "Would you rather have unlimited battery life on all of your devices or have free WiFi wherever you go?",
+    "Would you rather be in a zombie apocalypse or a robot apocalypse?",
+    "What's your favourite place in the world?",
+    "What's something you're proud of?",
+    "Where are you from?",
+    "Do you have a favourite hobby?",
+    "If you could go out to dinner with anyone in the world, who would it be?",
+    "What's your favourite food?",
+    "How do you communicate your feelings to others?",
+    "What do you do in your spare time?",
+    "Do you think we have things in common?",
+    "If I were an animal, what kind would I be?",
+    "What's your favorite thing you've learned about me so far?",
+    "What was your first impression of me?",
+    "What's your least favorite thing you've learned about me so far?",
+    "What do you do for a living?"
+]
 
 
 
@@ -259,13 +316,16 @@ BEL_STRING_SEPARATOR = "<bel_str_sep>"
 ASL_STRING_SEPARATOR = "__"
 STRING_SEPARATOR_INNER = "<str_sep_inner>"
 
-DIRECTIVE_SHUT_DOWN = "shut_down"
+DIRECTIVE_SHUT_DOWN = "to_shut_down"
+DIRECTIVE_SLEEP = "to_sleep"
+DIRECTIVE_WAKE_UP = "to_wake_up"
 DIRECTIVE_SAY = "say"
 DIRECTIVE_SAY_SPONTANEOUS = "say_spontaneous"
 DIRECTIVE_SAY_IN_RESPONSE = "say_in_response"
 DIRECTIVE_SAY_WHAT_USER_SAID = "say_what_user_said"
 DIRECTIVE_SAY_WHAT_BOT_SAID = "say_what_bot_said"
 DIRECTIVE_BEGIN_GREETING = "begin_greeting_procedure"
+DIRECTIVE_BEGIN_GOODBYE = "begin_goodbye_procedure"
 DIRECTIVE_CONTINUE_CONVERSATION = "continue_conversation"
 DIRECTIVE_TURN_CONVERSATION = "turn_conversation"
 DIRECTIVE_REPLY_TO_REACTIVE = "reply_to"
@@ -317,6 +377,8 @@ ANIMATION_LOOK_RIGHT = "look_right"
 ANIMATION_LOOK_TOP = "look_top"
 ANIMATION_LOOK_TOP_LEFT = "look_top_left"
 ANIMATION_LOOK_TOP_RIGHT = "look_top_right"
+ANIMATION_DANCE = "dance"
+
 
 ANIMATIONS = {ASL_STRING_SEPARATOR.join(["play", "yes", "sir"]): ANIMATION_YES_SIR,
               ASL_STRING_SEPARATOR.join(["play", "establish", "trust"]): ANIMATION_ESTABLISH_TRUST,
@@ -334,8 +396,14 @@ ANIMATIONS = {ASL_STRING_SEPARATOR.join(["play", "yes", "sir"]): ANIMATION_YES_S
               ASL_STRING_SEPARATOR.join(["look", "top"]): ANIMATION_LOOK_TOP,
               ASL_STRING_SEPARATOR.join(["look", "up"]): ANIMATION_LOOK_TOP,
               ASL_STRING_SEPARATOR.join(["look", "top", "left"]): ANIMATION_LOOK_TOP_LEFT,
-              ASL_STRING_SEPARATOR.join(["look", "top", "right"]): ANIMATION_LOOK_TOP_RIGHT
+              ASL_STRING_SEPARATOR.join(["look", "top", "right"]): ANIMATION_LOOK_TOP_RIGHT,
+              "dance": ANIMATION_DANCE
               }
+
+ANIMATION_ADDITIONAL_COMMAND_PREFIXES = [["can", "you"], ["do", "you", "know", "how", "to"]]
+for animation_key in list(ANIMATIONS.keys()):
+    for pref_l in ANIMATION_ADDITIONAL_COMMAND_PREFIXES:
+        ANIMATIONS[ASL_STRING_SEPARATOR.join(pref_l+[animation_key])] = ANIMATIONS[animation_key]
 
 FS_TRIANGULAR_MF = "triangular_mf"
 FS_TRAPEZOIDAL_MF = "trapezoidal_mf"
@@ -390,3 +458,4 @@ XMPP_AGENTS_DETAILS = {
     NORM_ADAPTER_NAME: {"jid": NORM_ADAPTER_JID, "pwd": NORM_ADAPTER_PWD}
 }
 
+ROBOT_NAME = "Nao"
