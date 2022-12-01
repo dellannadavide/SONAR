@@ -134,7 +134,7 @@ if __name__ == '__main__':
     now = datetime.now()
     exec_timestamp = str(now.strftime("%Y%m%d%H%M%S"))
     log_folder = "./log/"
-    log_path_name = log_folder + "nosar_" + exec_timestamp + ".log"
+    log_path_name = log_folder + "sonar_" + exec_timestamp + ".log"
 
     logging.addLevelName(Constants.LOGGING_LV_DEBUG_NOSAR, Constants.LOGGING_LV_DEBUG_NOSAR_NAME)
 

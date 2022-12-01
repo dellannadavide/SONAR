@@ -68,6 +68,7 @@ is(behind_left, frame).
 <- -+interacting_person(Person).
 
 //infers that if it is learnt during the conversation that the name of the person is Person, then that's the name of the interacting person
+
 +person_name(Person)
 <- -+interacting_person(Person);
     +greeted(Person).
@@ -173,8 +174,7 @@ is(behind_left, frame).
 
 +!reason_about_dialogue_obligations:
     said(Person, bye_bye)
-<- +obliged_goal(goodbye, Person);
-    -said(Person, bye_bye).
+<- +obliged_goal(goodbye, Person).
 
 //it is not appropriate to change topic of conversation if the person said something
 // also it is not appropriate to just be reactive while having a social conversation, instead it is appropriate to be proactive
@@ -239,7 +239,8 @@ is(behind_left, frame).
 +!reason_and_act_about_greeting:
     obliged_goal(goodbye, Person) &
     not prohibited_goal(goodbye)
-<- !goodbye(Person);
+<- -said(Person, bye_bye);
+    !goodbye(Person);
     -obliged_goal(goodbye, Person).
 
 // executes action .greet (from python)

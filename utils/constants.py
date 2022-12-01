@@ -131,6 +131,7 @@ LV_DIST = "DIST"
 LV_VOLUME = "VOLUME"
 LV_MOVEMENTS = "MOVEMENTS"
 LV_SPEED_VOICE = "SPEED_VOICE"
+LV_TONE_VOICE = "TONE_VOICE"
 
 LV_ROLE_SUBORDINATE = "ROLE_SUBORDINATE"
 
@@ -138,10 +139,14 @@ VOCABULARY_PERSONAL_CONVERSATION = {"personal", "private", "secret", "confidenti
                                     "keep it for yourself", "keep it to yourself",
                                     "keep for yourself", "keep to yourself",
                                     "don't tell anyone", "do not tell anyone",
-                                    "do not tell anybody", "don't tell anybody"}
+                                    "do not tell anybody", "don't tell anybody", "trust", "trust you",
+                                    "keep it just for yourself", "keep it only for yourself", "keep it just to yourself",
+                                    "keep it only to yourself", "keep just for yourself", "keep only for yourself",
+                                    "keep just to yourself", "keep only to yourself"}
 
-VOCABULARY_BYE_BYE = {"goodbye", "bye", "bye-bye", "see you later", "see you soon",
-                      "adios", "adieu", "talk to you later", "goodnight", "catch you later"}
+VOCABULARY_BYE_BYE = {"goodbye", "bye", "bye-bye", "bye bye", "see you later", "see you soon",
+                      "adios", "adieu", "talk to you later", "goodnight", "catch you later", "I have to leave", "leave now", "I want to leave", "I need to leave", "I have to go",
+                        "I need to go", "I should go"}
 
 
 VOCABULARY_TELL_ROBOT_NAME = {"what's your name", "what is your name", "what can i call you", "how can i call you",

@@ -99,7 +99,7 @@ class BDICore(BDIAgent):
             b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
             self.add_behaviour(b)
 
-            time.sleep(3)
+            time.sleep(5)
 
             msg_body_dict_power = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SLEEP
@@ -258,40 +258,40 @@ class BDICore(BDIAgent):
 
         @actions.add(".establish_trust", 1)
         def _establish_trust(agent, term, intention):
-            if not self.isInRecentMemory([Constants.ASL_BEL_ESTABLISHED_TRUST]):
-                logger.info("action establish trust")
-                x = str(agentspeak.grounded(term.args[0], intention.scope))
-                if x == Constants.ASL_FLUENT_UNKNOWN_PERSON:
-                    possible_answers = ["Oh, I see.", "Oh, ok, tell me more, you can trust me.", "Sure, go ahead", "Go ahead. I know how to keep a secret.",
-                                        "Oh, I see. Thank you for trusting me.", "You can trust me!", "What's bugging you?", "Is everything alright?"]
-                    to_say = random.choice(possible_answers)
-                else:
-                    possible_answers = [str(x) +", I see.", str(x) +", tell me more, you can trust me.", "Sure "+str(x) +", go ahead", "Go ahead "+str(x)+". I know how to keep a secret.",
-                                        str(x) + ", thank you for trusting me with this.", "You can trust me "+str(x), "Is everything alright, "+str(x)+"?"]
-                    to_say = random.choice(possible_answers)
+            # if not self.isInRecentMemory([Constants.ASL_BEL_ESTABLISHED_TRUST]):
+            logger.info("action establish trust")
+            x = str(agentspeak.grounded(term.args[0], intention.scope))
+            if x == Constants.ASL_FLUENT_UNKNOWN_PERSON:
+                possible_answers = ["Oh, I see.", "Oh, ok, tell me more, you can trust me.", "Sure, go ahead", "Go ahead. I know how to keep a secret.",
+                                    "Oh, I see. Thank you for trusting me.", "You can trust me!", "What's bugging you?", "Is everything alright?", "I will keep it for myself, you can trust me."]
+                to_say = random.choice(possible_answers)
+            else:
+                possible_answers = [str(x) +", I see.", str(x) +", tell me more, you can trust me.", "Sure "+str(x) +", go ahead", "Go ahead "+str(x)+". I know how to keep a secret.",
+                                    str(x) + ", thank you for trusting me with this.", "You can trust me "+str(x), "Is everything alright, "+str(x)+"?", "I will keep it for myself, you can trust me."]
+                to_say = random.choice(possible_answers)
 
-                msg_body_dict = {**{
-                    Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
-                    Constants.SPADE_MSG_TO_SAY: to_say,
-                    Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
-                    Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
-                }, **self.curr_social_interp}
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_IN_RESPONSE,
+                Constants.SPADE_MSG_TO_SAY: to_say,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
 
-                b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
-                self.add_behaviour(b)
+            b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
+            self.add_behaviour(b)
 
-                msg_body_dict_posture = {**{
-                    Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_PLAYANIMATION,
-                    Constants.SPADE_MSG_POSTURE: Constants.ANIMATION_ESTABLISH_TRUST,
-                    Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
-                    Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
-                }, **self.curr_social_interp}
+            msg_body_dict_posture = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_PLAYANIMATION,
+                Constants.SPADE_MSG_POSTURE: Constants.ANIMATION_ESTABLISH_TRUST,
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
 
-                b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
-                                              msg_body_dict_posture)
-                self.add_behaviour(b)
+            b = self.SendMessageBehaviour(Constants.POSTURE_HANDLER_JID, Constants.PERFORMATIVE_INFORM,
+                                          msg_body_dict_posture)
+            self.add_behaviour(b)
 
-                self.setBelief(time.time(), [Constants.ASL_BEL_ESTABLISHED_TRUST, x])
+            self.setBelief(time.time(), [Constants.ASL_BEL_ESTABLISHED_TRUST, x])
             yield
 
         @actions.add(".update_topic_of_interest", 3)
@@ -670,7 +670,7 @@ class BDICore(BDIAgent):
             In this way later inference will be able to use this info"""
             for key, bel in batch_of_beliefs_dict.items():
                 if key == Constants.ASL_BEL_PERSON_NAME or key == Constants.ASL_BEL_VISIBLE:  # note for these it is assumed that there is only one possible belief, so the key is checked to be ==
-                    # print("BDI: setting belief ", bel, "for batch ", batch)
+                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "setting belief {} for batch {}".format(bel, batch))
                     self.agent.setBelief(batch, bel)  # IT IS ASSUMED THAT BEL IS A LIST
             # for b in new_bel_list:
             #     bel = utils.splitStringBelToList(b)
@@ -824,6 +824,7 @@ class BDICore(BDIAgent):
                         break
                 if found:
                     instances = instances + 1
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "counting in recent memory occurrences of {}: {}".format(list_of_val, instances))
         return instances
 
     def getOrderedMemoryFromYoungestToOldest(self):

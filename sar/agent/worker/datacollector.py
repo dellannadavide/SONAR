@@ -336,6 +336,7 @@ class DataColletor(WorkerAgent):
                                 bels_to_add[chatter_bel_list[0]] = [internal_comm]
                             else:
                                 chatter_data_sentence = chatter_bel_list[1].lower()
+                                chatter_data_human_sentence = chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR, " ")
                                 chatter_data_volume = chatter_bel_list[2]
                                 #TODO I think all the following ifs could be generalized, so that it is possible to add some without changing the data collector
                                 if chatter_data_sentence in Constants.POSTURES:
@@ -347,23 +348,19 @@ class DataColletor(WorkerAgent):
                                                   Constants.ANIMATIONS[chatter_data_sentence],
                                                   Constants.ASL_FLUENT_IS_ANIMAATION]
                                 elif len([i for i in Constants.VOCABULARY_BYE_BYE if
-                                          i.lower() in chatter_data_sentence]) > 0:
+                                          i.lower() in chatter_data_human_sentence]) > 0:
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_BYE]
                                 elif len([i for i in Constants.VOCABULARY_TELL_ROBOT_NAME if
-                                          i.lower() in chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
-                                                                                     " ")]) > 0:
+                                          i.lower() in chatter_data_human_sentence]) > 0:
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_TELL_ROBOT_NAME]
                                 elif len([i for i in Constants.VOCABULARY_WHAT_IS_THIS if
-                                          i.lower() == chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
-                                                                                     " ")]) > 0:  # note here I'm checking if it's equal
+                                          i.lower() == chatter_data_human_sentence]) > 0:  # note here I'm checking if it's equal
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_YOU_SEE]
                                 elif len([i for i in Constants.VOCABULARY_WHAT_USER_SAID if
-                                          i.lower() == chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
-                                                                                     " ")]) > 0:  # same here
+                                          i.lower() == chatter_data_human_sentence]) > 0:  # same here
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_USER_SAID]
                                 elif len([i for i in Constants.VOCABULARY_WHAT_ROBOT_SAID if
-                                          i.lower() == chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR,
-                                                                                     " ")]) > 0:  # same here
+                                          i.lower() == chatter_data_human_sentence]) > 0:  # same here
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_ROBOT_SAID]
                                 else:
                                     # bel_string = utils.joinStringsBel([Constants.ASL_BEL_SAID, chatter_data_sentence])
@@ -375,7 +372,7 @@ class DataColletor(WorkerAgent):
                                 data[Constants.LV_COMMUNICATING] = 1.0
                                 data[Constants.LV_VOLUME] = float(chatter_data_volume)
                                 if len([i for i in Constants.VOCABULARY_PERSONAL_CONVERSATION if
-                                        i in chatter_data_sentence]) > 0:
+                                        i in chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR, " ")]) > 0:
                                     data[Constants.LV_VOC_PERSONAL] = 1.0
 
                             # last_chatter_data_sentence = last_chatter_data_split[0].replace(" ", Constants.ASL_STRING_SEPARATOR)

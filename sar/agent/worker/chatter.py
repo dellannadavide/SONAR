@@ -224,7 +224,7 @@ class Chatter(WorkerAgent):
             self.chatter.qualifyAndSendResponse(to_say, {}, False)
 
         def on_end_name_retrieval_positive(self):
-            to_say = "Got it! Nice to meet you " + str(self.name) + "!"
+            to_say = "Got it! Nice to meet you " + str(self.name) + "."
             suff_l = ["How is your day going?",  "How are you doing today?", "Having a nice day so far?", "What a nice day today, isn't it?", "What a day! Am I right?"]
             to_say = to_say+" "+random.choice(suff_l)
             self.chatter.received_inputs[Constants.TOPIC_NAME_LEARNT].append(str(self.name))
@@ -682,12 +682,14 @@ class Chatter(WorkerAgent):
                 self.qualifyAndSendResponse(to_say, work_info_dict, is_spontaneous)
 
     def qualifyAndSendResponse(self, to_say, work_info_dict, is_spontaneous_response):
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "IN QUALIFY: {}".format(work_info_dict))
         """ Function that qualifies the text to say based on the social info"""
         animation_to_perfom = None
         emotion_label = None
 
         volume = "75"
         speed = "100"
+        tone = "100"
         if not self.fsq is None: #THIS TESTS IF THE CHATTER HAS SOCIAL AND NORM-AWARENESS CAPABILITIES ENABLED
             """ Determining the emotion associated to the text to say """
 
@@ -718,12 +720,15 @@ class Chatter(WorkerAgent):
             if (not social_qualification is None):
                 volume = str(social_qualification[Constants.LV_VOLUME])
                 speed = str(social_qualification[Constants.LV_SPEED_VOICE])
+                tone = str(social_qualification[Constants.LV_TONE_VOICE])
 
             """ Qualifying the behavior based on the role of the agent w.r.t. the person """
             if Constants.SPADE_MSG_NAO_ROLE in work_info_dict:
                 if work_info_dict[Constants.SPADE_MSG_NAO_ROLE] == Constants.ASL_FLUENT_ROLE_SUBORDINATE:
                     # changing what to say
-                    to_say = "Sir, " + contractions.fix(to_say) + " Sir!"
+                    to_say = contractions.fix(to_say)
+                    if not "sir" in to_say.lower():
+                        to_say = "Sir, " + to_say + " Sir!"
                     # and also executing a certain animation
                     # self.mqtt_publisher.publish(Constants.TOPIC_POSTURE,
                     #                             utils.joinStrings([Constants.DIRECTIVE_PLAYANIMATION,
@@ -735,7 +740,7 @@ class Chatter(WorkerAgent):
             self.mqtt_publisher.publish(Constants.TOPIC_POSTURE,
                                         utils.joinStrings([Constants.DIRECTIVE_PLAYANIMATION, animation_to_perfom]))
 
-        message_to_say_list = [Constants.DIRECTIVE_SAY, to_say, "volume", volume, "speed", speed]
+        message_to_say_list = [Constants.DIRECTIVE_SAY, to_say, "volume", volume, "speed", speed, "tone", tone]
         if not emotion_label is None:
             message_to_say_list.extend(["emotion", str(emotion_label)])
 
@@ -786,8 +791,10 @@ class Chatter(WorkerAgent):
             # print("")
             resp = r[0]['generated_text'].split("<sep>")[0]
         if topic == Chatter._QUESTION_TOPIC_SOCIAL_QUESTION:
+            # logger.info("Random sampling social question")
             resp = random.choice(Constants.VOCABULARY_ANYWAYS)+". " + random.choice(Constants.SOCIAL_QUESTIONS_EXAMPLES)
-        if topic == Chatter._QUESTION_TOPIC_SOCIAL_QUESTION:
+            # logger.info("Sampled question: {}".format(resp))
+        if topic == Chatter._QUESTION_TOPIC_SUMMARY:
             summary = \
             self.summarizer(self.converser.getConversationString(last_n_sentences=5), min_length=5, max_length=40)[0][
                 "summary_text"]
@@ -836,9 +843,10 @@ class Chatter(WorkerAgent):
 
         if topic == Chatter._QUESTION_TOPIC_RANDOM:
             n = random.random()
-            if n < 0.6: #in 65% of cases I ask a questions about the last text
+            logger.info("In chatter question about random topic, n is {}".format(n))
+            if n < 0.6: #in 60% of cases I ask a questions about the last text
                 selected_topic = Chatter._QUESTION_TOPIC_TEXT
-            elif n < 0.8: #in 15%, I as a random social question
+            elif n < 0.8: #in 20%, I as a random social question
                 selected_topic = Chatter._QUESTION_TOPIC_SOCIAL_QUESTION
             elif n < 0.9: # in 10%, I ask a question about the conversation so far
                 selected_topic = Chatter._QUESTION_TOPIC_SUMMARY
@@ -896,7 +904,7 @@ class Chatter(WorkerAgent):
                 N.B. is_spontaneous is assumed False"""
                 if not self.isQuestion(text):
                     # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The user did not ask a question, so I try to reply in a more interesting way")
-                    if random.random() > 0.7:  # in 30% of cases I ask a question, so I don't always just reply
+                    if random.random() > 0.6:  # in 40% of cases I ask a question, so I don't always go to a dead end
                         if (not human_emotion is None) and (not self.asked_about_emotions):
                             resp = self.getQuestion(human_emotion, Chatter._QUESTION_TOPIC_EMOTIONS)
                             self.asked_about_emotions = True #I do it only once in every interaction (i.e., run of code)
