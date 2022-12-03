@@ -5,6 +5,7 @@ import traceback
 from datetime import datetime
 
 import contractions
+import nltk
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 
@@ -162,6 +163,7 @@ class Chatter(WorkerAgent):
                 super().__init__(name, value, initial)
 
             def process_input(self, user_input):
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "going ahead only if the sentence is 'wake up'")
                 return user_input.lower() == "wake up"
 
         # States
@@ -553,6 +555,13 @@ class Chatter(WorkerAgent):
             logger.info(to_say)
             is_spontaneous = False
 
+        if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_REPLY_PARROT:
+            message = work_info_dict[Constants.SPADE_MSG_SAID].replace(Constants.ASL_STRING_SEPARATOR, " ")
+            to_say = message
+            logger.info("response to : {}".format(message))
+            logger.info(to_say)
+            is_spontaneous = False
+
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_REPLY_TO_PROACTIVE:
             message = work_info_dict[Constants.SPADE_MSG_SAID].replace(Constants.ASL_STRING_SEPARATOR, " ")
             emotion = None
@@ -578,7 +587,7 @@ class Chatter(WorkerAgent):
             is_spontaneous = False
 
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_WHAT_BOT_SAID:
-            to_say = "I said: "+ self.converser.getITHToLastBotReponse(1)
+            to_say = "I said: "+ str(self.converser.getITHToLastBotReponse(1)).split(".")[-1]
             is_spontaneous = False
 
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_IN_RESPONSE:
@@ -614,11 +623,11 @@ class Chatter(WorkerAgent):
                 try:
                     if self.direction_last_detected_interest == Constants.ASL_FLUENT_UNKNOWN_DIRECTION:
                         t2tinput = "You are looking at the " + str(
-                            self.last_detected_interest) + ". You know what is a " + str(
+                            self.last_detected_interest) + " and you know what is a " + str(
                             self.last_detected_interest) + "."
                     else:
                         t2tinput = "You are looking at the " + str(self.last_detected_interest) + " on your " + str(
-                            self.direction_last_detected_interest) + ". You know what is a " + str(
+                            self.direction_last_detected_interest) + " and you know what is a " + str(
                             self.last_detected_interest) + "."
 
                     question = self.getTextFor(Chatter._TASK_ASK_QUESTION, t2tinput, True)
@@ -636,7 +645,7 @@ class Chatter(WorkerAgent):
             # print(to_say)
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_TURN_CONVERSATION:
             if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
-                topic = work_info_dict[Constants.SPADE_MSG_OBJECT].replace(Constants.ASL_STRING_SEPARATOR, " ")
+                topic = work_info_dict[Constants.SPADE_MSG_OBJECT].replace(Constants.ASL_STRING_SEPARATOR, " ").replace("_", " ")
                 logger.info(
                     "I trigger a spontaneous conversation about the perceived object {}".format(topic))
                 resp = self.getTextFor(Chatter._TASK_CONVERSATION_TURN_SPONTANEOUS, topic, True)
@@ -645,7 +654,7 @@ class Chatter(WorkerAgent):
                 # self.converser.addBotResponseToConversation(to_say, True)  # here is_spontaneous should be given True
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_CONTINUE_CONVERSATION:
             if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
-                topic = work_info_dict[Constants.SPADE_MSG_OBJECT].replace(Constants.ASL_STRING_SEPARATOR, " ")
+                # topic = work_info_dict[Constants.SPADE_MSG_OBJECT].replace(Constants.ASL_STRING_SEPARATOR, " ")
                 logger.info(
                     "I trigger a spontaneous continuation of the conversation because nothing was said for some time")
                 resp = self.getTextFor(Chatter._TASK_CONTINUE_CONVERSATION_SPONTANEOUS, "", True)
@@ -687,8 +696,8 @@ class Chatter(WorkerAgent):
         animation_to_perfom = None
         emotion_label = None
 
-        volume = "75"
-        speed = "100"
+        volume = "90"
+        speed = "90"
         tone = "100"
         if not self.fsq is None: #THIS TESTS IF THE CHATTER HAS SOCIAL AND NORM-AWARENESS CAPABILITIES ENABLED
             """ Determining the emotion associated to the text to say """
@@ -846,6 +855,20 @@ class Chatter(WorkerAgent):
             logger.info("In chatter question about random topic, n is {}".format(n))
             if n < 0.6: #in 60% of cases I ask a questions about the last text
                 selected_topic = Chatter._QUESTION_TOPIC_TEXT
+
+                # in this case I also convert the person sentence from first to second person,
+                # so that the question is more meaningful
+                text_for_question_list = []
+                for word in nltk.wordpunct_tokenize(text):
+                    if word.lower() in Constants.I_YOU_MAPPING.keys():
+                        text_for_question_list.append(Constants.I_YOU_MAPPING[word.lower()])
+                    else:
+                        text_for_question_list.append(word)
+                text = " ".join(text_for_question_list)
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                           "generating questions for converted text {}".format(text))
+
+
             elif n < 0.8: #in 20%, I as a random social question
                 selected_topic = Chatter._QUESTION_TOPIC_SOCIAL_QUESTION
             elif n < 0.9: # in 10%, I ask a question about the conversation so far
@@ -904,25 +927,29 @@ class Chatter(WorkerAgent):
                 N.B. is_spontaneous is assumed False"""
                 if not self.isQuestion(text):
                     # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The user did not ask a question, so I try to reply in a more interesting way")
-                    if random.random() > 0.6:  # in 40% of cases I ask a question, so I don't always go to a dead end
+                    if not self.last_robot_said_was_question and random.random() > 0.6:  # in 40% of cases I ask a question, so I don't always go to a dead end
                         if (not human_emotion is None) and (not self.asked_about_emotions):
                             resp = self.getQuestion(human_emotion, Chatter._QUESTION_TOPIC_EMOTIONS)
                             self.asked_about_emotions = True #I do it only once in every interaction (i.e., run of code)
                         else:
                             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "I'm going to ask a question about a random topic")
                             resp = self.getQuestion(text, Chatter._QUESTION_TOPIC_RANDOM)
+                        self.last_robot_said_was_question = True
                     else:
                         resp = self.converser.getResponse(text)
+                        self.last_robot_said_was_question = False
                 else:  # if it's a question I just try to answer
                     if "what time is it" in text.lower():
                         current_time = datetime.now().strftime("%H:%M")
                         resp = "It's "+current_time+"." + (random.choice(["Why do you ask?", "Why?", "How does this make you feel?"]) if random.random()>0.5 else "")
                     else:
                         resp = self.converser.getResponse(text)
+                    self.last_robot_said_was_question = False
 
                 if resp == "" or len(resp) < 2:  # If "the robot doesn't know what to say"
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Robot doesn't know what to say (was going for: {}). I generate a spontaneous question.".format(resp))
                     resp = self.getSpontaneousQuestion(text)
+                    self.last_robot_said_was_question = True
 
             if task == Chatter._TASK_ASK_QUESTION:
                 """ In this case, I want to generate a question for the user based on the text in argument text.
@@ -1073,6 +1100,7 @@ class Chatter(WorkerAgent):
         }
         self.inputs_being_processed = 0
         self.last_detected_interest = ""
+        self.last_robot_said_was_question = False
 
         """ This will listen to the sensors collecting data """
         self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_Chatter_Listener",

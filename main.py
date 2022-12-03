@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 import time
 from sar.sar import SARBDIAgent
@@ -131,10 +132,17 @@ if __name__ == '__main__':
     # parser.add_argument('--password', type=str, default="bdicore", help='XMPP password for the agent.')
     # args = parser.parse_args()
 
+    agent_type = "parrot_agent"
+    # agent_type = "baseline_agent"
+    # agent_type = "sonar_agent"
+
+    exp_id = "99999"
+
+
     now = datetime.now()
     exec_timestamp = str(now.strftime("%Y%m%d%H%M%S"))
     log_folder = "./log/"
-    log_path_name = log_folder + "sonar_" + exec_timestamp + ".log"
+    log_path_name = log_folder + exp_id+"_sonar_" + agent_type + "_" + exec_timestamp + ".log"
 
     logging.addLevelName(Constants.LOGGING_LV_DEBUG_NOSAR, Constants.LOGGING_LV_DEBUG_NOSAR_NAME)
 
@@ -166,11 +174,18 @@ if __name__ == '__main__':
         Constants.POSTURE_HANDLER_NAME,
         Constants.DATA_COLLECTOR_NAME
     ]
-    """ Uncomment one of the following to test the two types of agents"""
-    logger.info("IMPORTANT!!! Using the social and norm aware agent")
-    a = SARBDIAgent(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
-    # logger.info("IMPORTANT!!! Using the baseline agent")
-    # a = SARBDIAgent_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
+
+    if agent_type == "parrot_agent":
+        logger.warning("IMPORTANT!!! Using the parrotagent")
+        a = SARBDIAgent_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD,
+                                 asl_file="sar/basic_showcase_parrot.asl", workers_to_start=workers_to_start)
+    if agent_type == "baseline_agent":
+        logger.warning("IMPORTANT!!! Using the baseline agent")
+        a = SARBDIAgent_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD,
+                                 asl_file="sar/basic_minimal_baseline.asl", workers_to_start=workers_to_start)
+    if agent_type == "sonar_agent":
+        logger.warning("IMPORTANT!!! Using the social and norm aware agent")
+        a = SARBDIAgent(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
 
     future = a.start()
     future.result()

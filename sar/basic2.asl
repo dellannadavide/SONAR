@@ -1,14 +1,14 @@
 
 //=========================   Robot's initial knowledge   ==================================
 
-is_admin(davide).
+//is_admin(davide).
 
 //important because spade ignores plan failure
 interacting_person(unknown).
 
-is(bottom_right, book).
-is(behind, whiteboard).
-is(behind_left, frame).
+//is(bottom_right, book).
+//is(behind, whiteboard).
+//is(behind_left, frame).
 
 
 
@@ -174,7 +174,8 @@ is(behind_left, frame).
 
 +!reason_about_dialogue_obligations:
     said(Person, bye_bye)
-<- +obliged_goal(goodbye, Person).
+<- +obliged_goal(goodbye, Person);
+    -said(Person, bye_bye).
 
 //it is not appropriate to change topic of conversation if the person said something
 // also it is not appropriate to just be reactive while having a social conversation, instead it is appropriate to be proactive
@@ -239,8 +240,7 @@ is(behind_left, frame).
 +!reason_and_act_about_greeting:
     obliged_goal(goodbye, Person) &
     not prohibited_goal(goodbye)
-<- -said(Person, bye_bye);
-    !goodbye(Person);
+<- !goodbye(Person);
     -obliged_goal(goodbye, Person).
 
 // executes action .greet (from python)
@@ -411,8 +411,9 @@ is(behind_left, frame).
 // === Rules for spontaneous conversation ===
 +!reason_and_act_about_spontaneous_speech:
     add_spontaneous_conversation_goal
-<- !start(spontaneous_conversation);
--add_spontaneous_conversation_goal.
+<- -add_spontaneous_conversation_goal;
+.trigger_spontaneous_conversation.
+//    !start(spontaneous_conversation).
 
 +!start(spontaneous_conversation) :
     visible(face, Person) &

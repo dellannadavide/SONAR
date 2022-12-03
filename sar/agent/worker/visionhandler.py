@@ -133,7 +133,7 @@ class VisionHandler(WorkerAgent):
                         dict_count_emotions = {key: len(list(group)) for key, group in groupby(sorted(self.to_process_received_inputs[topic]))}
                         actually_detected_emotion = False
                         for em in dict_count_emotions.keys():
-                            if (dict_count_emotions[em] / num_received_inputs_topic)>= self.main_emotion_min_ratio:
+                            if ((dict_count_emotions[em] / num_received_inputs_topic)>= self.main_emotion_min_ratio) and (not em=="neutral"):
                                 self.received_inputs[topic].append(em)
                                 actually_detected_emotion = True
                                 break
@@ -153,8 +153,8 @@ class VisionHandler(WorkerAgent):
             Constants.TOPIC_OBJECT_DETECTION: [],
             Constants.TOPIC_EMOTION_DETECTION: []
         }
-        self.emotions_min_number = 30
-        self.main_emotion_min_ratio = 0.8
+        self.emotions_min_number = 30 #this means I need to collect at least 30 data points about emotion
+        self.main_emotion_min_ratio = 0.5 #and in at least 50% of the case (i.e., in the majority, i.e., if 30 then at least 15 of them) they should all about the same emotion
         """ This will listen to the sensors collecting data """
         # self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_VisionHandler_Listener", Constants.MQTT_CLIENT_TYPE_LISTENER, Constants.TOPIC_HUMAN_DETECTION, self.on_message)
         self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_VisionHandler_Listener", Constants.MQTT_CLIENT_TYPE_LISTENER, Constants.TOPIC_GROUP_VISION+"#", self.on_message)

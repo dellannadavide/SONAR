@@ -18,6 +18,22 @@ import logging
 logger = logging.getLogger("nosar.sar.agent.bdicore")
 
 class BDICore(BDIAgent):
+    """ The robot will move its head to look around no more than once every ... seconds """
+    _MOVE_HEAD_MAX_FREQUENCY = 15
+    """ The robot will trigger a new topic of interest no more than once every ... seconds """
+    _TOPIC_OF_INTEREST_MAX_FREQUENCY = 60
+    """ The robot will trigger a spontanous conversation no more than once every ... seconds """
+    _SPONTANEOUS_CONVERSATION_MAX_FREQUENCY = 60
+    """
+    We do not want the robot to continuously ask questions about a perceived object, 
+    so triggering about a specific object will happen at most once every 2 minutes. 
+    Note that the robot can still talk about the object in the conversation if it is going, 
+    or can also trigger conversation about other objects
+    """
+    _TOPIC_PERCEPTION_MAX_FREQUENCY = 120
+    """ min number of seconds of silence before the robot breaks it """
+    _BREAK_SILENCE_MAX_FREQUENCY = 15
+
     def add_custom_actions(self, actions):
         @actions.add(".greet", 1)
         def _greet(agent, term, intention):
@@ -127,6 +143,19 @@ class BDICore(BDIAgent):
             self.setEmotion(str(agentspeak.grounded(term.args[0], intention.scope)))
             yield
 
+        @actions.add(".reply_parrot", 2)
+        def _reply_parrot(agent, term, intention):
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .reply_parrot")
+            msg_body_dict = {**{
+                Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_PARROT,
+                Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
+                Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
+                Constants.SPADE_MSG_HUMAN_EMOTION: self.curr_emotion
+            }, **self.curr_social_interp}
+            b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
+            self.add_behaviour(b)
+            yield
+
         @actions.add(".reply_to_reactive", 2)
         def _reply_to_reactive(agent, term, intention):
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .reply_to_reactive")
@@ -222,7 +251,8 @@ class BDICore(BDIAgent):
         def _move_head(agent, term, intention):
             direction = str(agentspeak.grounded(term.args[0], intention.scope))
             if (not direction == Constants.ASL_FLUENT_CENTER_DIRECTION) and (
-            not self.isInRecentMemory([Constants.ASL_BEL_MOVED_HEAD_PREFIX + direction])):
+            # not self.isInRecentMemory([Constants.ASL_BEL_MOVED_HEAD_PREFIX + direction])):
+            not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_PERC], BDICore._MOVE_HEAD_MAX_FREQUENCY)):
                 min_last_n_consecutive_batches = 2  # todo this could be changed into seconds instead of times...
                 if len(self.memory.keys()) >= min_last_n_consecutive_batches:
                     reverse_order_mem = self.getOrderedMemoryFromYoungestToOldest()
@@ -258,16 +288,16 @@ class BDICore(BDIAgent):
 
         @actions.add(".establish_trust", 1)
         def _establish_trust(agent, term, intention):
-            # if not self.isInRecentMemory([Constants.ASL_BEL_ESTABLISHED_TRUST]):
             logger.info("action establish trust")
             x = str(agentspeak.grounded(term.args[0], intention.scope))
             if x == Constants.ASL_FLUENT_UNKNOWN_PERSON:
                 possible_answers = ["Oh, I see.", "Oh, ok, tell me more, you can trust me.", "Sure, go ahead", "Go ahead. I know how to keep a secret.",
-                                    "Oh, I see. Thank you for trusting me.", "You can trust me!", "What's bugging you?", "Is everything alright?", "I will keep it for myself, you can trust me."]
+                                    "Oh, I see. Thank you for trusting me.", "You can trust me!", "What's bugging you?", "Is everything alright?", "I will keep it for myself, you can trust me.",
+                                    "I feel honoured that you are trusting me. Thank you!"]
                 to_say = random.choice(possible_answers)
             else:
                 possible_answers = [str(x) +", I see.", str(x) +", tell me more, you can trust me.", "Sure "+str(x) +", go ahead", "Go ahead "+str(x)+". I know how to keep a secret.",
-                                    str(x) + ", thank you for trusting me with this.", "You can trust me "+str(x), "Is everything alright, "+str(x)+"?", "I will keep it for myself, you can trust me."]
+                                    str(x) + ", thank you for trusting me with this.", "I feel honoured that you are trusting me, " +str(x) + ". Thank you!", "You can trust me "+str(x), "Is everything alright, "+str(x)+"?", "I will keep it for myself, you can trust me."]
                 to_say = random.choice(possible_answers)
 
             msg_body_dict = {**{
@@ -298,7 +328,7 @@ class BDICore(BDIAgent):
         def _update_topic_of_interest(agent, term, intention):
             # print("As instructed by " + str(
             #     agentspeak.grounded(term.args[0], intention.scope)) + ", I will start procedure to shut down")
-            if not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_INTEREST]):
+            if not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_INTEREST], BDICore._TOPIC_OF_INTEREST_MAX_FREQUENCY):
                 person = str(agentspeak.grounded(term.args[0], intention.scope))
                 object = str(agentspeak.grounded(term.args[1], intention.scope))
                 direction = str(agentspeak.grounded(term.args[2], intention.scope))
@@ -336,7 +366,9 @@ class BDICore(BDIAgent):
             #             said_sth_recently = True
             #             break
             # if not said_sth_recently:
-            if not self.isInRecentMemory([Constants.ASL_BEL_SAID]):  # if nothing said something recently
+            if not self.isInRecentMemory([Constants.ASL_BEL_SAID], BDICore._BREAK_SILENCE_MAX_FREQUENCY) and \
+                    not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_SPONTANEOUS], BDICore._SPONTANEOUS_CONVERSATION_MAX_FREQUENCY):
+
                 msg_body_dict = {**{
                     Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_CONTINUE_CONVERSATION,
                     Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
@@ -345,6 +377,10 @@ class BDICore(BDIAgent):
 
                 b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
                 self.add_behaviour(b)
+
+                self.setBelief(time.time(), [Constants.ASL_BEL_UPDATED_TOPIC_SPONTANEOUS, "spontaneous"])
+            else:
+                logger.info("Not doing anything because something was said recently already")
             yield
 
         @actions.add(".update_topic_perception", 1)
@@ -358,7 +394,7 @@ class BDICore(BDIAgent):
             #             already_updated_topic_recently = True
             #             break
             # if not already_updated_topic_recently:
-            if not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_PERC, object_perceived]): #if I did not recently updated the topic about the perceived object
+            if not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_PERC, object_perceived], BDICore._TOPIC_PERCEPTION_MAX_FREQUENCY): #if I did not recently updated the topic about the perceived object
                 # times_perceived_object_recently = self.countInRecentMemory(["perceived_object", object])
                 # times_perceived_object_recently = 0
                 # for k in list(self.memory.keys()):
@@ -366,7 +402,7 @@ class BDICore(BDIAgent):
                 #         if ("perceived_object" in b and (object in b)):
                 #             times_perceived_object_recently += 1
                 # if times_perceived_object_recently <= 1:
-                if self.countInRecentMemory([Constants.ASL_BEL_PERCEIVED_OBJECT, object_perceived]) <= 1: #and if it has not been visible already for long time (maybe I updated it, then it remained visible from that moment on, I don't want to repeat)
+                if self.countInRecentMemory([Constants.ASL_BEL_PERCEIVED_OBJECT, object_perceived], BDICore._TOPIC_PERCEPTION_MAX_FREQUENCY) <= 1: #and if it has not been visible already for long time (maybe I updated it, then it remained visible from that moment on, I don't want to repeat)
                     msg_body_dict = {**{
                         Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_TURN_CONVERSATION,
                         Constants.SPADE_MSG_OBJECT: object_perceived,
@@ -568,12 +604,15 @@ class BDICore(BDIAgent):
 
         async def run(self):
             # print("Running ManageMemoryBehavior...")
-            # print("Memory at the beginning of run: ")
-            # print(self.agent.memory)
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Memory at the beginning of run: ")
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.agent.memory)
             """ This behavior deletes the beliefs that are older than self.memory_size seconds
                             It assumes that every belief that is subject to deletion is a perceived belief."""
 
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "datetime now: {}".format(datetime.now().timestamp()))
             oldest_time_timestamp_long_term = (datetime.now() - self.long_term_memory_size).timestamp()
+            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "oldest_time_timestamp_long_term: {}".format(oldest_time_timestamp_long_term))
+
             oldest_time_timestamp_beliefs = (datetime.now() - self.memory_size).timestamp()
             # print("deleting from memory that is older than memory_size_seconds seconds")
             for k in list(self.agent.memory.keys()):
@@ -611,6 +650,7 @@ class BDICore(BDIAgent):
             super().__init__(period, start_at)
 
         async def run(self):
+            logger.info("Running the spontaneous conversation periodic behavior. setting the {} belief".format(Constants.ASL_BEL_ADD_SPONT_CONV_GOAL))
             self.agent.bdi.set_belief(Constants.ASL_BEL_ADD_SPONT_CONV_GOAL)
 
     class SenseReasonAct(CyclicBehaviour):
@@ -802,29 +842,64 @@ class BDICore(BDIAgent):
         self.curr_emotion = emotion
         # self.bdi.set_belief(Constants.ASL_BEL_CURR_ROLE, self.curr_role)
 
-    def isInRecentMemory(self, fluents: list):
-        for k in list(self.memory.keys()):
-            for b in self.memory[k]:
-                all_in = True
-                for f in fluents:
-                    if not f in b:
-                        all_in = False
-                if all_in:
-                    return True
-        return False
+    def isInRecentMemory(self, fluents: list, last_n_seconds):
+        if last_n_seconds == -1:
+            #then I want to check in the entire memory
+            oldest_time_timestamp = 0.0 # by setting this to 0 the timestamp in the memory will always be greater
+        else:
+            oldest_time_timestamp = (datetime.now() - timedelta(seconds=last_n_seconds)).timestamp()
 
-    def countInRecentMemory(self, list_of_val):
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                   "Cecking if in the recent memory (in the last {} seconds) there is {}".format(last_n_seconds, fluents))
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                   "oldest_time_timestamp: {}".format(oldest_time_timestamp))
+
+        for k in list(self.memory.keys()):
+            if float(k) >= float(oldest_time_timestamp): #greater means that it is more recent than the last oldest time stamp
+                for b in self.memory[k]:
+                    all_in = True
+                    for f in fluents:
+                        if not f in b:
+                            all_in = False
+                    if all_in:
+                        return True
+        return False
+        #
+        # for k in list(self.memory.keys()):
+        #     for b in self.memory[k]:
+        #         all_in = True
+        #         for f in fluents:
+        #             if not f in b:
+        #                 all_in = False
+        #         if all_in:
+        #             return True
+        # return False
+
+    def countInRecentMemory(self, list_of_val, last_n_seconds):
+        if last_n_seconds == -1:
+            #then I want to check in the entire memory
+            oldest_time_timestamp = 0.0 # by setting this to 0 the timestamp in the memory will always be greater
+        else:
+            oldest_time_timestamp = (datetime.now() - timedelta(seconds=last_n_seconds)).timestamp()
+
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                   "counting in the recent memory (in the last {} seconds) how many occurrencies of  {}".format(last_n_seconds, list_of_val))
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                   "oldest_time_timestamp: {}".format(oldest_time_timestamp))
+
         instances = 0
         for k in list(self.memory.keys()):
-            for b in self.memory[k]:
-                found = True
-                for v in list_of_val:
-                    if not v in b:
-                        found = False
-                        break
-                if found:
-                    instances = instances + 1
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "counting in recent memory occurrences of {}: {}".format(list_of_val, instances))
+            if float(k) >= float(
+                    oldest_time_timestamp):  # greater means that it is more recent than the last oldest time stamp
+                for b in self.memory[k]:
+                    found = True
+                    for v in list_of_val:
+                        if not v in b:
+                            found = False
+                            break
+                    if found:
+                        instances = instances + 1
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "count of {} in the last {} sec: {}".format(list_of_val, last_n_seconds, instances))
         return instances
 
     def getOrderedMemoryFromYoungestToOldest(self):
@@ -840,12 +915,12 @@ class BDICore(BDIAgent):
         b = self.SenseReasonAct()
         self.add_behaviour(b)
         start_at = datetime.now() + timedelta(seconds=1)
-        beliefs_memory_size = 20  # seconds
+        beliefs_memory_size = 60  # seconds
         long_term_memory_size = 300
         mb = self.ManageMemoryBehaviour(period=beliefs_memory_size, start_at=start_at,
                                         beliefs_memory_size_seconds=beliefs_memory_size,
                                         long_term_memory_size_seconds=long_term_memory_size)
         self.add_behaviour(mb)
         start_at_sb = datetime.now() + timedelta(seconds=beliefs_memory_size)
-        sb = self.SpontaneousConversationBehaviour(period=15, start_at=start_at_sb)
+        sb = self.SpontaneousConversationBehaviour(period=60, start_at=start_at_sb)
         self.add_behaviour(sb)

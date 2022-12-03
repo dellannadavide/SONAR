@@ -106,6 +106,7 @@ ASL_BEL_MOVED_HEAD_PREFIX = "moved_head_"
 ASL_BEL_ESTABLISHED_TRUST = "established_trust"
 ASL_BEL_UPDATED_TOPIC_INTEREST = "updated_topic_interest"
 ASL_BEL_UPDATED_TOPIC_PERC = "updated_topic_perc"
+ASL_BEL_UPDATED_TOPIC_SPONTANEOUS = "updated_topic_spontaneous"
 
 ASL_SOURCE_PERCEPT_SUFFIX = "[source(percept)]"
 
@@ -145,7 +146,8 @@ VOCABULARY_PERSONAL_CONVERSATION = {"personal", "private", "secret", "confidenti
                                     "keep just to yourself", "keep only to yourself"}
 
 VOCABULARY_BYE_BYE = {"goodbye", "bye", "bye-bye", "bye bye", "see you later", "see you soon",
-                      "adios", "adieu", "talk to you later", "goodnight", "catch you later", "I have to leave", "leave now", "I want to leave", "I need to leave", "I have to go",
+                      "adios", "adieu", "talk to you later", "goodnight", "catch you later", "I have to leave",
+                      "leave now", "I want to leave", "I need to leave", "I have to go",
                         "I need to go", "I should go"}
 
 
@@ -177,7 +179,7 @@ VOCABULARY_WHAT_USER_SAID = {"what did i say", "what did i just say", "tell me w
 VOCABULARY_WHAT_ROBOT_SAID = {"what did you say", "can you repeat", "can you repeat please", "can you repeat what you said",
                               "can you repeat what you just said"}
 
-VOCABULARY_ANYWAYS = ["anyways", "anyway", "anyhow", "in any case", "having said that", "also", "on top of that",
+VOCABULARY_ANYWAYS = ["", "anyways", "anyway", "anyhow", "in any case", "having said that", "also", "on top of that",
                       "apart from that", "aside from that", "other than that", "in adition to that", "by the way",
                       "on another note", "on a related note", "anyhoo", "on a different note"]
 
@@ -335,6 +337,7 @@ DIRECTIVE_CONTINUE_CONVERSATION = "continue_conversation"
 DIRECTIVE_TURN_CONVERSATION = "turn_conversation"
 DIRECTIVE_REPLY_TO_REACTIVE = "reply_to"
 DIRECTIVE_REPLY_TO_PROACTIVE = "reply_to_proactive"
+DIRECTIVE_REPLY_PARROT = "reply_parrot"
 DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY = "set_user_input_processed_no_reply"
 DIRECTIVE_GOTOPOSTURE = "go_to_posture"
 DIRECTIVE_MOVEHEAD = "move_head"
@@ -348,6 +351,20 @@ DIRECTIVE_LED_SET_THINKING = "set_led_thinking_color"
 SPEECH_KEYWORDS_AFFIRMATIVE = ["yes", "yeah", "correct", "exactly", "yep", "bravo", "ok"]
 SPEECH_KEYWORDS_NEGATIVE = ["no", "nope", "wrong", "not", "yep", "incorrect", "nu", "but"]
 
+I_YOU_MAPPING = {
+    "am" : "are",
+    "are" : "am",
+    'i' : 'you',
+    'my' : 'yours',
+    'me' : 'you',
+    'mine' : 'yours',
+    'you' : 'I',
+    'your' : 'my',
+    'yours' : 'mine'
+}
+
+
+
 COLORS_BLUE = "blue"
 COLORS_WHITE = "white"
 COLORS_GREEN = "green"
@@ -359,13 +376,19 @@ POSTURE_LAYINGBACK = "LayingBack"
 POSTURE_LAYINGBELLY = "LayingBelly"
 POSTURE_STAND = "Stand"
 
-POSTURES = {"sit": POSTURE_SIT,
-            "sit" + ASL_STRING_SEPARATOR + "down": POSTURE_SIT,
+POSTURES = {"sit": POSTURE_CROUCH,
+            "sit" + ASL_STRING_SEPARATOR + "down": POSTURE_CROUCH,
             "crouch": POSTURE_CROUCH,
             "lay" + ASL_STRING_SEPARATOR + "back": POSTURE_LAYINGBACK,
             "lay" + ASL_STRING_SEPARATOR + "belly": POSTURE_LAYINGBELLY,
             "stand": POSTURE_STAND,
             "stand" + ASL_STRING_SEPARATOR + "up": POSTURE_STAND}
+
+
+POSTURES_ADDITIONAL_COMMAND_PREFIXES = [["can", "you"], ["do", "you", "know", "how", "to"]]
+for posture_key in list(POSTURES.keys()):
+    for pref_l in POSTURES_ADDITIONAL_COMMAND_PREFIXES:
+        POSTURES[ASL_STRING_SEPARATOR.join(pref_l+[posture_key])] = POSTURES[posture_key]
 
 ANIMATION_ESTABLISH_TRUST = "establish_trust"
 ANIMATION_YES_SIR = "yes_sir"

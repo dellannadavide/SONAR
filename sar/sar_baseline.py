@@ -30,9 +30,10 @@ aiosasl_scram_logger.setLevel(logging.WARNING)
 
 class SARBDIAgent_BASELINE(Agent):
 
-    def __init__(self, jid: str, password: str, verify_security: bool = False, gui_queue = None, workers_to_start : list = []):
+    def __init__(self, jid: str, password: str, verify_security: bool = False, gui_queue = None, asl_file : str = None, workers_to_start : list = []):
         super().__init__(jid, password, verify_security)
         self.gui_queue = gui_queue
+        self.asl_file = asl_file
         self.workers_to_start = workers_to_start
 
 
@@ -139,7 +140,8 @@ class SARBDIAgent_BASELINE(Agent):
             # await self.norm_adapter.start(auto_register=True)
 
         logger.info("Starting the agent's BDI core ...")
-        bdicore_asl = "sar/basic_minimal_baseline.asl"
-        self.bdi_core = BDICore(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, bdicore_asl)
+        # bdicore_asl = "sar/basic_minimal_baseline.asl"
+        # self.bdi_core = BDICore(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, bdicore_asl)
+        self.bdi_core = BDICore(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, self.asl_file)
         await self.bdi_core.start()
 

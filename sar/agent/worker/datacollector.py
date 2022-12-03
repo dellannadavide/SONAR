@@ -146,7 +146,8 @@ class DataColletor(WorkerAgent):
                                     bels.append([Constants.ASL_BEL_VISIBLE, Constants.ASL_FLUENT_FACE,
                                                  self.agent.interacting_person])
                             else:
-                                bels.append([Constants.ASL_BEL_PERCEIVED_OBJECT, obj])
+                                bels.append([Constants.ASL_BEL_PERCEIVED_OBJECT,
+                                             obj.replace(" ", Constants.ASL_STRING_SEPARATOR)])
                     if thread == Constants.TOPIC_EMOTION_DETECTION:
                         for em in vision_data_inner[1:]:
                             if not em == DataColletor._KEY_EMOTION_NEUTRAL:
@@ -442,8 +443,8 @@ class DataColletor(WorkerAgent):
                     # for d in data:
                     #     msg_to_norm_adapter.extend([str(d), str(data[d])])
                     send_msg_to_norm_adapter = self.SendMsgToBehaviour(Constants.NORM_ADAPTER_JID, msg_to_norm_adapter)
-                    logger.info("DATACOLLECTOR: Created new sendmsgtoBehavior at {}".format(str(time.time())))
-                    logger.info(msg_to_norm_adapter)
+                    logger.info("DATACOLLECTOR: Created new sendmsgtoBehavior for norm adapter at {}".format(str(time.time())))
+                    logger.info("datacollector msg for norm adapter: {}".format(msg_to_norm_adapter))
                     self.add_behaviour(send_msg_to_norm_adapter)
 
             if (not social_values is None):

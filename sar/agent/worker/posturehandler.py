@@ -43,7 +43,7 @@ class PostureHandler(WorkerAgent):
             # self.mqtt_client.publish(Constants.TOPIC_MOTION, msg)
 
             animation = "look" + \
-                        ("_bottom" if Constants.ASL_FLUENT_BOTTOM_DIRECTION in person_is_looking else ("_top" if Constants.ASL_FLUENT_TOP_DIRECTION in person_is_looking else "")) +  \
+                        ("_bottom" if Constants.ASL_FLUENT_BOTTOM_DIRECTION in person_is_looking else ("_top" if Constants.ASL_FLUENT_TOP_DIRECTION in person_is_looking else "_bottom")) +  \
                         ("_left" if Constants.ASL_FLUENT_RIGHT_DIRECTION in person_is_looking else ("_right" if Constants.ASL_FLUENT_LEFT_DIRECTION in person_is_looking else ""))
             if animation=="look":
                 logging.warning("!!!FOR SOME REASON i got no direction, only animation=='look'")
