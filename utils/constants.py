@@ -185,14 +185,14 @@ VOCABULARY_ANYWAYS = ["", "anyways", "anyway", "anyhow", "in any case", "having 
 
 SOCIAL_QUESTIONS_EXAMPLES = [
     "What tv shows are you into?",
-    "What’s your favorite movie?",
-    "What’s your favorite sport?",
-    "What’s your favorite food?",
+    "What's your favorite movie?",
+    "What's your favorite sport?",
+    "What's your favorite food?",
     "What's your favourite book?",
     "I have a question for you. If you could visit anywhere in the world, where would you go?",
     "What's your favorite activity to do when you have time off?",
     "What are some fun things to do here in The Netherlands?",
-    "What do you like to do that’s fun and relaxing?",
+    "What do you like to do that's fun and relaxing?",
     "Do you have friends?",
     "Question. What''s something you always wanted to try but haven't?",
     "Can I ask you a question? What makes you unique?",

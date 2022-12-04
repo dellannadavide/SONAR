@@ -801,7 +801,7 @@ class Chatter(WorkerAgent):
             resp = r[0]['generated_text'].split("<sep>")[0]
         if topic == Chatter._QUESTION_TOPIC_SOCIAL_QUESTION:
             # logger.info("Random sampling social question")
-            resp = random.choice(Constants.VOCABULARY_ANYWAYS)+". " + random.choice(Constants.SOCIAL_QUESTIONS_EXAMPLES)
+            resp = random.choice(Constants.SOCIAL_QUESTIONS_EXAMPLES)
             # logger.info("Sampled question: {}".format(resp))
         if topic == Chatter._QUESTION_TOPIC_SUMMARY:
             summary = \
@@ -943,6 +943,8 @@ class Chatter(WorkerAgent):
                         current_time = datetime.now().strftime("%H:%M")
                         resp = "It's "+current_time+"." + (random.choice(["Why do you ask?", "Why?", "How does this make you feel?"]) if random.random()>0.5 else "")
                     else:
+                        if not "?" in text:
+                            text = text+"?" #this is not really necessary but I found that it helps the language model to give more meaningful answers
                         resp = self.converser.getResponse(text)
                     self.last_robot_said_was_question = False
 

@@ -100,9 +100,9 @@ class BDICore(BDIAgent):
 
             x = str(agentspeak.grounded(term.args[0], intention.scope))
             to_say = random.choice(
-                ["Alright! It was very nice talking to you! Bye bye " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "! I will take a nap here!",
-                 "Oh, ok! It was very nice talking to you! I will take a nap here then! Dooi Dooi!",
-                 "See you another time " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + "! It was very nice talking to you! I will take a nap here in the meantime! Ciao!"])
+                ["Alright! It was very nice talking to you! Bye bye " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + ". I will take a nap here!",
+                 "Oh, ok! It was very nice talking to you. I will take a nap here then! Dooi Dooi!",
+                 "Ok then. See you another time " + ("" if x == Constants.ASL_FLUENT_UNKNOWN_PERSON else x) + ". It was very nice talking to you! I will take a nap here in the meantime! Ciao!"])
 
 
             msg_body_dict = {**{
