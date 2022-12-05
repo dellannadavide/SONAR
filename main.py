@@ -133,10 +133,11 @@ if __name__ == '__main__':
     # args = parser.parse_args()
 
     agent_type = "parrot_agent"
-    # agent_type = "baseline_agent"
+    agent_type = "baseline_agent"
     # agent_type = "sonar_agent"
 
-    exp_id = "99999"
+    exp_id = "gx4vs"
+    # exp_id = "dda"
 
 
     now = datetime.now()

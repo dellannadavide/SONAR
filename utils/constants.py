@@ -145,10 +145,10 @@ VOCABULARY_PERSONAL_CONVERSATION = {"personal", "private", "secret", "confidenti
                                     "keep it only to yourself", "keep just for yourself", "keep only for yourself",
                                     "keep just to yourself", "keep only to yourself"}
 
-VOCABULARY_BYE_BYE = {"goodbye", "bye", "bye-bye", "bye bye", "see you later", "see you soon",
+VOCABULARY_BYE_BYE = {"goodbye", "goodnight", "bye", "bye-bye", "bye bye", "see you later", "see you soon",
                       "adios", "adieu", "talk to you later", "goodnight", "catch you later", "I have to leave",
                       "leave now", "I want to leave", "I need to leave", "I have to go",
-                        "I need to go", "I should go"}
+                        "I need to go", "I should go", "see you tomorrow"}
 
 
 VOCABULARY_TELL_ROBOT_NAME = {"what's your name", "what is your name", "what can i call you", "how can i call you",

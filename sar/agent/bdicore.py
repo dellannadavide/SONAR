@@ -19,7 +19,7 @@ logger = logging.getLogger("nosar.sar.agent.bdicore")
 
 class BDICore(BDIAgent):
     """ The robot will move its head to look around no more than once every ... seconds """
-    _MOVE_HEAD_MAX_FREQUENCY = 15
+    _MOVE_HEAD_MAX_FREQUENCY = 5
     """ The robot will trigger a new topic of interest no more than once every ... seconds """
     _TOPIC_OF_INTEREST_MAX_FREQUENCY = 60
     """ The robot will trigger a spontanous conversation no more than once every ... seconds """
@@ -32,7 +32,7 @@ class BDICore(BDIAgent):
     """
     _TOPIC_PERCEPTION_MAX_FREQUENCY = 120
     """ min number of seconds of silence before the robot breaks it """
-    _BREAK_SILENCE_MAX_FREQUENCY = 15
+    _BREAK_SILENCE_MAX_FREQUENCY = 60
 
     def add_custom_actions(self, actions):
         @actions.add(".greet", 1)
@@ -114,8 +114,6 @@ class BDICore(BDIAgent):
 
             b = self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict)
             self.add_behaviour(b)
-
-            time.sleep(5)
 
             msg_body_dict_power = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SLEEP
@@ -253,7 +251,7 @@ class BDICore(BDIAgent):
             if (not direction == Constants.ASL_FLUENT_CENTER_DIRECTION) and (
             # not self.isInRecentMemory([Constants.ASL_BEL_MOVED_HEAD_PREFIX + direction])):
             not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_PERC], BDICore._MOVE_HEAD_MAX_FREQUENCY)):
-                min_last_n_consecutive_batches = 2  # todo this could be changed into seconds instead of times...
+                min_last_n_consecutive_batches = 4  # todo this could be changed into seconds instead of times...
                 if len(self.memory.keys()) >= min_last_n_consecutive_batches:
                     reverse_order_mem = self.getOrderedMemoryFromYoungestToOldest()
                     n_last_consec_batches_is_looking = 0

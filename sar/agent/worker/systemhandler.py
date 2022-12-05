@@ -1,3 +1,4 @@
+import time
 
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
@@ -20,6 +21,7 @@ class SystemHandler(WorkerAgent):
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SHUT_DOWN:
             self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE_SYSTEM, Constants.DIRECTIVE_SHUT_DOWN)
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SLEEP:
+            time.sleep(5)
             self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE_SYSTEM, Constants.DIRECTIVE_SLEEP)
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_EXEC_BEHAVIOR:
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "sending directive to execute behavior")

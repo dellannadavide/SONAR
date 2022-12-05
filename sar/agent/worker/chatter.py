@@ -1,8 +1,9 @@
 import copy
 import random
 import threading
+import time
 import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import contractions
 import nltk
@@ -587,7 +588,9 @@ class Chatter(WorkerAgent):
             is_spontaneous = False
 
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_WHAT_BOT_SAID:
-            to_say = "I said: "+ str(self.converser.getITHToLastBotReponse(1)).split(".")[-1]
+            last_response = str(self.converser.getITHToLastBotReponse(1)).split(".")[-1]
+            last_response = last_response.split("?")[-1]
+            to_say = "I said: "+ str(last_response)
             is_spontaneous = False
 
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_IN_RESPONSE:
@@ -785,6 +788,8 @@ class Chatter(WorkerAgent):
         return self.inputs_being_processed == 0
 
     def getQuestion(self, text, topic):
+        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                   "in getQuestions {}, {}".format(text, topic))
         resp = ""
         if topic == Chatter._QUESTION_TOPIC_TEXT:
             r = self.t2tgenerator("generate questions : " + text,
@@ -853,7 +858,7 @@ class Chatter(WorkerAgent):
         if topic == Chatter._QUESTION_TOPIC_RANDOM:
             n = random.random()
             logger.info("In chatter question about random topic, n is {}".format(n))
-            if n < 0.6: #in 60% of cases I ask a questions about the last text
+            if n < 0.7: #in x% of cases I ask a questions about the last text
                 selected_topic = Chatter._QUESTION_TOPIC_TEXT
 
                 # in this case I also convert the person sentence from first to second person,
@@ -869,10 +874,10 @@ class Chatter(WorkerAgent):
                            "generating questions for converted text {}".format(text))
 
 
-            elif n < 0.8: #in 20%, I as a random social question
-                selected_topic = Chatter._QUESTION_TOPIC_SOCIAL_QUESTION
-            elif n < 0.9: # in 10%, I ask a question about the conversation so far
+            elif n < 0.8: #in 10%, I as a question about the conversation so far
                 selected_topic = Chatter._QUESTION_TOPIC_SUMMARY
+            elif n < 0.9: # in 10%, I ask a random social question
+                selected_topic = Chatter._QUESTION_TOPIC_SOCIAL_QUESTION
             elif n < 0.975: # in 7.5% I ask a question about the news
                 selected_topic = Chatter._QUESTION_TOPIC_NEWS
             else: #  in 2.5% I ask a question about the weather
@@ -926,8 +931,10 @@ class Chatter(WorkerAgent):
                 Here I just want to use the conversation pipeline to generate a meaningful continuation.
                 N.B. is_spontaneous is assumed False"""
                 if not self.isQuestion(text):
-                    # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The user did not ask a question, so I try to reply in a more interesting way")
-                    if not self.last_robot_said_was_question and random.random() > 0.6:  # in 40% of cases I ask a question, so I don't always go to a dead end
+                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The user did not ask a question, so I try to reply in a more interesting way")
+                    if not self.last_robot_said_was_question and random.random() > 0.75:  # in 25% of cases I ask a question, so I don't always go to a dead end
+                        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                                   "last time i did not ask a question and random is larger than 0.6 so I ask a question")
                         if (not human_emotion is None) and (not self.asked_about_emotions):
                             resp = self.getQuestion(human_emotion, Chatter._QUESTION_TOPIC_EMOTIONS)
                             self.asked_about_emotions = True #I do it only once in every interaction (i.e., run of code)
@@ -936,6 +943,8 @@ class Chatter(WorkerAgent):
                             resp = self.getQuestion(text, Chatter._QUESTION_TOPIC_RANDOM)
                         self.last_robot_said_was_question = True
                     else:
+                        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                                   "last time i asked a question or random is not larger than 0.6 so I just respond")
                         resp = self.converser.getResponse(text)
                         self.last_robot_said_was_question = False
                 else:  # if it's a question I just try to answer
@@ -950,8 +959,21 @@ class Chatter(WorkerAgent):
 
                 if resp == "" or len(resp) < 2:  # If "the robot doesn't know what to say"
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Robot doesn't know what to say (was going for: {}). I generate a spontaneous question.".format(resp))
-                    resp = self.getSpontaneousQuestion(text)
-                    self.last_robot_said_was_question = True
+                    if random.random()>0.8:
+                        resp = self.getSpontaneousQuestion(text)
+                        self.last_robot_said_was_question = True
+                    else:
+                        resp = random.choice([
+                            "I'm not really sure what to say now.",
+                            "I'm kind of confused right now.",
+                            "I'm not sure I understood."
+                            "I'm not following. Can you repeat?",
+                            "What did you say?"])
+                        if "?" in resp:
+                            self.last_robot_said_was_question = True
+                        else:
+                            self.last_robot_said_was_question = False
+
 
             if task == Chatter._TASK_ASK_QUESTION:
                 """ In this case, I want to generate a question for the user based on the text in argument text.
@@ -971,7 +993,10 @@ class Chatter(WorkerAgent):
                 types_of_questions = ["Did you know that a " + text,
                                       "What kind of " + text,
                                       "Is that a " + text,
-                                      "I noticed a " + text + ". Is it"]
+                                      "I noticed a " + text + ". Is it",
+                                      "Is that " + text + "",
+                                      "What a pretty " + text,
+                                      "That's an interesting "+text+". Is it"]
                 selected_type_of_question = random.choice(types_of_questions)
                 g = self.tgenerator(selected_type_of_question, max_length=50,
                                    do_sample=True,
@@ -1007,13 +1032,25 @@ class Chatter(WorkerAgent):
             self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
                                         utils.joinStrings([Constants.DIRECTIVE_LED_SET_THINKING, "True"]))
 
+            self.last_thinking_time = time.time()
+
+            # self.addOneInputBeingProcessed()
             self.chatter_state_machine.process_input(rec_m)
 
         else:
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
-                       "Note: I ignore this data because there is already one input being processed.")
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.inputs_being_processed)
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.chatter_state_machine.is_default)
+            if float((datetime.now() - self.max_time_thinking).timestamp()) < float(self.last_thinking_time):
+                # if still not enough time passed (when now - x seconds is before last thinking time)
+                # then I still wait
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                           "Note: I ignore this data because there is already one input being processed.")
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.inputs_being_processed)
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.chatter_state_machine.is_default)
+            else:
+                #in this case max thinking time is expired
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                           "Timer is expired, I ignore the previous sentence and re process the current one")
+                self.setOneInputProcessed()
+                self.on_message(client, userdata, message)
 
     def kickstartLMs(self):
         logger.info("Kickstarting Language Models so to speed up interaction with humans...")
@@ -1073,6 +1110,9 @@ class Chatter(WorkerAgent):
 
         self.chatter_state_machine = self.ChatterStateMachine(self)
         self.chatter_state_machine.setup(self.nlp)
+
+        self.last_thinking_time = -1
+        self.max_time_thinking = timedelta(seconds=60)
 
         self.asked_about_emotions = False
         self.to_add_to_next_sentence = None
