@@ -1,0 +1,3 @@
+2022-12-12 10:40:36,771 - INFO - nosar - Starting agent
+2022-12-12 10:40:36,772 - WARNING - nosar - IMPORTANT!!! Using the parrotagent
+2022-12-12 10:40:40,981 - WARNING - aioxmpp.node - connection failed: could not connect to [localhost]:5222: multiple errors: [Errno 10061] Connect call failed ('::1', 5222, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 5222)

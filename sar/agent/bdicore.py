@@ -612,6 +612,7 @@ class BDICore(BDIAgent):
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "oldest_time_timestamp_long_term: {}".format(oldest_time_timestamp_long_term))
 
             oldest_time_timestamp_beliefs = (datetime.now() - self.memory_size).timestamp()
+            oldest_time_timestamp_beliefs_2 = (datetime.now() - timedelta(seconds=30)).timestamp()
             # print("deleting from memory that is older than memory_size_seconds seconds")
             for k in list(self.agent.memory.keys()):
                 if float(k) < float(oldest_time_timestamp_long_term):
@@ -625,7 +626,7 @@ class BDICore(BDIAgent):
             for bel in bel_list:
                 found = False
                 for k in list(self.agent.memory.keys()):
-                    if float(k) >= float(oldest_time_timestamp_beliefs):
+                    if float(k) >= float(oldest_time_timestamp_beliefs) and float(k) >= float(oldest_time_timestamp_beliefs_2):
                         for b in self.agent.memory[k]:
                             if str(bel) == self.agent.getBeliefString(b, source=source):
                                 # print("Found bel ", str(bel), " in ", self.agent.memory[k])

@@ -94,21 +94,26 @@ def main():
     """
 
     exp_possible_val = {
-        'society': ['Austria'],
-        'dataset_file': ['data_USAustria_8000dp_v11_simple.xlsx'],
+        'society': ['Austria', 'US'],
+        # 'dataset_file': ['data_USAustria_8000dp_v11_simple.xlsx'],
+        'dataset_file': ['data_USAustria_adaptation_experiments_ds1_1k.xlsx',
+                         'data_USAustria_adaptation_experiments_ds2_1k.xlsx',
+                         'data_USAustria_adaptation_experiments_ds3_1k.xlsx',
+                         'data_USAustria_adaptation_experiments_ds4_1k.xlsx',
+                         'data_USAustria_adaptation_experiments_ds5_1k.xlsx'],
         'max_dataset_size': [1000],  # [1000, 8000, 16000], #[1000, 999999],
         'fuzzy_sets_file': ['fuzzy_sets_multiple_ref.xlsx'],
         'ling_vars_file': ['ling_var_multiple_ref.xlsx'],
         'rules_file_id': ['_ref_all_refined2'], # ['_ref_all'], ['_ref_all_refined']
         'interpretability_index': [Constants.PHI_INTERPRETABILITY_INDEX], # [Constants.PHI_INTERPRETABILITY_INDEX, Constants.AVG_COVERAGE_INDEX], #["Phi", "XP"],
-        'min_nr_datapoints': [10],  # [1, 5, 10],
+        'min_nr_datapoints': [20, 40],  # [1, 5, 10],
         'min_certainty_threshold': [0.0],  # [0.0, 0.05, 0.1, 0.15],
-        'use_correct_interpretation': [False],  # [True, False],
-        'consider_past_experience': [True],
+        'use_correct_interpretation': [True, False],  # [True, False],
+        'consider_past_experience': [False],
         'genetic_algo': [Constants.GA],
         'ga_nr_gen': [100],
         'pop_size': [20],
-        'contextualize': [True],  # [False, True],
+        'contextualize': [False],  # [False, True],
         'min_nr_adaptations_for_contextualizing': [10],
         'trial': [0]  # list(range(5))
     }

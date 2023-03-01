@@ -177,7 +177,7 @@ VOCABULARY_WHAT_USER_SAID = {"what did i say", "what did i just say", "tell me w
                              }
 
 VOCABULARY_WHAT_ROBOT_SAID = {"what did you say", "can you repeat", "can you repeat please", "can you repeat what you said",
-                              "can you repeat what you just said"}
+                              "can you repeat what you just said", "could you repeat"}
 
 VOCABULARY_ANYWAYS = ["", "anyways", "anyway", "anyhow", "in any case", "having said that", "also", "on top of that",
                       "apart from that", "aside from that", "other than that", "in adition to that", "by the way",

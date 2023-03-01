@@ -116,37 +116,62 @@ mapping_ranges = {
     "MOVEMENTS": range_mov
 }
 
-res_folders = ["final/exp_exp_20220929110809/", #G1,
-                    "final/exp_exp_20220929110904/", #G2
-                    "final/exp_exp_20220929110937/", #G3
-                    "final/exp_exp_20221115171111/" #G3 missing pt1
-    ]
+# res_folders = ["final/exp_exp_20220929110809/", #G1,
+#                     "final/exp_exp_20220929110904/", #G2
+#                     "final/exp_exp_20220929110937/", #G3
+#                     "final/exp_exp_20221115171111/", #G3 missing pt1
+#                "final/exp_exp_20221115171427/", #G3 missing pt2
+# "final/25-35k/exp_exp_20221221210716/",
+#                     "final/25-35k/exp_exp_20221221211115/",
+#                     "final/25-35k/exp_exp_20221221211314/",
+#     ]
 
 """ Analysis steps
 
-... Step 1. 
+... Step 1. TO INTEGRATE FROM V2
 - from the files obtained by running simulations, compute, in an efficient way, the interpretability indeces and the NRMSE of every step. 
 - generate a new file <original_filename>_ext.xlsx containing the new info
+
 
 ... Step 2.
 - given the output files of step 1, compute, for every file (i.e., experimetn) the RMSE of the NRMSEerrors of core center and width and of interpretability
 - generate a new file results_<foldername>.xlsx containing one row per experiments with the full list of param + the resulting RMSEs.
+
+
 """
+
+
 analysis_step = 2
 
 if analysis_step == 2:
     res_folders = [
         # "final/exp_exp_20220929110809/",  # G1,
-                   "final/exp_exp_20220929110904/",  # G2
-                   # "final/exp_exp_20220929110937/",  # G3
-                   # "final/exp_exp_20221115171111/"  # G3 missing pt1
-                   ]
+        #            "final/exp_exp_20220929110904/",  # G2
+        #            "final/exp_exp_20220929110937/",  # G3
+        #            "final/exp_exp_20221115171111/",  # G3 missing pt1,
+        #            "final/exp_exp_20221115171427/",  # G3 missing pt2
+        # "final/exp_exp_20221213112012/",  # g3 longer optim
+        # "final/25-35k/exp_exp_20221221210716/",
+        # "final/25-35k/exp_exp_20221221211115/",
+        # "final/25-35k/exp_exp_20221221211314/",
+        # "final/5datasets",
+                    "final/5datasets_2040mindp",
+
+    ]
     for res_folder in res_folders:
         res_group = pd.DataFrame()
 
         all_rmse_means_errors = []
         all_rmse_stdev_errors = []
         all_rmse_interp_errors = []
+
+        last100_rmse_means_errors = []
+        last100_rmse_stdev_errors = []
+        last100_rmse_interp_errors = []
+
+        last200_rmse_means_errors = []
+        last200_rmse_stdev_errors = []
+        last200_rmse_interp_errors = []
 
         for filename in os.listdir(res_folder):
             f = os.path.join(res_folder, filename)
@@ -157,6 +182,7 @@ if analysis_step == 2:
                 last_row = dataset_df.iloc[-1:]  # taking the last row just to store all the experiments parameters
                 res_group = pd.concat([res_group, last_row])
 
+                # all
                 sum_squares_means_errors = 0.0
                 sum_squares_stdevs_errors = 0.0
                 sum_squares_interpr_errors_VS1 = 0.0
@@ -176,10 +202,63 @@ if analysis_step == 2:
                 all_rmse_stdev_errors.append(rmse_stdev_errors)
                 all_rmse_interp_errors.append(rmse_interp_errors_VS1)
 
-        res_group['rmse_means_errors'] = all_rmse_means_errors
-        res_group['rmse_stdev_errors'] = all_rmse_stdev_errors
-        res_group['rmse_interp_errors_VS1'] = all_rmse_interp_errors
-        res_group.to_excel(os.path.join(res_folder, "res_group.xlsx"))
+                #last 100
+                sum_squares_means_errors = 0.0
+                sum_squares_stdevs_errors = 0.0
+                sum_squares_interpr_errors_VS1 = 0.0
+                N = 0
+                for index, row in dataset_df.tail(100).iterrows():
+                    """ For every data point (row in the dataframe)"""
+                    sum_squares_means_errors += (row[
+                        'Average NRMSE of Means (core center)']) ** 2  # NOTE THE ROW ALAREDY CONTAINS THEERROR, SO I DO NOT MAKE A DIFFERENCE
+                    sum_squares_stdevs_errors += (row['Average NRMSE of Stdevs (core width)']) ** 2
+                    sum_squares_interpr_errors_VS1 += (1 - row[
+                        'Average Interpretability']) ** 2  # i'M USING 1 AS BEST INTERPRETABILITY (BUT NOT SURE IT'S GOOD)
+                    N += 1
+
+                rmse_means_errors = math.sqrt((1 / N) * sum_squares_means_errors)
+                rmse_stdev_errors = math.sqrt((1 / N) * sum_squares_stdevs_errors)
+                rmse_interp_errors_VS1 = math.sqrt((1 / N) * sum_squares_interpr_errors_VS1)
+
+                last100_rmse_means_errors.append(rmse_means_errors)
+                last100_rmse_stdev_errors.append(rmse_stdev_errors)
+                last100_rmse_interp_errors.append(rmse_interp_errors_VS1)
+
+                # last 200
+                sum_squares_means_errors = 0.0
+                sum_squares_stdevs_errors = 0.0
+                sum_squares_interpr_errors_VS1 = 0.0
+                N = 0
+                for index, row in dataset_df.tail(200).iterrows():
+                    """ For every data point (row in the dataframe)"""
+                    sum_squares_means_errors += (row[
+                        'Average NRMSE of Means (core center)']) ** 2  # NOTE THE ROW ALAREDY CONTAINS THEERROR, SO I DO NOT MAKE A DIFFERENCE
+                    sum_squares_stdevs_errors += (row['Average NRMSE of Stdevs (core width)']) ** 2
+                    sum_squares_interpr_errors_VS1 += (1 - row[
+                        'Average Interpretability']) ** 2  # i'M USING 1 AS BEST INTERPRETABILITY (BUT NOT SURE IT'S GOOD)
+                    N += 1
+
+                rmse_means_errors = math.sqrt((1 / N) * sum_squares_means_errors)
+                rmse_stdev_errors = math.sqrt((1 / N) * sum_squares_stdevs_errors)
+                rmse_interp_errors_VS1 = math.sqrt((1 / N) * sum_squares_interpr_errors_VS1)
+
+                last200_rmse_means_errors.append(rmse_means_errors)
+                last200_rmse_stdev_errors.append(rmse_stdev_errors)
+                last200_rmse_interp_errors.append(rmse_interp_errors_VS1)
+
+        res_group['all_rmse_means_errors'] = all_rmse_means_errors
+        res_group['all_rmse_stdev_errors'] = all_rmse_stdev_errors
+        res_group['all_rmse_interp_errors_VS1'] = all_rmse_interp_errors
+
+        res_group['last100_rmse_means_errors'] = last100_rmse_means_errors
+        res_group['last100_rmse_stdev_errors'] = last100_rmse_stdev_errors
+        res_group['last100_rmse_interp_errors_VS1'] = last100_rmse_interp_errors
+
+        res_group['last200_rmse_means_errors'] = last200_rmse_means_errors
+        res_group['last200_rmse_stdev_errors'] = last200_rmse_stdev_errors
+        res_group['last200_rmse_interp_errors_VS1'] = last200_rmse_interp_errors
+
+        res_group.to_excel(os.path.join(res_folder, "res_group_all_l100_l200.xlsx"))
 
 
 if analysis_step == 1:

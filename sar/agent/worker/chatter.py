@@ -740,7 +740,7 @@ class Chatter(WorkerAgent):
                     # changing what to say
                     to_say = contractions.fix(to_say)
                     if not "sir" in to_say.lower():
-                        to_say = "Sir, " + to_say + " Sir!"
+                        to_say = random.choice(["Sir, ", ""]) + to_say + random.choice([" Sir!", "!"])
                     # and also executing a certain animation
                     # self.mqtt_publisher.publish(Constants.TOPIC_POSTURE,
                     #                             utils.joinStrings([Constants.DIRECTIVE_PLAYANIMATION,
@@ -1112,7 +1112,7 @@ class Chatter(WorkerAgent):
         self.chatter_state_machine.setup(self.nlp)
 
         self.last_thinking_time = -1
-        self.max_time_thinking = timedelta(seconds=60)
+        self.max_time_thinking = timedelta(seconds=30)
 
         self.asked_about_emotions = False
         self.to_add_to_next_sentence = None

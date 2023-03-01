@@ -116,10 +116,18 @@ mapping_ranges = {
     "MOVEMENTS": range_mov
 }
 
-res_folders = ["final/exp_exp_20220929110809/", #G1,
-                    "final/exp_exp_20220929110904/", #G2
-                    "final/exp_exp_20220929110937/", #G3
-                    "final/exp_exp_20221115171111/" #G3 missing pt1
+res_folders = [
+    # "final/exp_exp_20220929110809/", #G1,
+    #                 "final/exp_exp_20220929110904/", #G2
+                    # "final/exp_exp_20220929110937/", #G3
+                    # "final/exp_exp_20221115171111/", #G3 missing pt1,
+                    # "final/exp_exp_20221115171427/", #G3 missing pt2
+                    # "final/exp_exp_20221213112012/", #g3 longer optim
+                    # "final/25-35k/exp_exp_20221221210716/",
+                    # "final/25-35k/exp_exp_20221221211115/",
+                    # "final/25-35k/exp_exp_20221221211314/",
+                    # "final/5datasets",
+                    "final/5datasets_2040mindp",
     ]
 
 """ Analysis steps
@@ -129,7 +137,31 @@ res_folders = ["final/exp_exp_20220929110809/", #G1,
 - generate a new file <original_filename>_ext.xlsx containing the new info
 
 """
-analysis_step = 1
+analysis_step = 0
+
+if analysis_step == 0:
+    for res_folder in res_folders:
+        print(res_folder)
+        for filename in os.listdir(res_folder):
+            f = os.path.join(res_folder, filename)
+            if os.path.isfile(f) and f.endswith(".csv"):
+
+                dataset_df = pd.read_csv(f)
+                row_0 = dataset_df.iloc[0]
+                # print(dataset_df.columns)
+                print(filename, end="\t")
+                for n in dataset_df.columns:
+                    print(row_0[n], end="\t")
+
+                print()
+                # 'society', 'dataset_file', 'max_dataset_size', 'fuzzy_sets_file',
+                # 'ling_vars_file', 'rules_file_id', 'interpretability_index',
+                # 'min_nr_datapoints', 'min_certainty_threshold', 'genetic_algo',
+                # 'ga_nr_gen', 'pop_size', 'trial', 'STEP/DATAPOINT',
+                # 'use_correct_interpretation', 'consider_past_experience',
+                # 'contextualize', 'min_nr_adaptations_for_contextualizing',
+                # 'correct_interpretation', 'social_interpretation',
+                # 'certainty_interpretation',
 
 if analysis_step == 1:
     memory_to_speed_up = {}

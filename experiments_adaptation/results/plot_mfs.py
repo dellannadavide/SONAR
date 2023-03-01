@@ -136,20 +136,28 @@ high_mov_a = fuzz.gaussmf(range_mov,        distributions_averages["Austria"]["h
 # index_row_to_plot = 251
 
 #G1
-results = pd.read_excel('final/exp_exp_20220929110809/aggr_res_g1.xlsx', sheet_name="Sheet1")
-indeces_row_to_plot = [113, 118] #G1, 10k, 100, no past
-indeces_row_to_plot = [63, 68] #G1, 1k, 10, no past
+# results = pd.read_excel('final/exp_exp_20220929110809/res_group_all_l100_l200_G1.xlsx', sheet_name="Sheet1")
+results = pd.read_excel('final/exp_exp_20220929110809/res_20220929110809_20220929110819_0_ext.xlsx', sheet_name="Sheet1")
+results = pd.read_excel('final/exp_exp_20220929110904/res_20220929110904_20220929112927_0_ext.xlsx', sheet_name="Sheet1")
+results = pd.read_excel('final/exp_exp_20221213112012/res_20221213112012_20221213215949_0_ext.xlsx', sheet_name="Sheet1")
+results = pd.read_excel('final/5datasets_2040mindp/res_20230212143920_20230212152113_7_ext.xlsx', sheet_name="Sheet1")
+# indeces_row_to_plot = [113, 118] #G1, 10k, 100, no past
 
-#G2
-results = pd.read_excel('final/exp_exp_20220929110904/aggr_res_g2.xlsx', sheet_name="Sheet1")
-indeces_row_to_plot = [113, 118] #G2, 10k, 100, no past
-indeces_row_to_plot = [74, 78] #G2, 1k, 50, no past
-indeces_row_to_plot = [93, 99] #G2, 10k, 10, no past
+# indeces_row_to_plot = [63, 68] #G1, 1k, 10, no past
+# indeces_row_to_plot = [1, 6] #G1, 1k, 10, no past
+# indeces_row_to_plot = [915] #G1, 1k, 10, no past
+indeces_row_to_plot = [950] #G1, 1k, 10, no past
 
-#G3 missing pt 1
-results = pd.read_excel('final/exp_exp_20221115171111/aggr_res_g3_missingpt1.xlsx', sheet_name="Sheet1")
-indeces_row_to_plot = [0, 5] #G3, PHI, 1K, 10, 100, 20
-indeces_row_to_plot = [10, 5] #G3, PHI, 1K, 10, 100, 20
+# #G2
+# results = pd.read_excel('final/exp_exp_20220929110904/aggr_res_g2.xlsx', sheet_name="Sheet1")
+# indeces_row_to_plot = [113, 118] #G2, 10k, 100, no past
+# indeces_row_to_plot = [74, 78] #G2, 1k, 50, no past
+# indeces_row_to_plot = [93, 99] #G2, 10k, 10, no past
+#
+# #G3 missing pt 1
+# results = pd.read_excel('final/exp_exp_20221115171111/aggr_res_g3_missingpt1.xlsx', sheet_name="Sheet1")
+# indeces_row_to_plot = [0, 5] #G3, PHI, 1K, 10, 100, 20
+# indeces_row_to_plot = [10, 5] #G3, PHI, 1K, 10, 100, 20
 
 plt.figure(figsize=(12, 8))
 
@@ -221,3 +229,4 @@ for index_row_to_plot in indeces_row_to_plot:
         plt.plot(range_mov, results_mfs["high_mov"])
 
 plt.show()
+plt.savefig('fig.pdf')
