@@ -1,4 +1,5 @@
-# SONAR: NOrm and Socially Aware Robots
+# SONAR: an adaptive control architecture for SOcial Norm Aware Robots
+![alt text](sonar.jpg)
 SONAR is a Python 3.9 resource intended to be used as the "brain" of a social robot. 
 SONAR provides decision-making mechanisms for social robots that allow them to account for social norms, practices and cues in interactions with humans.
 
