@@ -1,7 +1,7 @@
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 
 
 import utils.constants as Constants
@@ -9,7 +9,7 @@ from utils.mqttclient import MQTTClient
 
 import utils.utils as utils
 
-class PositionHandlerSim(WorkerAgent):
+class VisionHandlerSim(WorkerAgent):
     class SendMsgToBehaviour(OneShotBehaviour):
         """
         Sends all collected text to the BDI agent
@@ -19,7 +19,7 @@ class PositionHandlerSim(WorkerAgent):
             super().__init__()
             self.receiver = receiver
 
-        def getDistances(self):
+        def getVisionInfo(self):
             bel_list_from_oldest_file = []
             nr_rec_in = len(self.agent.received_inputs)
             for i in range(nr_rec_in):
@@ -29,13 +29,15 @@ class PositionHandlerSim(WorkerAgent):
 
         async def run(self):
             # print("chatter running the sendmsgtobdibehavior")
-            s_list = self.getDistances()
+            s_list = self.getVisionInfo()
             # print(s_list)
             if len(s_list) > 0:
-                msg_body = s_list
-                # print("sending data as requested to the bdi")
-                msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
-                await self.send(msg)
+                for p in s_list:
+                    if len(p) > 0:
+                        msg_body = p
+                        # print("sending data as requested to the bdi")
+                        msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
+                        await self.send(msg)
             # else:
             #     msg_body = Constants.NO_DATA
             #     # print(msg_body)
@@ -49,27 +51,21 @@ class PositionHandlerSim(WorkerAgent):
 
     def on_message(self, client, userdata, message):
         rec_m = str(message.payload.decode("utf-8"))
-        rec_m_list = utils.splitStringToList(rec_m)
-        # store the distance
-        self.received_inputs.append(rec_m_list[2])
+        # print("As a VISION HANDLER I received data " + rec_m)
+        split_m = utils.splitStringToList(rec_m)
 
         if not self.gui_queue is None:
-
-            info_for_gui = ["PERSON_POSITION",
-                float(rec_m_list[0]), #x
-                float(rec_m_list[1]), #y
-                float(rec_m_list[2])] #dist
+            info_for_gui = ["PERSON_INFO",
+                            int(split_m[0]),
+                            str(split_m[1]),
+                            float(split_m[2])]
             self.gui_queue.put(info_for_gui)
 
-            info_for_gui2 = ["NAO_NORM",
-                            self.fsq[0].getRuleBase().getMF("mid_distance").param["b"],
-                             self.fsq[0].getRuleBase().getMF("mid_distance").param["c"]]
-            self.gui_queue.put(info_for_gui2)
-            #person_idx, new_p_x, new_p_y, nao_x, nao_y, person_norm, nao_norm, person_greets, nao_greets
+        self.received_inputs.append(split_m[1])
 
     async def setup(self):
         """ I create and train the actual chatter"""
         self.received_inputs = []
         """ This will listen to the sensors collecting data """
-        self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_PositionHandler_Listener", Constants.MQTT_CLIENT_TYPE_LISTENER, Constants.TOPIC_DISTANCE, self.on_message)
+        self.mqtt_listener = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_VisionHandler_Listener", Constants.MQTT_CLIENT_TYPE_LISTENER, Constants.TOPIC_HUMAN_DETECTION, self.on_message)
         await super().setup()

@@ -19,7 +19,7 @@ Other worker agents perform tasks internal to the multi-agent system. For exampl
 SONAR is decoupled from any specific implementation of a robot. 
 Commands for and inputs from the robot (or other devices) are given and received via MQTT. [MQTT](https://en.wikipedia.org/wiki/MQTT) is a lightweight method of carrying out messaging using a publish/subscribe model, and the standard messaging protocol for the Internet of Things.
 
-SONAR can be effectively used to control a [Nao robot](https://www.aldebaran.com/en/nao) by establishing MQTT communication between SONAR and the [MQTT-Nao-Interface](https://github.com/dellannadavide/MQTT-Nao-Interface).
+SONAR has been effectively used to control a [Nao robot](https://www.aldebaran.com/en/nao) by establishing MQTT communication between SONAR and the [MQTT-Nao-Interface](https://github.com/dellannadavide/MQTT-Nao-Interface).
 Services from both SONAR and MQTT-Nao-Interface subscribe to or publish messages to an MQTT broker.
 This allows for decoupling between the specific interface with the robot or other devices (e.g., microphones, cameras, or IoT devices) and SONAR. 
 

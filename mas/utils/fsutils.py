@@ -7,11 +7,11 @@ import pandas as pd
 import numpy as np
 
 
-from sar.utils.moea import getContextualizedFS
-from sar.utils.skfsutils import createSKFuzzyMFandGetDissimilarity
+from mas.utils.moea import getContextualizedFS
+from mas.utils.skfsutils import createSKFuzzyMFandGetDissimilarity
 
 import logging
-logger = logging.getLogger("nosar.sar.utils.fsutils")
+logger = logging.getLogger("nosar.mas.utils.fsutils")
 
 def scaleFrom01ToAB(x, a, b, lambd, k_SF):
     if x <= lambd:

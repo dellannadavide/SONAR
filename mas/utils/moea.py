@@ -35,10 +35,10 @@ import utils.constants as Constants
 import skfuzzy as fuzz
 import scipy.integrate as integrate
 
-from sar.utils.skfsutils import convertFSTOSkFuzzy, getDissimilaritySKFuzzyMF
+from mas.utils.skfsutils import convertFSTOSkFuzzy, getDissimilaritySKFuzzyMF
 
 import logging
-logger = logging.getLogger("nosar.sar.utils.moea")
+logger = logging.getLogger("nosar.mas.utils.moea")
 
 def f(xy, *fuzzy_sets):
     """ To determine the intersection between two functions """

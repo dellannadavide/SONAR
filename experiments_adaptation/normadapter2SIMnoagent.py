@@ -16,7 +16,7 @@ parent = os.path.dirname(current)
 # the sys.path.
 sys.path.append(parent)
 
-from sar.utils.fsutils import linearScaleUniverseToA1B1, getDissimilarity
+from mas.utils.fsutils import linearScaleUniverseToA1B1, getDissimilarity
 from utils import utils
 import numpy as np
 import utils.constants as Constants

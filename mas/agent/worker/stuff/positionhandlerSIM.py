@@ -1,7 +1,7 @@
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 
 
 import utils.constants as Constants
@@ -9,19 +9,15 @@ from utils.mqttclient import MQTTClient
 
 import utils.utils as utils
 
-import logging
-logger = logging.getLogger("nosar.sar.agent.worker.positionhandler")
-
-class PositionHandler(WorkerAgent):
+class PositionHandlerSim(WorkerAgent):
     class SendMsgToBehaviour(OneShotBehaviour):
         """
         Sends all collected text to the BDI agent
         """
 
-        def __init__(self, receiver, metadata):
+        def __init__(self, receiver):
             super().__init__()
             self.receiver = receiver
-            self.metadata = metadata
 
         def getDistances(self):
             bel_list_from_oldest_file = []
@@ -34,15 +30,11 @@ class PositionHandler(WorkerAgent):
         async def run(self):
             # print("chatter running the sendmsgtobdibehavior")
             s_list = self.getDistances()
-            metadata = None
-            if not self.metadata is None:
-                if "batch" in self.metadata:
-                    metadata = {"batch": self.metadata["batch"]}
             # print(s_list)
             if len(s_list) > 0:
                 msg_body = s_list
                 # print("sending data as requested to the bdi")
-                msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, msg_body, Constants.TOPIC_DISTANCE, metadata)
+                msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
                 await self.send(msg)
             # else:
             #     msg_body = Constants.NO_DATA
@@ -52,13 +44,28 @@ class PositionHandler(WorkerAgent):
 
     async def send_msg_to(self, receiver, metadata=None, content=None):
         # print("As a chatter, I received request from the BDI module to send data")
-        b = self.SendMsgToBehaviour(receiver, metadata)
+        b = self.SendMsgToBehaviour(receiver)
         self.add_behaviour(b)
 
     def on_message(self, client, userdata, message):
         rec_m = str(message.payload.decode("utf-8"))
-        # print("position handler: received message ", rec_m)
-        self.received_inputs.append(rec_m)
+        rec_m_list = utils.splitStringToList(rec_m)
+        # store the distance
+        self.received_inputs.append(rec_m_list[2])
+
+        if not self.gui_queue is None:
+
+            info_for_gui = ["PERSON_POSITION",
+                float(rec_m_list[0]), #x
+                float(rec_m_list[1]), #y
+                float(rec_m_list[2])] #dist
+            self.gui_queue.put(info_for_gui)
+
+            info_for_gui2 = ["NAO_NORM",
+                            self.fsq[0].getRuleBase().getMF("mid_distance").param["b"],
+                             self.fsq[0].getRuleBase().getMF("mid_distance").param["c"]]
+            self.gui_queue.put(info_for_gui2)
+            #person_idx, new_p_x, new_p_y, nao_x, nao_y, person_norm, nao_norm, person_greets, nao_greets
 
     async def setup(self):
         """ I create and train the actual chatter"""

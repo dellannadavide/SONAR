@@ -10,7 +10,7 @@ import nltk
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 
 # import chatterbot
 # from chatterbot import ChatBot
@@ -19,8 +19,8 @@ from sar.agent.workeragent import WorkerAgent
 # from chatterbot import filters
 
 import utils.constants as Constants
-from sar.utils.news import getRandomNewsFromBBC
-from sar.utils.weather import getCurrentWeather
+from mas.utils.news import getRandomNewsFromBBC
+from mas.utils.weather import getCurrentWeather
 from utils.mqttclient import MQTTClient
 
 import utils.utils as utils
@@ -38,7 +38,7 @@ from statemachine import StateMachine, State
 
 import logging
 
-logger = logging.getLogger("nosar.sar.agent.worker.chatter")
+logger = logging.getLogger("nosar.mas.agent.worker.chatter")
 
 
 class Chatter(WorkerAgent):

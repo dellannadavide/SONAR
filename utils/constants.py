@@ -1,4 +1,10 @@
-""" Constants to be used for utilities """
+"""
+This file contains all constants used in SONAR.
+Constants include, among others, also vocabularies used for keywords recognition, or predefined sentences.
+Constants also include, at the end of the file, the jid of agents in the MAS.
+These can be modified when introducing new agents.
+"""
+
 LOGGING_LV_DEBUG_NOSAR = 15
 LOGGING_LV_DEBUG_NOSAR_NAME = "DEBUG_NOSAR"
 

@@ -3,8 +3,8 @@ import time
 
 import matplotlib as mpl
 
-from sar.sar import SARBDIAgent
-from sar.sar_baseline import SARBDIAgent_BASELINE
+from mas.mas import MAS
+from mas.mas_baseline import MAS_BASELINE
 
 mpl.use('TkAgg')
 
@@ -13,6 +13,7 @@ import utils.constants as Constants
 from datetime import datetime
 import logging
 
+""" This main module starts SONAR"""
 
 if __name__ == '__main__':
 
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     now = datetime.now()
     exec_timestamp = str(now.strftime("%Y%m%d%H%M%S"))
     log_folder = "./log/"
-    log_path_name = log_folder + exp_id+"_sonar_" + agent_type + "_" + exec_timestamp + ".log"
+    log_path_name = log_folder + exp_id + "_sonar_" + agent_type + "_" + exec_timestamp + ".log"
 
     logging.addLevelName(Constants.LOGGING_LV_DEBUG_NOSAR, Constants.LOGGING_LV_DEBUG_NOSAR_NAME)
 
@@ -53,15 +54,16 @@ if __name__ == '__main__':
 
     if agent_type == "parrot_agent":
         logger.warning("IMPORTANT!!! Using the parrotagent")
-        a = SARBDIAgent_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD,
-                                 asl_file="sar/basic_showcase_parrot.asl", workers_to_start=workers_to_start)
+        a = MAS_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD,
+                         asl_file="mas/basic_showcase_parrot.asl", workers_to_start=workers_to_start)
     if agent_type == "baseline_agent":
         logger.warning("IMPORTANT!!! Using the baseline agent")
-        a = SARBDIAgent_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD,
-                                 asl_file="sar/basic_minimal_baseline.asl", workers_to_start=workers_to_start)
+        a = MAS_BASELINE(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD,
+                         asl_file="mas/basic_minimal_baseline.asl", workers_to_start=workers_to_start)
     if agent_type == "sonar_agent":
         logger.warning("IMPORTANT!!! Using the social and norm aware agent")
-        a = SARBDIAgent(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD, workers_to_start=workers_to_start)
+        a = MAS(Constants.BDI_CORE_JID, Constants.BDI_CORE_PWD,
+                asl_file="mas/basic2.asl", workers_to_start=workers_to_start)
 
     future = a.start()
     future.result()

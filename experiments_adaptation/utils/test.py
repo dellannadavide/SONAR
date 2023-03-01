@@ -1,6 +1,6 @@
 import utils.constants as Constants
-from sar.agent.worker.stuff.normadapter2SIM import NormAdapter2SIM
-from sar.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
+from mas.agent.worker.stuff.normadapter2SIM import NormAdapter2SIM
+from mas.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
 from utils.utils import joinStrings
 
 import pandas as pd

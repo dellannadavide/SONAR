@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import skfuzzy
 
-from sar.utils.moea import PHI_Q
+from mas.utils.moea import PHI_Q
 
 pd.set_option('display.max_columns', None)
 

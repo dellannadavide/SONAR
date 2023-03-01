@@ -2,14 +2,14 @@ import time
 
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 from utils.mqttclient import MQTTClient
 
 import utils.utils as utils
 import utils.constants as Constants
 
 import logging
-logger = logging.getLogger("nosar.sar.agent.worker.systemhandler")
+logger = logging.getLogger("nosar.mas.agent.worker.systemhandler")
 
 class SystemHandler(WorkerAgent):
     async def setup(self):

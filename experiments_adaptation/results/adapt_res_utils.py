@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import skfuzzy
 import matplotlib.pyplot as plt
-from sar.utils.moea import PHI_Q
+from mas.utils.moea import PHI_Q
 
 
 mappings = {

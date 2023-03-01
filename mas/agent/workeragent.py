@@ -1,45 +1,45 @@
-import datetime
-import getpass
-import os
-import time
-from random import random
+import logging
+from abc import abstractmethod
 
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
-from spade.message import Message
-
-import simpful as sf
-from simpful import *
-
-
-import paho.mqtt.client as mqtt
-import time
-
-# from chatterbot import ChatBot
-# from chatterbot.trainers import ChatterBotCorpusTrainer
-# from chatterbot.trainers import UbuntuCorpusTrainer
-# from chatterbot import filters
 
 import utils.constants as Constants
-from sar.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
-from utils.mqttclient import MQTTClient
-
-from abc import abstractmethod
 import utils.utils as utils
-import json
 
-import logging
-logger = logging.getLogger("nosar.sar.agent.workeragent")
+logger = logging.getLogger("nosar.mas.agent.workeragent")
 
 class WorkerAgent(Agent):
+    """
+    A class representing a Worker Agent. A type of agent that can interact with the external world via MQTT,
+    and internally with other agents via message passing.
+    """
 
     def __init__(self, jid: str, password: str, verify_security: bool = False, fsi=None, fsq=None, gui_queue=None):
+        """
+        Init of the agent
+        :param jid: the jid of the SPADE agent
+        :param password: the pwd of the SPADE agent
+        :param verify_security:
+        :param fsi: an instance of FuzzySocialInterpreter used by the agent to attribute social interpretation to physical inputs
+        :param fsq: an instance of FuzzySocialQualifier used by the agent to appropriately qualify actions
+        :param gui_queue:
+        """
         super().__init__(jid, password, verify_security)
-        self.fsi = fsi #fuzzy social interpreter (None if not needed by the particular worker)
-        self.fsq = fsq #fuzzy social qualifier (None if not needed, otherwise a list of fuzzy systems)
+        self.fsi = fsi # fuzzy social interpreter (None if not needed by the particular worker)
+        self.fsq = fsq # fuzzy social qualifier (None if not needed, otherwise a list of fuzzy systems)
         self.gui_queue = gui_queue
 
     class ListenBehavior(CyclicBehaviour):
+        """
+        Every worker agent has at least one listenbehavior
+        this behavior cyclically waits for a message
+        - if the message is a REQUEST, then the agent calls function send_msg_to
+        - if the message is an INFORM, the agent calls function do_work
+        both send_msg_to and do_work functions are worker-specific.
+        Typically, REQUEST is used by other agents to request info from the agent,
+        while INFORM is used mainly by the BDI agent to give directives to the agent
+        """
         async def run(self):
             msg = await self.receive(timeout=10)  # wait for a message for 10 seconds
             if msg:
@@ -51,12 +51,6 @@ class WorkerAgent(Agent):
                 else:
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, str(msg.sender)+", you are telling me something I don't understand...")
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, msg.body)
-
-
-        # async def on_end(self):
-        #     # stop agent from behaviour
-        #     print("Stopping ListenToBDIBehavior...")
-        #     await self.agent.stop()
 
     async def setup(self):
         b = self.ListenBehavior()

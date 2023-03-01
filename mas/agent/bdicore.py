@@ -12,12 +12,16 @@ from spade.message import Message
 
 import utils.constants as Constants
 import utils.utils as utils
-from sar.norm.normativereasoner import NormativeReasoner
+from mas.norm.normativereasoner import NormativeReasoner
 
 import logging
-logger = logging.getLogger("nosar.sar.agent.bdicore")
+logger = logging.getLogger("nosar.mas.agent.bdicore")
 
 class BDICore(BDIAgent):
+    """
+    A class representing a BDI Agent, the core of the MAS.
+    """
+
     """ The robot will move its head to look around no more than once every ... seconds """
     _MOVE_HEAD_MAX_FREQUENCY = 5
     """ The robot will trigger a new topic of interest no more than once every ... seconds """
@@ -35,8 +39,11 @@ class BDICore(BDIAgent):
     _BREAK_SILENCE_MAX_FREQUENCY = 60
 
     def add_custom_actions(self, actions):
+        """ This function adds a number of custom actions to the AgentSpeak inference engine.
+        The actions are accessed and invoked by the .asl files which are used to instantiate the BDI agents."""
         @actions.add(".greet", 1)
         def _greet(agent, term, intention):
+            """ An action to greet. It informs (by sending a message) the chatter agent to begin the greeting social practice """
             x = str(agentspeak.grounded(term.args[0], intention.scope))
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_BEGIN_GREETING,
@@ -52,10 +59,9 @@ class BDICore(BDIAgent):
 
         @actions.add(".goodbye", 1)
         def _goodbye(agent, term, intention):
+            """ An action to say goodbye. It informs the chatter agent to begin the goodbye social practice. """
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .goodbye")
-
             to_say = "Are you leaving?"
-
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_BEGIN_GOODBYE,
                 Constants.SPADE_MSG_TO_SAY: to_say,
@@ -70,6 +76,10 @@ class BDICore(BDIAgent):
 
         @actions.add(".shut_down", 1)
         def _turn_off(agent, term, intention):
+            """ An action to shut down. It informs, after having received the command from a user,
+            the system handler worker agent to shut down the robot.
+            It also informs the chatter that the user input was a command, so no reply is needed
+            (this is useful to keep the history of conversation consistent in the chatter) """
             logger.info("As instructed by " + str(
                 agentspeak.grounded(term.args[0], intention.scope)) + ", I will start procedure to shut down")
 
@@ -354,16 +364,6 @@ class BDICore(BDIAgent):
         @actions.add(".trigger_spontaneous_conversation", 0)
         def _trigger_spontaneous_conversation(agent, term, intention):
             logger.info("I trigger a spontaneous conversation, if needed ")
-            """ What I want to do is the following:
-            1. check if in the memory tehre is some "said", if yes then do nothing
-            2. if not, then communicate to the chatter to Constants.DIRECTIVE_CONTINUE_CONVERSATION"""
-            # said_sth_recently = False
-            # for k in list(self.memory.keys()):
-            #     for b in self.memory[k]:
-            #         if "said" in b:
-            #             said_sth_recently = True
-            #             break
-            # if not said_sth_recently:
             if not self.isInRecentMemory([Constants.ASL_BEL_SAID], BDICore._BREAK_SILENCE_MAX_FREQUENCY) and \
                     not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_SPONTANEOUS], BDICore._SPONTANEOUS_CONVERSATION_MAX_FREQUENCY):
 
@@ -384,22 +384,7 @@ class BDICore(BDIAgent):
         @actions.add(".update_topic_perception", 1)
         def _update_topic_perception(agent, term, intention):
             object_perceived = str(agentspeak.grounded(term.args[0], intention.scope))
-            # already_updated_topic_recently = False
-            # for k in list(self.memory.keys()):
-            #     for b in self.memory[k]:
-            #         # if (("updated_topic" in b) and (object in b)):
-            #         if (("updated_topic" in b)):
-            #             already_updated_topic_recently = True
-            #             break
-            # if not already_updated_topic_recently:
             if not self.isInRecentMemory([Constants.ASL_BEL_UPDATED_TOPIC_PERC, object_perceived], BDICore._TOPIC_PERCEPTION_MAX_FREQUENCY): #if I did not recently updated the topic about the perceived object
-                # times_perceived_object_recently = self.countInRecentMemory(["perceived_object", object])
-                # times_perceived_object_recently = 0
-                # for k in list(self.memory.keys()):
-                #     for b in self.memory[k]:
-                #         if ("perceived_object" in b and (object in b)):
-                #             times_perceived_object_recently += 1
-                # if times_perceived_object_recently <= 1:
                 if self.countInRecentMemory([Constants.ASL_BEL_PERCEIVED_OBJECT, object_perceived], BDICore._TOPIC_PERCEPTION_MAX_FREQUENCY) <= 1: #and if it has not been visible already for long time (maybe I updated it, then it remained visible from that moment on, I don't want to repeat)
                     msg_body_dict = {**{
                         Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_TURN_CONVERSATION,
@@ -513,8 +498,6 @@ class BDICore(BDIAgent):
                     except IndexError:
                         pass
 
-            # self.add_behaviour(self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM,
-            #                                              [Constants.DIRECTIVE_SAY_IN_RESPONSE, "Well, I know many things. But I think what you want to know is the following."] + self.curr_social_interp))
             knowledge_response = ""
             for b in belief_list:
                 # print(b)
@@ -571,13 +554,10 @@ class BDICore(BDIAgent):
                 self.SendMessageBehaviour(Constants.CHATTER_JID, Constants.PERFORMATIVE_INFORM, msg_body_dict))
             yield
 
-        # @actions.add(".my_action", 1)
-        # def _my_action(agent, term, intention):
-        #     arg = agentspeak.grounded(term.args[0], intention.scope)
-        #     print(arg)
-        #     yield
-
     class SendMessageBehaviour(OneShotBehaviour):
+        """
+        OneShotBehavior instantiated and executed in order to send a message to one of the agents.
+        """
         def __init__(self, receiver, performative, message_body_dict, thread=None, metadata=None):
             super().__init__()
             self.receiver = receiver
@@ -593,6 +573,10 @@ class BDICore(BDIAgent):
             await self.send(msg)
 
     class ManageMemoryBehaviour(PeriodicBehaviour):
+        """ A periodic behavior used to manage the agent's memory.
+        In particular, this behavior removes from the memory too old information.
+        This allows the agent to have a short term memory that can be used to infer the objects in sight.
+        """
         def __init__(self, period, start_at, beliefs_memory_size_seconds=60, long_term_memory_size_seconds=300):
             super().__init__(period, start_at)
             self.memory_size_seconds = beliefs_memory_size_seconds
@@ -653,14 +637,13 @@ class BDICore(BDIAgent):
             self.agent.bdi.set_belief(Constants.ASL_BEL_ADD_SPONT_CONV_GOAL)
 
     class SenseReasonAct(CyclicBehaviour):
+        """
+        The main cyclic behavior of the agent representing the sense reason and act cycle.
+        """
         async def on_end(self):
             await self.agent.stop()
 
         async def run(self):
-            # print("BDI: Starting one cycle of SENSEREASONACT at " + str(time.time()))
-            # sense
-            # request the data
-            # print("BDI: asking the chatter to give data")
             request_msg_from_data_collector = utils.prepareMessage(self.agent.jid,
                                                                    Constants.DATA_COLLECTOR_JID,
                                                                    Constants.PERFORMATIVE_REQUEST,
@@ -693,12 +676,7 @@ class BDICore(BDIAgent):
         def prepareForNextCycle(self):
             # print("BDI: preparing for next cycle")
             self.agent.bdi.set_belief(Constants.ASL_BEL_PREPARE_FOR_NEXT_CYCLE)
-            # self.removePrevNorms()
             self.agent.setRole(Constants.ASL_FLUENT_ROLE_NONE)
-            # self.removeBeliefsWithKey("perceived_object")
-            # self.removeBeliefsWithKey("distance")
-            # self.removeBeliefsWithKey("is_looking")
-            # self.removeBeliefsWithKey("saw")
 
         def addNewBeliefs(self, batch_of_beliefs_dict):
             # print("BDI: adding new beliefs")
@@ -711,10 +689,6 @@ class BDICore(BDIAgent):
                 if key == Constants.ASL_BEL_PERSON_NAME or key == Constants.ASL_BEL_VISIBLE:  # note for these it is assumed that there is only one possible belief, so the key is checked to be ==
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "setting belief {} for batch {}".format(bel, batch))
                     self.agent.setBelief(batch, bel)  # IT IS ASSUMED THAT BEL IS A LIST
-            # for b in new_bel_list:
-            #     bel = utils.splitStringBelToList(b)
-            #     if ("person_name" in bel) or ("visible" in bel):
-            #         self.agent.setBelief(batch, bel)
 
             """ and then I just process all other beliefs """
             for key, bel in batch_of_beliefs_dict.items():
@@ -728,21 +702,13 @@ class BDICore(BDIAgent):
                     self.agent.setBelief(batch,
                                          bel)  # note I may set again the beliefs above, but they will just be replaced (little waste here)
 
-            # for b in new_bel_list:
-            #     bel = utils.splitStringBelToList(b)
-            #     if bel[0] == "social_eval":
-            #         self.agent.curr_social_interp = bel
-            #         print("BDI updating current social interpr to: ", bel)
-            #         print("new social interp is ", self.agent.curr_social_interp)
-            #     else:
-            #         self.agent.setBelief(batch, bel)
 
         def performReasoning(self):
             # print("BDI: performing reasoning")
-
-            # N.B. I could also perform some "external" (normative) reasoning
+            # todo n.b I could also perform some "external" (normative) reasoning
             # external to agentsopeak
             # by invoking some other functions and then setting/removing the opportune beliefs/goals
+            # for now this is left for future work
             self.agent.bdi.set_belief(Constants.ASL_BEL_PERFORM_REASONING)
 
         def removePrevNorms(self):
@@ -863,16 +829,7 @@ class BDICore(BDIAgent):
                     if all_in:
                         return True
         return False
-        #
-        # for k in list(self.memory.keys()):
-        #     for b in self.memory[k]:
-        #         all_in = True
-        #         for f in fluents:
-        #             if not f in b:
-        #                 all_in = False
-        #         if all_in:
-        #             return True
-        # return False
+
 
     def countInRecentMemory(self, list_of_val, last_n_seconds):
         if last_n_seconds == -1:

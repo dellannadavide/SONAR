@@ -1,7 +1,7 @@
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 
 
 import utils.constants as Constants
@@ -12,7 +12,7 @@ import utils.utils as utils
 from itertools import groupby
 
 import logging
-logger = logging.getLogger("nosar.sar.agent.worker.visionhandler")
+logger = logging.getLogger("nosar.mas.agent.worker.visionhandler")
 
 class VisionHandler(WorkerAgent):
     class SendMsgToBehaviour(OneShotBehaviour):

@@ -2,7 +2,7 @@ import numpy as np
 import skfuzzy as fuzz
 
 import logging
-logger = logging.getLogger("nosar.sar.utils.skfsutils")
+logger = logging.getLogger("nosar.mas.utils.skfsutils")
 
 def convertFSTOSkFuzzy(partition_universe_boundaries, simpful_fuzzyset):
     """ Assuming trapezoid """

@@ -2,7 +2,7 @@ import copy
 
 from spade.behaviour import PeriodicBehaviour
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 from simpful import *
 
 from utils import utils

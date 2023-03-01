@@ -5,9 +5,26 @@ import utils.constants as Constants
 import json
 
 import logging
-logger = logging.getLogger("nosar.sar.utils.utils")
+logger = logging.getLogger("nosar.mas.utils.utils")
+
+""" A utility module. It contains some global utility functions"""
 
 def prepareMessage(sender_jid, received_jid, performative, msg_body, thread=None, metadata=None):
+    """
+    Utility function used by the agents to communicate in the MAS. THe function prepares a Message instance.
+    In particular, it constructs the metadata of the message from the input given as parameters and
+    creates, if it is not, a json to use as msg_body
+    :param sender_jid:
+    :param received_jid:
+    :param performative: a FIPA performative
+    :param msg_body: the content of the body
+    :param thread: a thread identifying the type of message
+    :param metadata: the metadata, used to filter the message
+    :return: an isntance of Message
+    """
+    """ 
+
+    """
     msg = Message(received_jid)  # Instantiate the message
     msg.set_metadata("performative", performative)  # Set the "inform" FIPA performative
     if not metadata is None:

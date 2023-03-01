@@ -2,9 +2,14 @@ import paho.mqtt.client as mqtt
 import utils.constants as Constants
 
 import logging
-logger = logging.getLogger("nosar.sar.utils.mqttclient")
+logger = logging.getLogger("nosar.mas.utils.mqttclient")
 
 class MQTTClient:
+    """
+    Utility class. Worker agents in SONAR have, among their attributes, instances of mqtt clients that they
+    use to communicate with the external world. in particular, to send directives to the robot's actuator, and to
+    receive data from robot's sensors.
+    """
     def __init__(self, broker, client_id, client_type, topic, on_message):
         self.mqttBroker = broker
         self.client_id = client_id

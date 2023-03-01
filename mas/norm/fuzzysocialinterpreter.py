@@ -1,44 +1,70 @@
 import copy
 import threading
 import traceback
+import random
 
 import utils.constants as Constants
-from sar.utils.fsutils import SARFuzzyRuleBase
+from mas.utils.fsutils import SARFuzzyRuleBase
 
 import logging
-logger = logging.getLogger("nosar.sar.norm.fuzzysocialqualifier")
+logger = logging.getLogger("nosar.mas.norm.fuzzysocialinterpreter")
 
-class FuzzySocialQualifier:
-        def __init__(self, aspect, fuzzy_sets_file, ling_var_file, rules_file) -> None:
+class FuzzySocialInterpreter:
+        def __init__(self, fuzzy_sets_file, ling_var_file, rules_file, min_certainty) -> None:
             super().__init__()
-            self.aspect = aspect
             self.fuzzy_sets_file = fuzzy_sets_file
             self.ling_var_file = ling_var_file
             self.rules_file = rules_file
-            self.fuzzyRuleBase = SARFuzzyRuleBase(self.fuzzy_sets_file, self.ling_var_file, self.rules_file, self.aspect)
+            self.fuzzyRuleBase = SARFuzzyRuleBase(self.fuzzy_sets_file, self.ling_var_file, self.rules_file, "social_interpreter")
+            self.min_certainty = min_certainty
 
+            #self.DIAMONDS = ['DUTY', 'INTELLECT', 'ADVERSITY', 'MATING', 'POSITIVITY', 'NEGATIVITY', 'DECEPTION', 'SOCIALITY']
             self.lock = threading.Lock()
 
-        def getSocialQualification(self, input):
+        def getSocialInterpretationValues(self, inputs):
             fs_output = None
             self.lock.acquire()
             try:
-                for i in self.fuzzyRuleBase.inputs:
-                    if i in input.keys():
-                        # try:
-                        self.fuzzyRuleBase.fs.set_variable(i, input[i])
-                            # print("Set val "+str(input[i])+" to var "+str(i))
-                        # except:
-                        #     logger.info("Variable "+str(i)+" not in the fuzzyRuleBase, skipping.")
-                    else:
-                        self.fuzzyRuleBase.fs.set_variable(i, self.fuzzyRuleBase.ling_vars_dict[i].getDefaultVal())
+                for i in inputs:
+                    if i in self.fuzzyRuleBase.inputs:
+                        # print("----------setting variable "+str(i)+" to "+str(inputs[i]))
+                        self.fuzzyRuleBase.fs.set_variable(i, inputs[i]) #todo somewhere mapping should be written
+                # print("----------performing mamdani inference in the zsocial interpreter")
+                # print(self.fuzzyRuleBase.fs._rules)
                 fs_output = self.fuzzyRuleBase.fs.Mamdani_inference(verbose=False)
-                # output_val = max(fs_output, key=fs_output.get)
+                # print(fs_output)
+                # print("----------end of inference")
             except Exception:
                 logger.exception(traceback.format_exc())
                 pass
             self.lock.release()
             return fs_output
+
+
+        def getBestSocialInterpretation(self, inputs):
+            fs_output = self.getSocialInterpretationValues(inputs)
+            if not fs_output is None:
+                best_interpr = max(fs_output, key=fs_output.get)
+                # print("Inputs: "+str(inputs))
+                # print(best_interpr)
+                """ Communicating the social interpretation back"""
+                if fs_output[best_interpr] > self.min_certainty:
+                    # I want to retrieve all interpr that have same certainty as the max and randomly select among them (otherwise we select always the first)
+                    all_best_int = []
+                    for interpr in fs_output.keys():
+                        if fs_output[interpr] == fs_output[best_interpr]:
+                            all_best_int.append(interpr)
+                    best_interpr = random.choice(all_best_int)
+                    return fs_output, best_interpr
+                else:
+                    return fs_output, "UNKNOWN"
+            else:
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The inputs "+str(inputs)+" are currently not supported")
+                best_social_interpr = "UNKNOWN"
+                social_values = {}
+                for o in self.fuzzyRuleBase.outputs:
+                    social_values[o] = 0.0
+                return social_values, best_social_interpr
 
         def getRuleBase(self):
             return self.fuzzyRuleBase
@@ -85,7 +111,8 @@ class FuzzySocialQualifier:
             #             print(fs.get_params())
             #         except:
             #             pass
-            contextualized_FS = self.fuzzyRuleBase.getContextualizedFS(dataset, optim_param)
+            contextualized_FS = self.fuzzyRuleBase.getContextualizedFS(dataset, optim_param) #returns a simpful fs
+
             # print("======= contextualized fs ======")
             # print(contextualized_FS)
             # for lv in contextualized_FS._lvs:

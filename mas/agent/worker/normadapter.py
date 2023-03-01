@@ -2,7 +2,7 @@ import copy
 
 from spade.behaviour import PeriodicBehaviour, OneShotBehaviour
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 from simpful import *
 
 from utils import utils
@@ -27,15 +27,15 @@ parent = os.path.dirname(current)
 # the sys.path.
 sys.path.append(parent)
 
-from sar.utils.fsutils import linearScaleUniverseToA1B1, getDissimilarity
+from mas.utils.fsutils import linearScaleUniverseToA1B1, getDissimilarity
 from utils import utils
 import numpy as np
 import utils.constants as Constants
 
 import logging
-logger = logging.getLogger("nosar.sar.agent.worker.normadapter")
+logger = logging.getLogger("nosar.mas.agent.worker.normadapter")
 
-class NormAdapter2SIMnoagent_AGENTIFIED(WorkerAgent):
+class NormAdapter(WorkerAgent):
 
     class PerformAdaptation(OneShotBehaviour):
         def __init__(self, data, aggr_knowledge, var_maxmin):

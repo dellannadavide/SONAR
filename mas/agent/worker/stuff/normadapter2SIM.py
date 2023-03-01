@@ -2,10 +2,10 @@ import copy
 
 from spade.behaviour import PeriodicBehaviour, OneShotBehaviour
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 from simpful import *
 
-from sar.utils.fsutils import linearScaleUniverseToA1B1
+from mas.utils.fsutils import linearScaleUniverseToA1B1
 from utils import utils
 import utils.constants as Constants
 

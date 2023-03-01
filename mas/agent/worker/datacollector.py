@@ -6,14 +6,14 @@ from spade.behaviour import OneShotBehaviour, PeriodicBehaviour
 from spade.message import Message
 from spade.template import Template
 
-from sar.agent.workeragent import WorkerAgent
+from mas.agent.workeragent import WorkerAgent
 
 import utils.utils as utils
 import utils.constants as Constants
 
 import logging
 
-logger = logging.getLogger("nosar.sar.agent.worker.datacollector")
+logger = logging.getLogger("nosar.mas.agent.worker.datacollector")
 
 
 class DataColletor(WorkerAgent):

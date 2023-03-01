@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 import scipy.integrate as integrate
 from scipy.optimize import fsolve, curve_fit
-from sar.utils.moea import YuanFuzzyOrderingIndex
+from mas.utils.moea import YuanFuzzyOrderingIndex
 
 
 # def linearScaleFromABToA1B1(x, a, b, a1, b1):
