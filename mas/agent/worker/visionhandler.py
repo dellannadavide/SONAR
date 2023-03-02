@@ -12,7 +12,7 @@ import utils.utils as utils
 from itertools import groupby
 
 import logging
-logger = logging.getLogger("nosar.mas.agent.worker.visionhandler")
+logger = logging.getLogger("sonar.mas.agent.worker.visionhandler")
 
 class VisionHandler(WorkerAgent):
     """ Vision worker agent. deals with all vision-related data.
@@ -49,8 +49,8 @@ class VisionHandler(WorkerAgent):
             for topic in self.agent.received_inputs.keys():
                 s_ordered_dict = self.getVisionInfo(topic)
                 if len(s_ordered_dict.keys()) > 0:
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "sending data as requested to the datacollector")
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, s_ordered_dict)
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "sending data as requested to the datacollector")
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, s_ordered_dict)
                     msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, s_ordered_dict, topic, metadata)
                     await self.send(msg)
 

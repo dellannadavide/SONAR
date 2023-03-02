@@ -2,7 +2,7 @@ import numpy as np
 import skfuzzy as fuzz
 
 import logging
-logger = logging.getLogger("nosar.mas.utils.skfsutils")
+logger = logging.getLogger("sonar.mas.utils.skfsutils")
 
 """
 This module contains all utils related to fuzzy inference specific to skfuzzy

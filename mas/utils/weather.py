@@ -1,7 +1,7 @@
 import requests, json
 
 import logging
-logger = logging.getLogger("nosar.mas.utils.weather")
+logger = logging.getLogger("sonar.mas.utils.weather")
 
 def getCurrentWeather():
     ret_val = "the weather today"

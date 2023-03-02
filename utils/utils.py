@@ -5,7 +5,7 @@ import utils.constants as Constants
 import json
 
 import logging
-logger = logging.getLogger("nosar.mas.utils.utils")
+logger = logging.getLogger("sonar.mas.utils.utils")
 
 """ A utility module. It contains some global utility functions"""
 

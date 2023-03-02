@@ -29,9 +29,9 @@ if __name__ == '__main__':
     log_folder = "./log/"
     log_path_name = log_folder + exp_id + "_sonar_" + agent_type + "_" + exec_timestamp + ".log"
 
-    logging.addLevelName(Constants.LOGGING_LV_DEBUG_NOSAR, Constants.LOGGING_LV_DEBUG_NOSAR_NAME)
+    logging.addLevelName(Constants.LOGGING_LV_DEBUG_SONAR, Constants.LOGGING_LV_DEBUG_SONAR_NAME)
 
-    logging.basicConfig(level=Constants.LOGGING_LV_DEBUG_NOSAR_NAME,
+    logging.basicConfig(level=Constants.LOGGING_LV_DEBUG_SONAR_NAME,
                         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
                         handlers=[
                             logging.FileHandler(log_path_name, mode="a+"),
@@ -39,7 +39,7 @@ if __name__ == '__main__':
                         ],
                         )
 
-    logger = logging.getLogger("nosar")
+    logger = logging.getLogger("sonar")
 
     logger.info("Starting agent")
     workers_to_start = [

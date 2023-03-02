@@ -9,7 +9,7 @@ import utils.utils as utils
 import utils.constants as Constants
 
 import logging
-logger = logging.getLogger("nosar.mas.agent.worker.systemhandler")
+logger = logging.getLogger("sonar.mas.agent.worker.systemhandler")
 
 class SystemHandler(WorkerAgent):
     """
@@ -27,5 +27,5 @@ class SystemHandler(WorkerAgent):
             time.sleep(5)
             self.mqtt_client.publish(Constants.TOPIC_DIRECTIVE_SYSTEM, Constants.DIRECTIVE_SLEEP)
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_EXEC_BEHAVIOR:
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "sending directive to execute behavior")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "sending directive to execute behavior")
             self.mqtt_client.publish(Constants.TOPIC_BEHAVIOR, Constants.DIRECTIVE_EXEC_BEHAVIOR)

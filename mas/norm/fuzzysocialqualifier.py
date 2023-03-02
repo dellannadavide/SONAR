@@ -6,7 +6,7 @@ import utils.constants as Constants
 from mas.utils.fsutils import SARFuzzyRuleBase
 
 import logging
-logger = logging.getLogger("nosar.mas.norm.fuzzysocialqualifier")
+logger = logging.getLogger("sonar.mas.norm.fuzzysocialqualifier")
 
 class FuzzySocialQualifier:
     """ The Fuzzy Social Qualifier is a fuzzy inference system.

@@ -8,7 +8,7 @@ import utils.constants as Constants
 from mas.utils.moea import getContextualizedFS
 from mas.utils.skfsutils import createSKFuzzyMFandGetDissimilarity
 
-logger = logging.getLogger("nosar.mas.utils.fsutils")
+logger = logging.getLogger("sonar.mas.utils.fsutils")
 
 """
 This module contains all utils related to fuzzy inference via simpful
@@ -159,7 +159,7 @@ class SARFuzzyRuleBase:
 
         # print(self.fuzzy_sets_dict)
         # print(self.ling_vars_dict)
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.rules)
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.rules)
 
         self.fs = self.createFuzzySystem()
 
@@ -327,12 +327,12 @@ class SARFuzzyRuleBase:
                     datapoint["outputs"][output_var] = dp[output_var]
                 fs_specific_dataset.append(datapoint)
             except:
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                            "Skipping data point with no sufficient data for adapting the current FS.")
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, dp)
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Required inputs and outputs")
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.inputs)
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.outputs)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, dp)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "Required inputs and outputs")
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.inputs)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.outputs)
 
         if (len(fs_specific_dataset) > 0) and (len(self.dynamic_ling_var) > 0):
             # print("get the contextualized fs based on data", str(fs_specific_dataset))

@@ -23,7 +23,7 @@ from mas.utils.news import getRandomNewsFromBBC
 from mas.utils.weather import getCurrentWeather
 from utils.mqttclient import MQTTClient
 
-logger = logging.getLogger("nosar.mas.agent.worker.chatter")
+logger = logging.getLogger("sonar.mas.agent.worker.chatter")
 
 
 class Chatter(WorkerAgent):
@@ -173,7 +173,7 @@ class Chatter(WorkerAgent):
                 super().__init__(name, value, initial)
 
             def process_input(self, user_input):
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "going ahead only if the sentence is 'wake up'")
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "going ahead only if the sentence is 'wake up'")
                 return user_input.lower() == "wake up"
 
         # States
@@ -249,7 +249,7 @@ class Chatter(WorkerAgent):
             # N.B rec_m may contain other things in addition to the text of the user (e.g., the volume of voice)
             # so I first extract just the text to process
             user_input = (utils.splitStringToList(rec_m, Constants.STRING_SEPARATOR_INNER)[0]).strip()
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Processing input " + user_input)
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "Processing input " + user_input)
 
             # I first do the processing of the input based on the current state:
             # Note, this step is expected not to transition between states
@@ -524,8 +524,8 @@ class Chatter(WorkerAgent):
             for topic in self.agent.received_inputs.keys():
                 s_ordered_dict = self.getSentences(topic)
                 if len(s_ordered_dict.keys()) > 0:
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "sending data as requested to the datacollector")
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, s_ordered_dict)
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "sending data as requested to the datacollector")
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, s_ordered_dict)
                     msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM,
                                                s_ordered_dict, topic, metadata)
                     await self.send(msg)
@@ -552,7 +552,7 @@ class Chatter(WorkerAgent):
         logger.info("work_info {}".format(work_info_dict))
 
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY:
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                        "CHATTER: setting input processed with no reply (adding a fake 'ok' bot response to conversation)")
             self.converser.addBotResponseToConversation("ok", False)
             self.setOneInputProcessed()
@@ -584,7 +584,7 @@ class Chatter(WorkerAgent):
             is_spontaneous = False
 
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SAY_SPONTANEOUS:
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                        "---------- INPUTS BEING PROCESSED, IN WORK INFO SAY SPONTANEOUS {}".format(
                            self.inputs_being_processed))
             if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
@@ -624,13 +624,13 @@ class Chatter(WorkerAgent):
         elif work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_UPDATE_TOPIC_INTEREST:
 
             if self.noInputBeingProcessed() and self.chatter_state_machine.is_default:
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, work_info_dict)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, work_info_dict)
                 self.last_detected_interest = work_info_dict[Constants.SPADE_MSG_OBJECT].replace(
                     Constants.ASL_STRING_SEPARATOR, " ")
                 self.direction_last_detected_interest = work_info_dict[Constants.SPADE_MSG_DIRECTION].replace(
                     Constants.ASL_STRING_SEPARATOR, " ")
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.last_detected_interest)
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.direction_last_detected_interest)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.last_detected_interest)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.direction_last_detected_interest)
                 try:
                     if self.direction_last_detected_interest == Constants.ASL_FLUENT_UNKNOWN_DIRECTION:
                         t2tinput = "You are looking at the " + str(
@@ -643,7 +643,7 @@ class Chatter(WorkerAgent):
 
                     question = self.getTextFor(Chatter._TASK_ASK_QUESTION, t2tinput, True)
 
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, question)
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, question)
                     resp = question
 
                 except:
@@ -713,7 +713,7 @@ class Chatter(WorkerAgent):
         4. finally send via mqtt all directives for the robot's actuators
         """
 
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "IN QUALIFY: {}".format(work_info_dict))
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "IN QUALIFY: {}".format(work_info_dict))
         """ Function that qualifies the text to say based on the social info"""
         animation_to_perfom = None
         emotion_label = None
@@ -726,11 +726,11 @@ class Chatter(WorkerAgent):
 
             logger.info("determined to say: {}".format(to_say))
 
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "I determine the emotion associated to the text.")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "I determine the emotion associated to the text.")
             emotion = self.temotion_classifier(to_say)[0][0]
             if emotion["score"] > 0.7:
                 emotion_label = emotion["label"]
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "emotion detected: {}".format(emotion_label))
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "emotion detected: {}".format(emotion_label))
             animation_to_perfom = emotion_label
 
             """ Using the fuzzy system to determine the adequate levels of volume, etc., based on the social inputs """
@@ -742,8 +742,8 @@ class Chatter(WorkerAgent):
 
                 social_qualification = self.fsq[0].getSocialQualification(
                     work_info_dict)  # here this is is only concerning the position but it should actually refer to all possible inputs that we are interested into, maybe the social itnerpreter should be some other worker independent, which will give back info about social intepretation
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "SOCIAL_qualification")
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, social_qualification)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "SOCIAL_qualification")
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, social_qualification)
             except Exception:
                 logger.warning(
                     "Note: the exception is (in some cases) expected. I'm printing the traceback for now for the sake of clarity")
@@ -814,7 +814,7 @@ class Chatter(WorkerAgent):
         :param topic:
         :return:
         """
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                    "in getQuestions {}, {}".format(text, topic))
         resp = ""
         if topic == Chatter._QUESTION_TOPIC_TEXT:
@@ -882,7 +882,7 @@ class Chatter(WorkerAgent):
                     else:
                         text_for_question_list.append(word)
                 text = " ".join(text_for_question_list)
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                            "generating questions for converted text {}".format(text))
 
             elif n < 0.8: #in 10%, I as a question about the conversation so far
@@ -894,7 +894,7 @@ class Chatter(WorkerAgent):
             else: #  in 2.5% I ask a question about the weather
                 selected_topic = Chatter._QUESTION_TOPIC_WEATHER
 
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Selected topic is "+str(selected_topic))
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "Selected topic is "+str(selected_topic))
             resp = self.getQuestion(text, selected_topic)
         return resp
 
@@ -938,19 +938,19 @@ class Chatter(WorkerAgent):
                 Here I just want to use the conversation pipeline to generate a meaningful continuation.
                 N.B. is_spontaneous is assumed False"""
                 if not self.isQuestion(text):
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The user did not ask a question, so I try to reply in a more interesting way")
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "The user did not ask a question, so I try to reply in a more interesting way")
                     if not self.last_robot_said_was_question and random.random() > 0.75:  # in 25% of cases I ask a question, so I don't always go to a dead end
-                        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                        logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                                    "last time i did not ask a question and random is larger than 0.6 so I ask a question")
                         if (not human_emotion is None) and (not self.asked_about_emotions):
                             resp = self.getQuestion(human_emotion, Chatter._QUESTION_TOPIC_EMOTIONS)
                             self.asked_about_emotions = True #I do it only once in every interaction (i.e., run of code)
                         else:
-                            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "I'm going to ask a question about a random topic")
+                            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "I'm going to ask a question about a random topic")
                             resp = self.getQuestion(text, Chatter._QUESTION_TOPIC_RANDOM)
                         self.last_robot_said_was_question = True
                     else:
-                        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                        logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                                    "last time i asked a question or random is not larger than 0.6 so I just respond")
                         resp = self.converser.getResponse(text)
                         self.last_robot_said_was_question = False
@@ -965,7 +965,7 @@ class Chatter(WorkerAgent):
                     self.last_robot_said_was_question = False
 
                 if resp == "" or len(resp) < 2:  # If "the robot doesn't know what to say"
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Robot doesn't know what to say (was going for: {}). I generate a spontaneous question.".format(resp))
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "Robot doesn't know what to say (was going for: {}). I generate a spontaneous question.".format(resp))
                     if random.random()>0.8:
                         resp = self.getSpontaneousQuestion(text)
                         self.last_robot_said_was_question = True
@@ -1041,13 +1041,13 @@ class Chatter(WorkerAgent):
             if float((datetime.now() - self.max_time_thinking).timestamp()) < float(self.last_thinking_time):
                 # if still not enough time passed (when now - x seconds is before last thinking time)
                 # then I still wait
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                            "Note: I ignore this data because there is already one input being processed.")
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.inputs_being_processed)
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.chatter_state_machine.is_default)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.inputs_being_processed)
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.chatter_state_machine.is_default)
             else:
                 #in this case max thinking time is expired
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                            "Timer is expired, I ignore the previous sentence and re process the current one")
                 self.setOneInputProcessed()
                 self.on_message(client, userdata, message)

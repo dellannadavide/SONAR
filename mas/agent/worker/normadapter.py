@@ -19,7 +19,7 @@ import numpy as np
 import utils.constants as Constants
 
 import logging
-logger = logging.getLogger("nosar.mas.agent.worker.normadapter")
+logger = logging.getLogger("sonar.mas.agent.worker.normadapter")
 
 class NormAdapter(WorkerAgent):
     """

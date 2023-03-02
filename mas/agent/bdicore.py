@@ -12,7 +12,7 @@ import utils.constants as Constants
 import utils.utils as utils
 from mas.norm.normativereasoner import NormativeReasoner
 
-logger = logging.getLogger("nosar.mas.agent.bdicore")
+logger = logging.getLogger("sonar.mas.agent.bdicore")
 
 class BDICore(BDIAgent):
     """
@@ -57,7 +57,7 @@ class BDICore(BDIAgent):
         @actions.add(".goodbye", 1)
         def _goodbye(agent, term, intention):
             """ An action to say goodbye. It informs the chatter agent to begin the goodbye social practice. """
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .goodbye")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "in action .goodbye")
             to_say = "Are you leaving?"
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_BEGIN_GOODBYE,
@@ -150,7 +150,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".reply_parrot", 2)
         def _reply_parrot(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .reply_parrot")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "in action .reply_parrot")
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_PARROT,
                 Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
@@ -163,7 +163,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".reply_to_reactive", 2)
         def _reply_to_reactive(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .reply_to_reactive")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "in action .reply_to_reactive")
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_TO_REACTIVE,
                 Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
@@ -176,7 +176,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".reply_to_proactive", 2)
         def _reply_to_proactive(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .reply_to_proactive")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "in action .reply_to_proactive")
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_REPLY_TO_PROACTIVE,
                 Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
@@ -189,7 +189,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".ignore_last_person_said", 2)
         def _ignore_last_person_said(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "in action .ignore_last_person_said")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "in action .ignore_last_person_said")
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY,
                 Constants.SPADE_MSG_SAID: str(agentspeak.grounded(term.args[1], intention.scope)),
@@ -397,7 +397,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".tell_what_you_see", 0)
         def _tell_what_you_see(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "telling what I see")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "telling what I see")
             visible_things = []
             # print("BDI: ", self.bdi_agent.beliefs)
             for beliefs in self.bdi_agent.beliefs:
@@ -443,7 +443,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".tell_what_user_said", 0)
         def _tell_what_user_said(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "telling what user said")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "telling what user said")
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_WHAT_USER_SAID,
                 Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
@@ -455,7 +455,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".tell_what_you_said", 0)
         def _tell_what_you_said(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "telling what bot said")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "telling what bot said")
             msg_body_dict = {**{
                 Constants.SPADE_MSG_DIRECTIVE: Constants.DIRECTIVE_SAY_WHAT_BOT_SAID,
                 Constants.SPADE_MSG_NAO_ROLE: self.curr_role,
@@ -467,7 +467,7 @@ class BDICore(BDIAgent):
 
         @actions.add(".tell_robot_name", 0)
         def _tell_robot_name(agent, term, intention):
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "telling robot name")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "telling robot name")
             possible_answers_prefix = ["My name is ", "I'm ", "It's ", "You can call me ", "They call me "]
             to_say = random.choice(possible_answers_prefix)+Constants.ROBOT_NAME+"!"
 
@@ -583,14 +583,14 @@ class BDICore(BDIAgent):
 
         async def run(self):
             # print("Running ManageMemoryBehavior...")
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Memory at the beginning of run: ")
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.agent.memory)
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "Memory at the beginning of run: ")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.agent.memory)
             """ This behavior deletes the beliefs that are older than self.memory_size seconds
                             It assumes that every belief that is subject to deletion is a perceived belief."""
 
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "datetime now: {}".format(datetime.now().timestamp()))
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "datetime now: {}".format(datetime.now().timestamp()))
             oldest_time_timestamp_long_term = (datetime.now() - self.long_term_memory_size).timestamp()
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "oldest_time_timestamp_long_term: {}".format(oldest_time_timestamp_long_term))
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "oldest_time_timestamp_long_term: {}".format(oldest_time_timestamp_long_term))
 
             oldest_time_timestamp_beliefs = (datetime.now() - self.memory_size).timestamp()
             oldest_time_timestamp_beliefs_2 = (datetime.now() - timedelta(seconds=30)).timestamp()
@@ -619,8 +619,8 @@ class BDICore(BDIAgent):
                     # print("Bel ", bel, " is older than ", self.memory_size_seconds, " seconds. Removing it...")
                     self.agent.bdi.remove_belief(*self.agent.getListFromBeliefString(str(bel)))
 
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Memory at the end of run: ")
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.agent.memory)
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "Memory at the end of run: ")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, self.agent.memory)
 
     class SpontaneousConversationBehaviour(PeriodicBehaviour):
         """ A periodic behavior that is run every period seconds and triggers a spontaneoous conversation
@@ -653,7 +653,7 @@ class BDICore(BDIAgent):
             if msg:
                 if msg.get_metadata(Constants.SPADE_MSG_METADATA_PERFORMATIVE) == Constants.PERFORMATIVE_INFORM:
                     if str(msg.sender) == Constants.DATA_COLLECTOR_JID:
-                        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Data Collector told me {}".format(str(msg.body)))
+                        logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "Data Collector told me {}".format(str(msg.body)))
                         msg_body = utils.readMessage(msg.body, msg.metadata)
                         self.reasonAndAct(msg_body)
                     else:
@@ -684,7 +684,7 @@ class BDICore(BDIAgent):
             In this way later inference will be able to use this info"""
             for key, bel in batch_of_beliefs_dict.items():
                 if key == Constants.ASL_BEL_PERSON_NAME or key == Constants.ASL_BEL_VISIBLE:  # note for these it is assumed that there is only one possible belief, so the key is checked to be ==
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "setting belief {} for batch {}".format(bel, batch))
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "setting belief {} for batch {}".format(bel, batch))
                     self.agent.setBelief(batch, bel)  # IT IS ASSUMED THAT BEL IS A LIST
 
             """ and then I just process all other beliefs """
@@ -695,7 +695,7 @@ class BDICore(BDIAgent):
                     self.agent.curr_social_interp = bel
                     # print("BDI: new social interp is ", self.agent.curr_social_interp)
                 else:  # I am actually not using this key
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "setting belief {} for batch {}".format(bel, batch))
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "setting belief {} for batch {}".format(bel, batch))
                     self.agent.setBelief(batch,
                                          bel)  # note I may set again the beliefs above, but they will just be replaced (little waste here)
 
@@ -811,9 +811,9 @@ class BDICore(BDIAgent):
         else:
             oldest_time_timestamp = (datetime.now() - timedelta(seconds=last_n_seconds)).timestamp()
 
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                    "Cecking if in the recent memory (in the last {} seconds) there is {}".format(last_n_seconds, fluents))
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                    "oldest_time_timestamp: {}".format(oldest_time_timestamp))
 
         for k in list(self.memory.keys()):
@@ -835,9 +835,9 @@ class BDICore(BDIAgent):
         else:
             oldest_time_timestamp = (datetime.now() - timedelta(seconds=last_n_seconds)).timestamp()
 
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                    "counting in the recent memory (in the last {} seconds) how many occurrencies of  {}".format(last_n_seconds, list_of_val))
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR,
                    "oldest_time_timestamp: {}".format(oldest_time_timestamp))
 
         instances = 0
@@ -852,7 +852,7 @@ class BDICore(BDIAgent):
                             break
                     if found:
                         instances = instances + 1
-        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "count of {} in the last {} sec: {}".format(list_of_val, last_n_seconds, instances))
+        logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "count of {} in the last {} sec: {}".format(list_of_val, last_n_seconds, instances))
         return instances
 
     def getOrderedMemoryFromYoungestToOldest(self):

@@ -9,7 +9,7 @@ import utils.constants as Constants
 import utils.utils as utils
 from mas.agent.workeragent import WorkerAgent
 
-logger = logging.getLogger("nosar.mas.agent.worker.datacollector")
+logger = logging.getLogger("sonar.mas.agent.worker.datacollector")
 
 
 class DataColletor(WorkerAgent):
@@ -88,9 +88,9 @@ class DataColletor(WorkerAgent):
                 if sender == Constants.VISION_HANDLER_JID:
                     logger.info("vision data: {}".format(str(msg_body_dict)))
                     vision_data = msg_body_dict[max(msg_body_dict.keys())]
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, vision_data)
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, vision_data)
                     vision_data_inner = utils.splitStringToList(vision_data, Constants.STRING_SEPARATOR_INNER)
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, vision_data_inner)
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, vision_data_inner)
                     """ DISTINGUISHING BETWEEEN THREADS """
                     if thread == Constants.TOPIC_HUMAN_DETECTION:
 
@@ -134,7 +134,7 @@ class DataColletor(WorkerAgent):
 
                         if dist != -1.0:
                             bels.append([DataColletor._KEY_DIST_DATA, dist])
-                        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "DETECTED DISTANCE IS {}".format(dist))
+                        logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "DETECTED DISTANCE IS {}".format(dist))
                     if thread == Constants.TOPIC_OBJECT_DETECTION:
                         for obj in vision_data_inner[1:]:
                             if obj == DataColletor._KEY_VISION_DETECTED_PERSON:
@@ -148,7 +148,7 @@ class DataColletor(WorkerAgent):
                         for em in vision_data_inner[1:]:
                             if not em == DataColletor._KEY_EMOTION_NEUTRAL:
                                 bels.append([Constants.ASL_BEL_DETECTED_EMOTION, em])
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, bels)
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, bels)
                 """ If the sender is the CHATTER """
                 if sender == Constants.CHATTER_JID:
 
@@ -170,7 +170,7 @@ class DataColletor(WorkerAgent):
                         bels.append(
                             [Constants.ASL_BEL_SAID, last_chatter_data_sentence, float(last_chatter_data_volume)])
 
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "bels: {}".format(bels))
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "bels: {}".format(bels))
 
                 if sender == Constants.POSITION_HANDLER_JID:
 
@@ -178,7 +178,7 @@ class DataColletor(WorkerAgent):
                     bels.append([DataColletor._KEY_DIST_DATA, position_data])
 
 
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "adding bels " + str(bels) + " to batch")
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "adding bels " + str(bels) + " to batch")
                 await self.agent.addToBatch(self.batch, sender, thread, bels)  # n.b. bels is a list of lists
             else:  # if timeout reached
                 # print("Timeout reached")
@@ -251,11 +251,11 @@ class DataColletor(WorkerAgent):
                     vision_bel_lists = self.work_in_progress_data[batch][Constants.VISION_HANDLER_JID + "-" + thread]
                     for vision_bel_list in vision_bel_lists:
                         if len(vision_bel_list) > 0:
-                            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "vision_bel_list {}".format(vision_bel_list))
+                            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "vision_bel_list {}".format(vision_bel_list))
                             if vision_bel_list[0] == DataColletor._KEY_DIST_DATA:
                                 position_data = vision_bel_list[1]
                                 data[Constants.LV_DIST] = position_data
-                                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, data)
+                                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, data)
                             else:
                                 """ the following allows for having multiple beliefs of a kind (e.g., multiple perceived_object beliefs)
                                  It assumes that in the bdicore the key of these beliefs is not used for anything
@@ -276,7 +276,7 @@ class DataColletor(WorkerAgent):
                     chatter_bel_lists = self.work_in_progress_data[batch][Constants.CHATTER_JID + "-" + thread]
                     for chatter_bel_list in chatter_bel_lists:
                         if len(chatter_bel_list) > 0:
-                            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "chatter bel list {}".format(chatter_bel_list))
+                            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "chatter bel list {}".format(chatter_bel_list))
                             if chatter_bel_list[0] == Constants.ASL_BEL_PERSON_NAME:
                                 batch_visible_person = chatter_bel_list[1]
                                 bels_to_add[chatter_bel_list[0]] = chatter_bel_list
@@ -340,7 +340,7 @@ class DataColletor(WorkerAgent):
             if (self.fsi is not None) and (nr_info > 0):
                 for fsi_input in self.fsi.fuzzyRuleBase.inputs:
                     if not fsi_input in data:
-                        logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, str(fsi_input) + " not in data")
+                        logger.log(Constants.LOGGING_LV_DEBUG_SONAR, str(fsi_input) + " not in data")
                         input_default_val = self.fsi.fuzzyRuleBase.ling_vars_dict[fsi_input].getDefaultVal()
                         input_min_val = self.fsi.fuzzyRuleBase.ling_vars_dict[fsi_input].universe_of_discourse[0]
                         if input_default_val is None:
@@ -370,7 +370,7 @@ class DataColletor(WorkerAgent):
                     self.add_behaviour(send_msg_to_norm_adapter)
 
             if (not social_values is None):
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "social_values: {}".format(str(social_values)))
+                logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "social_values: {}".format(str(social_values)))
                 bels_to_add[Constants.SPADE_MSG_SOCIAL_EVAL] = social_values
                 if (not best_social_interpr is None):
                     bels_to_add[Constants.ASL_BEL_DISTANCE] = [Constants.ASL_BEL_DISTANCE,

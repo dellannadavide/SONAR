@@ -7,7 +7,7 @@ import utils.constants as Constants
 from mas.utils.fsutils import SARFuzzyRuleBase
 
 import logging
-logger = logging.getLogger("nosar.mas.norm.fuzzysocialinterpreter")
+logger = logging.getLogger("sonar.mas.norm.fuzzysocialinterpreter")
 
 class FuzzySocialInterpreter:
     """ The Fuzzy Social Interpreter is a fuzzy inference system.
@@ -62,7 +62,7 @@ class FuzzySocialInterpreter:
             else:
                 return fs_output, "UNKNOWN"
         else:
-            logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "The inputs "+str(inputs)+" are currently not supported")
+            logger.log(Constants.LOGGING_LV_DEBUG_SONAR, "The inputs "+str(inputs)+" are currently not supported")
             best_social_interpr = "UNKNOWN"
             social_values = {}
             for o in self.fuzzyRuleBase.outputs:

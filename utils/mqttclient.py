@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import utils.constants as Constants
 
 import logging
-logger = logging.getLogger("nosar.mas.utils.mqttclient")
+logger = logging.getLogger("sonar.mas.utils.mqttclient")
 
 class MQTTClient:
     """

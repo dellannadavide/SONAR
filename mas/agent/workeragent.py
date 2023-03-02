@@ -7,7 +7,7 @@ from spade.behaviour import CyclicBehaviour
 import utils.constants as Constants
 import utils.utils as utils
 
-logger = logging.getLogger("nosar.mas.agent.workeragent")
+logger = logging.getLogger("sonar.mas.agent.workeragent")
 
 class WorkerAgent(Agent):
     """
@@ -49,8 +49,8 @@ class WorkerAgent(Agent):
                 elif performative == Constants.PERFORMATIVE_INFORM:
                     await self.agent.do_work(utils.readMessage(msg.body, msg.metadata))
                 else:
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, str(msg.sender)+", you are telling me something I don't understand...")
-                    logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, msg.body)
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, str(msg.sender)+", you are telling me something I don't understand...")
+                    logger.log(Constants.LOGGING_LV_DEBUG_SONAR, msg.body)
 
     async def setup(self):
         b = self.ListenBehavior()

@@ -19,7 +19,7 @@ from mas.agent.worker.visionhandler import VisionHandler
 from mas.agent.worker.stuff.visionhandlerSIM import VisionHandlerSim
 # from mas.gui.gui_normadaptivity import GUI_NormAdaptivity
 
-logger = logging.getLogger("nosar.mas.mas")
+logger = logging.getLogger("sonar.mas.mas")
 
 spade_agent_logger = logging.getLogger("spade.Agent")
 spade_agent_logger.setLevel(logging.WARNING)

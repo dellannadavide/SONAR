@@ -29,7 +29,7 @@ from scipy.optimize import fsolve
 import utils.constants as Constants
 from mas.utils.skfsutils import convertFSTOSkFuzzy, getDissimilaritySKFuzzyMF
 
-logger = logging.getLogger("nosar.mas.utils.moea")
+logger = logging.getLogger("sonar.mas.utils.moea")
 
 """
 This module contains all utils related to evolutionary algorithms

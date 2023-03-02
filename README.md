@@ -79,7 +79,7 @@ This step only needs to be done once.
 Following the [guidelines from the SPADE library](https://spade-mas.readthedocs.io/en/latest/usage.html), the jid (e.g., <agent_name>@<your_xmpp_server>) contains the agent’s name (before the @) and the DNS or IP of the XMPP server (after the @). 
 
 > **Example.** Assuming that you installed the Prosody XMPP server locally by following the steps indicated in Section 2.1, the server IP will be by default ```localhost```.
-An example of <agent_name> that operates in SONAR is ```SONAR_chatter```. In the default settings, therefore such an agent will have jid ```SONAR_chatter@localhost```.
+An example of <agent_name> that operates in SONAR is ```sonar_chatter```. In the default settings, therefore such an agent will have jid ```sonar_chatter@localhost```.
 
 The list of required agents and XMPP-related information (e.g., name, server, jid, pwd) can be found at the bottom of file ```SONAR/utils/constants.py```. 
 All agents in the ```XMPP_AGENTS_DETAILS``` data structure should be registered in the XMPP server.

@@ -3,7 +3,7 @@ import random
 import requests
 
 import logging
-logger = logging.getLogger("nosar.mas.utils.news")
+logger = logging.getLogger("sonar.mas.utils.news")
 
 def getRandomNewsFromBBC():
     ret_choice = "today"

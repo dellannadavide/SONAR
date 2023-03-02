@@ -10,7 +10,7 @@ from utils.mqttclient import MQTTClient
 import utils.utils as utils
 
 import logging
-logger = logging.getLogger("nosar.mas.agent.worker.positionhandler")
+logger = logging.getLogger("sonar.mas.agent.worker.positionhandler")
 
 class PositionHandler(WorkerAgent):
     """ This worker agent can handle data about distance and position of the agent w.r.t. its surroundings """

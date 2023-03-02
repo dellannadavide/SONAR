@@ -7,7 +7,7 @@ import utils.utils as utils
 import utils.constants as Constants
 
 import logging
-logger = logging.getLogger("nosar.mas.agent.worker.posturehandler")
+logger = logging.getLogger("sonar.mas.agent.worker.posturehandler")
 
 class PostureHandler(WorkerAgent):
     """ Worker agent that can handle posture-related tasks (e.g., looking up)"""

@@ -19,7 +19,7 @@ from mas.agent.worker.visionhandler import VisionHandler
 from mas.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
 from mas.norm.fuzzysocialqualifier import FuzzySocialQualifier
 
-logger = logging.getLogger("nosar.mas.mas")
+logger = logging.getLogger("sonar.mas.mas")
 
 spade_agent_logger = logging.getLogger("spade.Agent")
 spade_agent_logger.setLevel(logging.WARNING)
