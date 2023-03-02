@@ -58,9 +58,9 @@ class MAS(Agent):
         logger.info("Agent starting . . .")
         self.my_behav = self.MyBehav()
         self.add_behaviour(self.my_behav)
-        fuzzy_sets_file = "data/fuzzy_rules/social_interpretation3/fuzzy_sets_multiple_ref.xlsx"
-        ling_vars_file = "data/fuzzy_rules/social_interpretation3/ling_var_multiple_ref2.xlsx"
-        rules_file = "data/fuzzy_rules/social_interpretation3/rules.xlsx"
+        fuzzy_sets_file = "data/fuzzy_rules/social_interpretationHRI/fuzzy_sets_multiple_ref.xlsx"
+        ling_vars_file = "data/fuzzy_rules/social_interpretationHRI/ling_var_multiple_ref2.xlsx"
+        rules_file = "data/fuzzy_rules/social_interpretationHRI/rules.xlsx"
         self.fsi = FuzzySocialInterpreter(fuzzy_sets_file, ling_vars_file, rules_file, 0.0) #this is an intraagent element, sort of a database
         self.fsq = {}
         for a in Constants.ACTUATION_ASPECTS:

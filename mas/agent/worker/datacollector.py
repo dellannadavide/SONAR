@@ -1,17 +1,13 @@
+import logging
 import time
 from datetime import timedelta, datetime
 
-import spade
 from spade.behaviour import OneShotBehaviour, PeriodicBehaviour
-from spade.message import Message
 from spade.template import Template
 
-from mas.agent.workeragent import WorkerAgent
-
-import utils.utils as utils
 import utils.constants as Constants
-
-import logging
+import utils.utils as utils
+from mas.agent.workeragent import WorkerAgent
 
 logger = logging.getLogger("nosar.mas.agent.worker.datacollector")
 
@@ -49,6 +45,7 @@ class DataColletor(WorkerAgent):
             beliefs_to_send = []
             visible_person = "none"
 
+            """ For every source and for every thread I create a waitformessage behavior that will wait for a message """
             for d in self.data_sources.keys():
                 # using a template here is useful so I create a behavior for every data source
                 # and I do not risk that the same data source uses all behaviors for example because faster
@@ -63,7 +60,11 @@ class DataColletor(WorkerAgent):
 
     class WaitForMessageBehaviour(OneShotBehaviour):
         """ This is the behavior that receives and store data from all the workers.
-        Another behavior will later process them and create beliefs to send to the bdi"""
+        Another behavior will later process them and create beliefs to send to the bdi.
+
+        This one shot behavior is regularly run for every source and for every thread
+        and waits for a messagee from that source-thread for max timeout_data_source sec.
+        """
 
         def __init__(self, timeout_data_source, batch):
             super().__init__()
@@ -79,25 +80,20 @@ class DataColletor(WorkerAgent):
                 sender = str(msg.sender)
                 thread = str(msg.thread)
                 msg_body_dict = utils.readMessage(msg.body, msg.metadata)
-                # if not msg.body == Constants.NO_DATA: #not sure where
-                # await self.agent.addToBatch(self.batch, sender, [])
-                # else:
 
                 logger.info("DataCollector (batch " + str(
                     self.batch) + "): Message received from " + sender + "-" + thread + " with content: {}".format(
                     msg.body))
+                """ If the sender is the VISION_HANDLER """
                 if sender == Constants.VISION_HANDLER_JID:
-                    # print(msg.body)
-                    # vision_data = utils.splitStringToList(msg.body)
                     logger.info("vision data: {}".format(str(msg_body_dict)))
-                    # vision_data = str(vision_data[len(vision_data) - 1]).lower()  # e.g., taking only the last one here
                     vision_data = msg_body_dict[max(msg_body_dict.keys())]
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, vision_data)
                     vision_data_inner = utils.splitStringToList(vision_data, Constants.STRING_SEPARATOR_INNER)
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, vision_data_inner)
+                    """ DISTINGUISHING BETWEEEN THREADS """
                     if thread == Constants.TOPIC_HUMAN_DETECTION:
-                        # self.agent.visible_person = vision_data
-                        # bel = utils.joinStringsBel()
+
                         face = vision_data_inner[1]
                         if not face == Constants.ASL_FLUENT_UNKNOWN_PERSON:
                             self.agent.interacting_person = face
@@ -153,10 +149,9 @@ class DataColletor(WorkerAgent):
                             if not em == DataColletor._KEY_EMOTION_NEUTRAL:
                                 bels.append([Constants.ASL_BEL_DETECTED_EMOTION, em])
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, bels)
-                    # beliefs_to_send.append(bel)
+                """ If the sender is the CHATTER """
                 if sender == Constants.CHATTER_JID:
-                    # chatter_data = utils.splitStringToList(msg.body) #replaced by msg_body_dict
-                    # last_chatter_data = str(chatter_data[len(chatter_data) - 1])  # e.g., taking only the last one here
+
                     logger.info("chatter data: {}".format(msg_body_dict))
                     last_chatter_data = msg_body_dict[max(msg_body_dict.keys())]
                     last_chatter_data_split = utils.splitStringToList(last_chatter_data,
@@ -176,14 +171,12 @@ class DataColletor(WorkerAgent):
                             [Constants.ASL_BEL_SAID, last_chatter_data_sentence, float(last_chatter_data_volume)])
 
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "bels: {}".format(bels))
-                    # beliefs_to_send.append(bel)
+
                 if sender == Constants.POSITION_HANDLER_JID:
-                    # position_data = utils.splitStringToList(msg.body)
-                    # position_data = float(position_data[len(position_data) - 1])  # e.g., taking only the last one here
-                    # position data is the distance
+
                     position_data = msg_body_dict[max(msg_body_dict.keys())]
                     bels.append([DataColletor._KEY_DIST_DATA, position_data])
-                    # print(bels)
+
 
                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "adding bels " + str(bels) + " to batch")
                 await self.agent.addToBatch(self.batch, sender, thread, bels)  # n.b. bels is a list of lists
@@ -201,8 +194,7 @@ class DataColletor(WorkerAgent):
 
         async def run(self):
             if self.content is None:
-                """ This is the default behavior, which sends the msg to the bdi agent
-                in particular, it sends, for now, the latest batch collected, and deletes (ignores?) all others"""
+                """ This is the default behavior, which sends the msg to the bdi agent"""
                 last_batch_id = self.agent.last_batch_in_data_to_send
                 if not last_batch_id is None:
                     if last_batch_id in self.agent.data_to_send.keys():
@@ -210,9 +202,6 @@ class DataColletor(WorkerAgent):
                         msg_body = {**{
                             Constants.SPADE_MSG_BATCH_ID: last_batch_id
                         }, **last_batch}
-                        # metadata = {Constants.SPADE_MSG_METADATA_KEYS_TYPE: "float"}
-                        # msg_body = utils.joinStrings([last_batch_id]+last_batch)
-                        # print("data collector: sending data as requested to the bdi")
                         logger.info("data collector: sending to bdi {}".format(str(msg_body)))
                         msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM,
                                                    msg_body)
@@ -222,21 +211,6 @@ class DataColletor(WorkerAgent):
                         for k in list(self.agent.data_to_send.keys()):
                             if float(k) <= float(last_batch_id):
                                 del self.agent.data_to_send[k]
-
-                # Commenting the following, before it was sending only one belief at a time
-                # nr_rec_in = len(self.agent.data_to_send)
-                # for i in range(nr_rec_in):
-                #     bel = self.agent.data_to_send.pop()
-                #     # bel_list = []
-                #     # for i in batch:
-                #     #     bel_list.extend(batch[i])
-                #     # if len(bel_list)>0:
-                #     msg_body = bel
-                #     print("data collector: sending data as requested to the bdi")
-                #     print("data collector: sending "+str(msg_body))
-                #     msg = utils.prepareMessage(self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
-                #     await self.send(msg)
-                # print("DATACOLLECTOR: Completed running sendmsgtoBehavior at " + str(time.time()))
             else:
                 """ Non-default behavior (e.g., for the norm aapter)"""
                 # print("sending data as requested to " + str(self.receiver))
@@ -252,6 +226,7 @@ class DataColletor(WorkerAgent):
         self.add_behaviour(b)
 
     async def addToBatch(self, batch, sender, thread, list_of_bel_lists):
+        """ This will start constructing beliefs to send to the bdi """
 
         if not batch in self.work_in_progress_data:
             self.work_in_progress_data[batch] = {}
@@ -264,18 +239,9 @@ class DataColletor(WorkerAgent):
 
         # if I completed the batch
         if len(self.work_in_progress_data[batch].keys()) == self.required_nr_data_for_batch:
-            # print("Batch is complete... preparing to send to bdi")
-            # print("Batch ", batch, " is ")
-            # print(self.work_in_progress_data)
-            # print(batch)
-            # print(self.work_in_progress_data[batch])
-            # print(self.work_in_progress_data)
-            """ you should also create all the necessary beliefs from the data"""
             bels_to_add = {}
 
             batch_visible_person = self.interacting_person
-            # chatter_data = None
-            # position_data = None
 
             data = {}
 
@@ -286,27 +252,11 @@ class DataColletor(WorkerAgent):
                     for vision_bel_list in vision_bel_lists:
                         if len(vision_bel_list) > 0:
                             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "vision_bel_list {}".format(vision_bel_list))
-                            # if vision_bel_list[0] == Constants.ASL_BEL_IS_LOOKING:
-                            #     # bels_to_add.append(utils.joinStringsBel(vision_bel_list))
-                            #     bels_to_add[Constants.ASL_BEL_IS_LOOKING] = vision_bel_list
-                            #     # bel_string = utils.joinStringsBel(
-                            #     #     ["is_looking"]+vision_bel_list[1:])
-                            #     # bels_to_add.append(bel_string)
-                            #     # print(bel_string)
                             if vision_bel_list[0] == DataColletor._KEY_DIST_DATA:
                                 position_data = vision_bel_list[1]
                                 data[Constants.LV_DIST] = position_data
                                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, data)
-                            # elif vision_bel_list[0] == Constants.ASL_BEL_VISIBLE:
-                            #     # bels_to_add.append(utils.joinStringsBel(vision_bel_list))
-                            #     batch_visible_person = vision_bel_list[2]
-                            #     bels_to_add[Constants.ASL_BEL_VISIBLE] = vision_bel_list
-                            # elif vision_bel_list[0] == "detected_emotion":
-                            #     bel_string = utils.joinStringsBel(
-                            #         ["detected_emotion"] + vision_bel_list[1:])
-                            #     bels_to_add.append(bel_string)
                             else:
-                                # bels_to_add.append(utils.joinStringsBel(vision_bel_list))
                                 """ the following allows for having multiple beliefs of a kind (e.g., multiple perceived_object beliefs)
                                  It assumes that in the bdicore the key of these beliefs is not used for anything
                                  (the key of beliefs that should be singletone instead is used)"""
@@ -329,11 +279,9 @@ class DataColletor(WorkerAgent):
                             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "chatter bel list {}".format(chatter_bel_list))
                             if chatter_bel_list[0] == Constants.ASL_BEL_PERSON_NAME:
                                 batch_visible_person = chatter_bel_list[1]
-                                # bels_to_add.append(utils.joinStringsBel(chatter_bel_list))
                                 bels_to_add[chatter_bel_list[0]] = chatter_bel_list
                             elif chatter_bel_list[0] == Constants.ASL_BEL_INTERNAL:
                                 internal_comm = chatter_bel_list[1]
-                                # bels_to_add.append(utils.joinStringsBel(chatter_bel_list))
                                 bels_to_add[chatter_bel_list[0]] = [internal_comm]
                             else:
                                 chatter_data_sentence = chatter_bel_list[1].lower()
@@ -364,9 +312,7 @@ class DataColletor(WorkerAgent):
                                           i.lower() == chatter_data_human_sentence]) > 0:  # same here
                                     formed_bel = [Constants.ASL_BEL_SAID, Constants.ASL_FLUENT_WHAT_ROBOT_SAID]
                                 else:
-                                    # bel_string = utils.joinStringsBel([Constants.ASL_BEL_SAID, chatter_data_sentence])
                                     formed_bel = [Constants.ASL_BEL_SAID, chatter_data_sentence]
-                                # bels_to_add.append(bel_string)
                                 bels_to_add[Constants.ASL_BEL_SAID] = formed_bel
                                 # here I create the data inputs for the social interpreter.
                                 # these inputs are obtained by both the sensors and the analysis of the words and of the context
@@ -375,10 +321,6 @@ class DataColletor(WorkerAgent):
                                 if len([i for i in Constants.VOCABULARY_PERSONAL_CONVERSATION if
                                         i in chatter_data_sentence.replace(Constants.ASL_STRING_SEPARATOR, " ")]) > 0:
                                     data[Constants.LV_VOC_PERSONAL] = 1.0
-
-                            # last_chatter_data_sentence = last_chatter_data_split[0].replace(" ", Constants.ASL_STRING_SEPARATOR)
-                        # else:
-                        #     data[Constants.LV_COMMUNICATING] = 0.0
 
             # position
             if Constants.POSITION_HANDLER_JID in self.workers_data_sources_threads.keys():
@@ -391,29 +333,16 @@ class DataColletor(WorkerAgent):
                             data[Constants.LV_DIST] = position_data
 
             # alltogether
-            """ This next test is very important because it allows to make sure we do not perform inference (social interpretation) if we do not have any data
-            (otherwise we give a random interpretation to a context and we don't want this) """
             social_values = None
             best_social_interpr = None
 
             nr_info = len(data)
-            # print("nr info", nr_info)
             if (self.fsi is not None) and (nr_info > 0):
-                # if there is some data, then I fill all the rest with "off" values
-                # for social_cue in Constants.LV_SOCIAL_CUES:
-                #     if not social_cue in data:
-                #         data[social_cue] = 0.0
-                #
                 for fsi_input in self.fsi.fuzzyRuleBase.inputs:
                     if not fsi_input in data:
                         logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, str(fsi_input) + " not in data")
-                        # print(fsi_input)
-                        # print(self.fsi.fuzzyRuleBase.ling_vars_dict)
-                        # print(self.fsi.fuzzyRuleBase.ling_vars_dict[fsi_input])
-                        # print(self.fsi.fuzzyRuleBase.ling_vars_dict[fsi_input].getDefaultVal())
                         input_default_val = self.fsi.fuzzyRuleBase.ling_vars_dict[fsi_input].getDefaultVal()
                         input_min_val = self.fsi.fuzzyRuleBase.ling_vars_dict[fsi_input].universe_of_discourse[0]
-                        # print("default val of", fsi_input, ": ", input_default_val)
                         if input_default_val is None:
                             data[fsi_input] = input_min_val
                         else:
@@ -423,9 +352,8 @@ class DataColletor(WorkerAgent):
                 logger.info("{}, best is {}".format(social_values, best_social_interpr))
 
             if (not best_social_interpr is None):
-                # print("best social interpretation: " + str(best_social_interpr))
                 """
-                The following test also is very important: we send data to the norm adapter only if there is more than
+                The following test is important: we send data to the norm adapter only if there is more than
                 one social cue. Otherwise we are not learning/adapting correctly, but only reinforcing knowledge."""
                 if nr_info > 1:
                     msg_to_norm_adapter = {
@@ -436,12 +364,6 @@ class DataColletor(WorkerAgent):
                             msg_to_norm_adapter[str(s)] = str(social_values[s])
                     for d in data:
                         msg_to_norm_adapter[str(d)] = str(data[d])
-                    # msg_to_norm_adapter = [Constants.TOPIC_SOCIAL_INTERPR, str(best_social_interpr)]
-                    # if not social_values is None:
-                    #     for s in social_values:
-                    #         msg_to_norm_adapter.extend([str(s), str(social_values[s])])
-                    # for d in data:
-                    #     msg_to_norm_adapter.extend([str(d), str(data[d])])
                     send_msg_to_norm_adapter = self.SendMsgToBehaviour(Constants.NORM_ADAPTER_JID, msg_to_norm_adapter)
                     logger.info("DATACOLLECTOR: Created new sendmsgtoBehavior for norm adapter at {}".format(str(time.time())))
                     logger.info("datacollector msg for norm adapter: {}".format(msg_to_norm_adapter))
@@ -449,27 +371,11 @@ class DataColletor(WorkerAgent):
 
             if (not social_values is None):
                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "social_values: {}".format(str(social_values)))
-                # I also create another belief with the current values of social interpretation
-                # sev = []
-                # for s in social_values:
-                #     sev.append(s)
-                #     sev.append(str(social_values[s]))
-                # bel_v = utils.joinStringsBel(["social_eval"] + sev)
-                # bels_to_add.append(bel_v)
                 bels_to_add[Constants.SPADE_MSG_SOCIAL_EVAL] = social_values
-                # beliefs_to_send.append(bel)
                 if (not best_social_interpr is None):
-                    # bel = utils.joinStringsBel(
-                    #     ["distance", str(best_social_interpr).lower()])
-                    # bels_to_add.append(bel)
                     bels_to_add[Constants.ASL_BEL_DISTANCE] = [Constants.ASL_BEL_DISTANCE,
                                                                str(best_social_interpr).lower()]
-                    # print(bel)
                 if (not self.interacting_person == Constants.ASL_FLUENT_UNKNOWN_PERSON):
-                    # bel = utils.joinStringsBel(
-                    #     ["person_name", str(self.interacting_person).lower()])
-                    # bels_to_add.append(bel)
-                    # print(bel)
                     bels_to_add[Constants.ASL_BEL_PERSON_NAME] = [Constants.ASL_BEL_PERSON_NAME,
                                                                   str(self.interacting_person).lower()]
 
@@ -490,10 +396,8 @@ class DataColletor(WorkerAgent):
         self.data_to_send = {}
         self.last_batch_in_data_to_send = None
 
-        # self.workers_data_sources = [Constants.CHATTER_JID,
-        #                              Constants.POSITION_HANDLER_JID,
-        #                              Constants.VISION_HANDLER_JID]  # ... here you can add the others, or remove some
 
+        """ This dictionary defines all sources for the data collector"""
         self.workers_data_sources_threads = {Constants.CHATTER_JID: [Constants.TOPIC_NAME_LEARNT,
                                                                      Constants.TOPIC_SPEECH,
                                                                      Constants.TOPIC_INTERNAL_COMMUNICATIONS],

@@ -15,6 +15,9 @@ import logging
 logger = logging.getLogger("nosar.mas.agent.worker.visionhandler")
 
 class VisionHandler(WorkerAgent):
+    """ Vision worker agent. deals with all vision-related data.
+    e.g., object detection, person detection, emotions, etc.
+    These might also include the mined distance of the robot from people. """
     class SendMsgToBehaviour(OneShotBehaviour):
         """
         Sends all collected text to the BDI agent
@@ -25,13 +28,6 @@ class VisionHandler(WorkerAgent):
             self.receiver = receiver
             self.metadata = metadata
 
-        # def getVisionInfo(self, topic):
-        #     bel_list_from_oldest_one = []
-        #     nr_rec_in = len(self.agent.received_inputs[topic])
-        #     for i in range(nr_rec_in):
-        #         b = self.agent.received_inputs[topic].pop()
-        #         bel_list_from_oldest_one.append(b)
-        #     return bel_list_from_oldest_one
 
         def getVisionInfo(self, topic):
             vision_info_dict_with_ordered_keys_from_oldest = {}
@@ -57,30 +53,7 @@ class VisionHandler(WorkerAgent):
                     logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, s_ordered_dict)
                     msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM, s_ordered_dict, topic, metadata)
                     await self.send(msg)
-        #
-        # async def run(self):
-        #     # print("chatter running the sendmsgtobdibehavior")
-        #     metadata = None
-        #     if not self.metadata is None:
-        #         if "batch" in self.metadata:
-        #             metadata = {"batch": self.metadata["batch"]}
-        #
-        #     for topic in self.agent.received_inputs.keys():
-        #         s_list = self.getVisionInfo(topic)
-        #         # print(s_list)
-        #         if len(s_list) > 0:
-        #             for p in s_list:
-        #                 if len(p) > 0:
-        #                     msg_body = p
-        #                     # print("sending data as requested")
-        #                     # print(msg_body)
-        #                     msg = utils.prepareMessage(self.receiver, Constants.PERFORMATIVE_INFORM, msg_body, topic, metadata)
-        #                     await self.send(msg)
-        #     # else:
-        #     #     msg_body = Constants.NO_DATA
-        #     #     # print(msg_body)
-        #     #     msg = utils.prepareMessage(self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
-        #     #     await self.send(msg)
+
 
     async def send_msg_to(self, receiver, metadata=None, content=None):
         b = self.SendMsgToBehaviour(receiver, metadata)

@@ -1,34 +1,20 @@
 import copy
+import math
+import os
+import sys
+from datetime import timedelta, datetime
 
+from simpful import *
 from spade.behaviour import PeriodicBehaviour, OneShotBehaviour
 
 from mas.agent.workeragent import WorkerAgent
-from simpful import *
 
-from utils import utils
-import utils.constants as Constants
 
-from datetime import timedelta, datetime
-
-import math
-
-from simpful import *
-
-import sys
-import os
-
-# getting the name of the directory
-# where the this file is present.
 current = os.path.dirname(os.path.realpath(__file__))
-# Getting the parent directory name
-# where the current directory is present.
 parent = os.path.dirname(current)
-# adding the parent directory to
-# the sys.path.
 sys.path.append(parent)
 
 from mas.utils.fsutils import linearScaleUniverseToA1B1, getDissimilarity
-from utils import utils
 import numpy as np
 import utils.constants as Constants
 
@@ -36,6 +22,9 @@ import logging
 logger = logging.getLogger("nosar.mas.agent.worker.normadapter")
 
 class NormAdapter(WorkerAgent):
+    """
+    The worker agent that performs norm adaptation
+    """
 
     class PerformAdaptation(OneShotBehaviour):
         def __init__(self, data, aggr_knowledge, var_maxmin):

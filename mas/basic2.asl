@@ -1,3 +1,4 @@
+// The knowledge and rule base of the robot.
 
 //=========================   Robot's initial knowledge   ==================================
 

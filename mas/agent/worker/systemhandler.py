@@ -12,6 +12,9 @@ import logging
 logger = logging.getLogger("nosar.mas.agent.worker.systemhandler")
 
 class SystemHandler(WorkerAgent):
+    """
+    Worker agent that deals with system-related tasks (e.g. shutting down)
+    """
     async def setup(self):
         self.mqtt_client = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_SystemHandler_Publisher",
                                          Constants.MQTT_CLIENT_TYPE_PUBLISHER, None, None)

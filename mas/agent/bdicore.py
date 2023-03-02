@@ -1,20 +1,17 @@
 import collections
+import logging
 import random
 import time
 from datetime import datetime, timedelta
 
+import agentspeak
 from spade.behaviour import CyclicBehaviour, OneShotBehaviour, PeriodicBehaviour
 from spade_bdi.bdi import BDIAgent
-
-import agentspeak
-
-from spade.message import Message
 
 import utils.constants as Constants
 import utils.utils as utils
 from mas.norm.normativereasoner import NormativeReasoner
 
-import logging
 logger = logging.getLogger("nosar.mas.agent.bdicore")
 
 class BDICore(BDIAgent):

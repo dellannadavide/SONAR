@@ -1,47 +1,37 @@
-import copy
+import logging
 import random
 import threading
 import time
 import traceback
+from abc import abstractmethod
 from datetime import datetime, timedelta
 
 import contractions
 import nltk
+import spacy
+import torch
 from spade.behaviour import OneShotBehaviour
-from spade.message import Message
-
-from mas.agent.workeragent import WorkerAgent
-
-# import chatterbot
-# from chatterbot import ChatBot
-# from chatterbot.trainers import ChatterBotCorpusTrainer
-# from chatterbot.trainers import UbuntuCorpusTrainer
-# from chatterbot import filters
+from statemachine import StateMachine, State
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import pipeline
+from transformers.utils import logging as transformers_logging
 
 import utils.constants as Constants
+import utils.utils as utils
+from mas.agent.workeragent import WorkerAgent
 from mas.utils.news import getRandomNewsFromBBC
 from mas.utils.weather import getCurrentWeather
 from utils.mqttclient import MQTTClient
-
-import utils.utils as utils
-
-from transformers import pipeline
-
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-
-from transformers.utils import logging as transformers_logging
-
-from abc import abstractmethod
-import spacy
-from statemachine import StateMachine, State
-
-import logging
 
 logger = logging.getLogger("nosar.mas.agent.worker.chatter")
 
 
 class Chatter(WorkerAgent):
+    """
+    A class representing a chatter worker agent: an agent that deals with chatting with a human.
+    """
+
+    """ Constants used to identify tasks and types of questions """
     _TASK_CONTINUE_CONVERSATION = "continue_conversation"
     _TASK_CONTINUE_CONVERSATION_PROACTIVE = "continue_conversation_proactive"
     _TASK_ASK_QUESTION = "ask_question"
@@ -56,6 +46,9 @@ class Chatter(WorkerAgent):
     _QUESTION_TOPIC_SOCIAL_QUESTION = "social_question"
 
     class ChatterStateMachine(StateMachine):
+        """ The chatter makes use of a state machine to enter non-default states.
+        This helps minimizing inconsistencies and allows to implement social practices.
+        A multi-state temporal social practice corresponds to a path in the state machine."""
         def __init__(self, chatter) -> None:
             super().__init__()
             self.chatter = chatter
@@ -74,10 +67,14 @@ class Chatter(WorkerAgent):
                 pass
 
         class DefaultChatterState(ChatterState):
+            """ The default chatter state is the one where a normal reply is given.
+            This happens by passing directly the user input to the data collector and then to the bdi agent.
+            so here there is nothing. """
             def process_input(self, user_input):
                 return None
 
         class NameRetrievalState(ChatterState):
+            """ State entered when the name of a person needs to be retrieved. """
             def __init__(self, name, value=None, initial=False, nlp=None):
                 super().__init__(name, value, initial)
                 self.nlp = nlp
@@ -95,6 +92,7 @@ class Chatter(WorkerAgent):
                 return detected_name
 
         class NameConfirmationState(ChatterState):
+            """ After retrieving the name the agent asks for and checks confirmation that the correct name is learnt. """
             def __init__(self, name, value=None, initial=False, nlp=None):
                 super().__init__(name, value, initial)
                 self.nlp = nlp
@@ -122,6 +120,15 @@ class Chatter(WorkerAgent):
                 return self.isYesNoUnclearAnswer(user_input)
 
         class GiveFollowUpAnswerState(ChatterState):
+            """ A state entered when the chatter is instructed by the bdi agent to ask a question and then give a
+            follow-up answer/sentence after the user replied.
+            E.g.,
+            agent: by the way do you know what's the temperature outside?
+            [after saying this, enters GiveFollowUpAnswerState]
+            user: no I don't
+            agent: it's 4 degrees
+            [the follow-up answer]
+            """
             def __init__(self, name, value=None, initial=False):
                 super().__init__(name, value, initial)
                 self.follow_up_answer = ""
@@ -133,6 +140,7 @@ class Chatter(WorkerAgent):
                 return self.follow_up_answer
 
         class GoodbyeConfirmationState(ChatterState):
+            """ A state entered to confirm that the person is leaving before completing the goodbye social practice """
             def __init__(self, name, value=None, initial=False, nlp=None):
                 super().__init__(name, value, initial)
                 self.nlp = nlp
@@ -160,6 +168,7 @@ class Chatter(WorkerAgent):
                 return self.isYesNoUnclearAnswer(user_input)
 
         class SleepingState(ChatterState):
+            """ In this state the agent is asleep and all user inputs are ignored unless the sentence is 'wake up'"""
             def __init__(self, name, value=None, initial=False, nlp=None):
                 super().__init__(name, value, initial)
 
@@ -178,6 +187,7 @@ class Chatter(WorkerAgent):
         end_name_retrieval_negative = name_retrieval.to(default)
 
         def possibly_end_retrieval(self):
+            """ Function called to check if the name retrieval practice should be terminated """
             if self.is_name_retrieval and self.first_retrieval:
                 to_say = "Nevermind."
                 # self.chatter.converser.addBotResponseToConversation(to_say, True)
@@ -228,12 +238,14 @@ class Chatter(WorkerAgent):
 
         def on_end_name_retrieval_positive(self):
             to_say = "Got it! Nice to meet you " + str(self.name) + "."
-            suff_l = ["How is your day going?",  "How are you doing today?", "Having a nice day so far?", "What a nice day today, isn't it?", "What a day! Am I right?"]
-            to_say = to_say+" "+random.choice(suff_l)
+            to_say = to_say+" "+random.choice(Constants.GREETING_QUESTIONS)
             self.chatter.received_inputs[Constants.TOPIC_NAME_LEARNT].append(str(self.name))
             self.chatter.qualifyAndSendResponse(to_say, {}, False)
 
         def process_input(self, rec_m):
+            """ This function is called for every input received by the user.
+            Based on the current state of the state machine, it determines the correct consequence
+            """
             # N.B rec_m may contain other things in addition to the text of the user (e.g., the volume of voice)
             # so I first extract just the text to process
             user_input = (utils.splitStringToList(rec_m, Constants.STRING_SEPARATOR_INNER)[0]).strip()
@@ -249,21 +261,22 @@ class Chatter(WorkerAgent):
                     logger.error(
                         "Something is wrong. state_output is not None after processing input from default state")
                 else:
-                    self.chatter.received_inputs[Constants.TOPIC_SPEECH].append(rec_m)
-                    self.chatter.converser.addUserInput(user_input)
-                    self.chatter.addOneInputBeingProcessed()
+                    self.chatter.received_inputs[Constants.TOPIC_SPEECH].append(rec_m) # append the received input to the chatter dict that will be comunicate to the data collector
+                    self.chatter.converser.addUserInput(user_input) # add the user input to the converser, which keeps track of the conversation
+                    self.chatter.addOneInputBeingProcessed() # set one input as being processed
 
-            elif self.is_name_retrieval:  # when I'm in states that are not the default, I do not want to send stuff to the data collector (so I do not add to received_inputs), but I still would like to store the conversation
+            elif self.is_name_retrieval:
+                # when I'm in states that are not the default,
+                # I do not want to send stuff to the data collector (so I do not add to received_inputs),
+                # but I still would like to store the conversation
                 self.chatter.converser.addUserInput(user_input)  # note I only add to the user input history
                 self.chatter.addOneInputBeingProcessed()
 
                 if state_output is not None:  # the output is the name
                     self.temp_name = state_output
-                    # print("---setting temp_name to", self.temp_name)
                     self.confirm_name()  # I transition to confirmation
                 else:  # then no name detected
                     to_say = "I couldn't get your name. Could you repeat, please?"
-                    # self.chatter.converser.addBotResponseToConversation(to_say, False)
                     self.chatter.qualifyAndSendResponse(to_say, {}, False)
                     self.first_retrieval = False
             elif self.is_name_confirmation:
@@ -315,6 +328,8 @@ class Chatter(WorkerAgent):
                 logger.error("This should actually never happen...")
 
     class Converser:
+        """ The Converser is a class used to keep track of the conversation so far so to be able to
+        have some context in the responses provided to the user. """
         def __init__(self, model_name) -> None:
             super().__init__()
             self.model_name = model_name
@@ -322,8 +337,6 @@ class Chatter(WorkerAgent):
             self.model = AutoModelForCausalLM.from_pretrained(model_name)
             self.max_length_history = 4
             self.chat_history_ids = None
-            # self.bot_input_ids = None
-            # self.chat_history_ids_list = None
             self.input_ids = None
             self.user_inputs = []
             self.generated_responses = []
@@ -332,8 +345,6 @@ class Chatter(WorkerAgent):
 
         def initializeVariables(self):
             self.chat_history_ids = None
-            # self.bot_input_ids = None
-            # self.chat_history_ids_list = None
             self.input_ids = None
             self.user_inputs = []
             self.generated_responses = []
@@ -488,7 +499,7 @@ class Chatter(WorkerAgent):
 
     class SendMsgToBehaviour(OneShotBehaviour):
         """
-        Sends all collected text to the data collector agent
+        Sends all collected info (stored in the agent's received_inputs dict) to the data collector agent
         """
 
         def __init__(self, receiver, metadata):
@@ -505,12 +516,10 @@ class Chatter(WorkerAgent):
             return sentence_dict_with_ordered_keys_from_oldest
 
         async def run(self):
-            # print("chatter running the sendmsgtobdibehavior")
             metadata = {Constants.SPADE_MSG_METADATA_KEYS_TYPE: "int"}
             if not self.metadata is None:
                 if Constants.SPADE_MSG_BATCH_ID in self.metadata:
                     metadata[Constants.SPADE_MSG_BATCH_ID] = self.metadata[Constants.SPADE_MSG_BATCH_ID]
-            # print(s_list)
 
             for topic in self.agent.received_inputs.keys():
                 s_ordered_dict = self.getSentences(topic)
@@ -520,13 +529,10 @@ class Chatter(WorkerAgent):
                     msg = utils.prepareMessage(self.agent.jid, self.receiver, Constants.PERFORMATIVE_INFORM,
                                                s_ordered_dict, topic, metadata)
                     await self.send(msg)
-            # else:
-            #     msg_body = Constants.NO_DATA
-            #     # print(msg_body)
-            #     msg = utils.prepareMessage(self.receiver, Constants.PERFORMATIVE_INFORM, msg_body)
-            #     await self.send(msg)
+
 
     def __init__(self, jid: str, password: str, verify_security: bool = False, fsi=None, fsq=None, gui_queue=None):
+        """ Init of the chatter agent"""
         super().__init__(jid, password, verify_security, fsi, fsq, gui_queue)
         self.asked_about_emotions = None
         self.to_add_to_next_sentence = None
@@ -537,10 +543,12 @@ class Chatter(WorkerAgent):
         self.add_behaviour(b)
 
     async def do_work(self, work_info_dict):
+        """ Function automatically invoked when the agent receives a message with performative INFORM.
+        This type of message is typically received by the BDI agent which informs the chatter to say or do something
+        e.g., to process the user input without reply, to reply in a proactive way, to say something spontaneous, etc."""
         to_say = None
         is_spontaneous = None
-        # self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
-        #                             utils.joinStrings([Constants.DIRECTIVE_LED_SET_THINKING, "True"]))
+
         logger.info("work_info {}".format(work_info_dict))
 
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_SET_USER_INPUT_PROCESSED_WITH_NO_REPLY:
@@ -694,6 +702,17 @@ class Chatter(WorkerAgent):
                 self.qualifyAndSendResponse(to_say, work_info_dict, is_spontaneous)
 
     def qualifyAndSendResponse(self, to_say, work_info_dict, is_spontaneous_response):
+        """ This function represents the social qualification of the chatter agent.
+        It does the following steps:
+        1. it determines the emotion associated to the sentence it is going to say.
+        The emotion is transformed in a label that will be used to determine an appropriate animation to do while saying the words
+        2. it runs fuzzy inference to determine appropriate levels of volume, speed and tone of voice
+        based on the current social interpretation of the situation (this info is stored in the work_info_dict, sent by the BDI agent).
+        3. if the agent has a particular role, then rules are applied to also qualify the sentence based on the role
+        (e.g., for the subordinate role, the agent will not use contractions, and will add "sir" to the sentence)
+        4. finally send via mqtt all directives for the robot's actuators
+        """
+
         logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "IN QUALIFY: {}".format(work_info_dict))
         """ Function that qualifies the text to say based on the social info"""
         animation_to_perfom = None
@@ -769,6 +788,7 @@ class Chatter(WorkerAgent):
 
 
     def setOneInputProcessed(self):
+        """ used to avoid processing more than one user sentence at a time"""
         self.inputs_being_processed = max(self.inputs_being_processed - 1,
                                           0)  # making sure I don't go below 0 in any case
 
@@ -788,6 +808,12 @@ class Chatter(WorkerAgent):
         return self.inputs_being_processed == 0
 
     def getQuestion(self, text, topic):
+        """
+        Returns a question on a particular topic starting from text when needed
+        :param text:
+        :param topic:
+        :return:
+        """
         logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
                    "in getQuestions {}, {}".format(text, topic))
         resp = ""
@@ -798,31 +824,18 @@ class Chatter(WorkerAgent):
                                   top_p=0.92,
                                   top_k=100,
                                   temperature=0.75)
-            # print("questions for ", text, ": ")
-            # for s in r:
-            #     first = s['generated_text'].split("<sep>")[0]
-            #     print(first)
-            # print("")
             resp = r[0]['generated_text'].split("<sep>")[0]
         if topic == Chatter._QUESTION_TOPIC_SOCIAL_QUESTION:
-            # logger.info("Random sampling social question")
             resp = random.choice(Constants.SOCIAL_QUESTIONS_EXAMPLES)
-            # logger.info("Sampled question: {}".format(resp))
         if topic == Chatter._QUESTION_TOPIC_SUMMARY:
             summary = \
             self.summarizer(self.converser.getConversationString(last_n_sentences=5), min_length=5, max_length=40)[0][
                 "summary_text"]
-            # print(summary)
             resp = self.getQuestion("You can tell me more about " + summary, Chatter._QUESTION_TOPIC_TEXT)
         if topic == Chatter._QUESTION_TOPIC_NEWS:
 
             one_news_title, one_news_description = getRandomNewsFromBBC()
             news = one_news_title+". "+one_news_description
-
-            # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "news title = {}, descript= {}".format(one_news_title, one_news_description))
-            # possible_questions_types = ["You think about ", "You've heard that "]
-            # q_type = random.choice(possible_questions_types)
-            # logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "selected question type = {}".format(q_type))
             resp = random.choice(Constants.VOCABULARY_ANYWAYS)+". " + random.choice(["I was checking the news. ",
                                                                                      "I can't stop reading the news. ",
                                                                                      "I'm obsessed with the news today. ",
@@ -860,7 +873,6 @@ class Chatter(WorkerAgent):
             logger.info("In chatter question about random topic, n is {}".format(n))
             if n < 0.7: #in x% of cases I ask a questions about the last text
                 selected_topic = Chatter._QUESTION_TOPIC_TEXT
-
                 # in this case I also convert the person sentence from first to second person,
                 # so that the question is more meaningful
                 text_for_question_list = []
@@ -873,7 +885,6 @@ class Chatter(WorkerAgent):
                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
                            "generating questions for converted text {}".format(text))
 
-
             elif n < 0.8: #in 10%, I as a question about the conversation so far
                 selected_topic = Chatter._QUESTION_TOPIC_SUMMARY
             elif n < 0.9: # in 10%, I ask a random social question
@@ -882,11 +893,7 @@ class Chatter(WorkerAgent):
                 selected_topic = Chatter._QUESTION_TOPIC_NEWS
             else: #  in 2.5% I ask a question about the weather
                 selected_topic = Chatter._QUESTION_TOPIC_WEATHER
-            # possible_topics = [Chatter._QUESTION_TOPIC_TEXT] * 28 + \
-            #                   [Chatter._QUESTION_TOPIC_SUMMARY] * 6 + \
-            #                   [Chatter._QUESTION_TOPIC_NEWS] * 5 + \
-            #                   [Chatter._QUESTION_TOPIC_WEATHER] * 1  # by doing so I'm reducing (in a very rudimental way) the chances to ask about the news (so it doesn't happen often)
-            # selected_topic = possible_topics[random.randint(0, len(possible_topics) - 1)]
+
             logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Selected topic is "+str(selected_topic))
             resp = self.getQuestion(text, selected_topic)
         return resp
@@ -909,20 +916,20 @@ class Chatter(WorkerAgent):
         else:
             resp = self.getQuestion(text, Chatter._QUESTION_TOPIC_RANDOM)
 
-        #
-        # if len(self.converser.getConversation()) < 4:  # if less than 2 interactions
-        #     resp = "Hey, I was reading the news. " + self.getQuestion("", Chatter._QUESTION_TOPIC_NEWS)
-        # else:
-        #     resp = self.getQuestion(text, Chatter._QUESTION_TOPIC_RANDOM)
-        #     resp = "By the way, I was thinking about our conversation earlier. " + self.getQuestion("",
-        #                                                                                             Chatter._QUESTION_TOPIC_SUMMARY)
-
         return resp
 
     def getTextFor(self, task, text, human_emotion=None, is_spontaneous=False):
+        """
+        Determines a response for a certain task (e.g., continue conversation proactive, or ask a question),
+        starting from text (i.e., using text as a starting point, based on the task)
+        taking into account possible human emotion detected
+        :param task:
+        :param text:
+        :param human_emotion:
+        :param is_spontaneous:
+        :return:
+        """
         resp = ""
-        # self.mqtt_publisher.publish(Constants.TOPIC_LEDS,
-        #                             utils.joinStrings([Constants.DIRECTIVE_LED_SET_COLOR, Constants.COLORS_BLUE]))
         try:
             if task == Chatter._TASK_CONTINUE_CONVERSATION:
                 resp = self.converser.getResponse(text)
@@ -1005,14 +1012,6 @@ class Chatter(WorkerAgent):
                                    temperature=0.75,
                                    num_return_sequences=10)
                 resp = g[0]['generated_text'].split("?")[0] + "?"
-                #
-                # g = self.tgenerator("a " + text, max_length=20,
-                #                     do_sample=True,
-                #                     top_p=0.92,
-                #                     top_k=100,
-                #                     temperature=0.75)
-                # # logger.info(g)
-                # resp = self.getQuestion("You know that " + g[0]["generated_text"] + ".", Chatter._QUESTION_TOPIC_TEXT)
         except:
             resp = ""
 
@@ -1024,6 +1023,7 @@ class Chatter(WorkerAgent):
         return resp
 
     def on_message(self, client, userdata, message):
+        """ Function automatically called every time data is received via mqtt"""
         rec_m = str(message.payload.decode("utf-8"))
         logger.info("As a chatter I received data " + str(rec_m))
 
@@ -1053,6 +1053,8 @@ class Chatter(WorkerAgent):
                 self.on_message(client, userdata, message)
 
     def kickstartLMs(self):
+        """ Kickstarting the language models to speed up later answers """
+
         logger.info("Kickstarting Language Models so to speed up interaction with humans...")
         kickstart_conversation_user_inputs = ["Hello!", "You are going to speak with a human, are you ready?",
                                               "Let's begin!"]  # I do it with three sentences because in some cases the randomness will not initiate the dialogue model
@@ -1072,40 +1074,31 @@ class Chatter(WorkerAgent):
             e = self.temotion_classifier(s)
 
     async def setup(self):
-        transformers_logging.set_verbosity(40)  # errors
+        transformers_logging.set_verbosity(40)
 
-        # """ I create and train the actual chatter"""
-        # self.chatbot = ChatBot('Chatter', logic_adapters=['chatterbot.logic.BestMatch',
-        #                                                   'chatterbot.logic.MathematicalEvaluation'
-        #                                                   # 'chatterbot.logic.TimeLogicAdapter'
-        #                                                  ])
-        # self.chatbot = ChatBot('Chatter', logic_adapters=[
-        #     {
-        #         'import_path': 'chatterbot.logic.BestMatch',
-        #         "statement_comparison_function": "chatterbot.comparisons.levenshtein_distance"
-        #     }
-        # ])
-        #
-        # self.to_train = False
-        # if self.to_train:
-        #     print("Training chatter")
-        #     self.trainer = ChatterBotCorpusTrainer(self.chatbot)
-        #     self.trainer.train("chatterbot.corpus.english",
-        #                        # "chatterbot.corpus.english.greetings",
-        #                        # "chatterbot.corpus.english.conversations",
-        #                        "data.chatter.custom")
+        """ Initializing all language models """
+        """ The converser to generate responses in dialogues """
         self.converser = self.Converser("microsoft/DialoGPT-medium")
         # self.converser = self.Converser("facebook/blenderbot-400M-distill")
         # self.converser = self.Converser("microsoft/DialoGPT-large")
+
+        """ The t2t generator is used to generate questions """
         self.t2tgenerator = pipeline("text2text-generation", model="valhalla/t5-base-e2e-qg")
+        """ The question-answering is used to generate answers to the self-generate questions"""
         self.question_answerer = pipeline("question-answering", model="deepset/roberta-base-squad2",
                             tokenizer="deepset/roberta-base-squad2")
+        """ The summarizer is used to summarize the converstion so far, or to summarize the news """
         self.summarizer = pipeline("summarization")
+        """ The text generator is used to generate spontaneous sentences or questions """
         self.tgenerator = pipeline('text-generation', model="facebook/opt-350m")
+        """ The temotionclassifier is use for sentiment analysis of the agent's sentences"""
         self.temotion_classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion',
                                             top_k=1)
+        """ The question statement classifier is a classifier that determines whether a sentence is a question or not"""
         self.question_statement_classifier = pipeline("text-classification",
                                                       model='shahrukhx01/question-vs-statement-classifier')
+
+        """ Init spacy, the state machine and different variables"""
         self.nlp = spacy.load("en_core_web_sm")
 
         self.chatter_state_machine = self.ChatterStateMachine(self)
@@ -1117,24 +1110,11 @@ class Chatter(WorkerAgent):
         self.asked_about_emotions = False
         self.to_add_to_next_sentence = None
 
+        """ Kickstarting the language models with a couple initial sentences to speed up answering"""
         self.kickstartLMs()
 
-        # giving a first input to initialize the models, it seems it is faster after
-        # self.converser.addUserInput("Hello!")
-        # self.converser.getResponse("Hello!")
-        # init_sum = self.summarizer(self.converser.getConversationString(), min_length=5, max_length=20)[0][
-        #     "summary_text"]
-        # init_q = self.getQuestion("You can tell me more about " + init_sum)
-        #
-        # init_g = self.tgenerator(init_sum)
-
-        # conversational_pipeline = pipeline("text2text-generation") #not working like this but could be interesting to try e.g., for sentiment analysis
-        # self.conversation = Conversation()
-
-        # ubuntu corpur traininng takes extremely long and it is currently practically not usable
-        # self.trainer = UbuntuCorpusTrainer(self.chatbot)
-        # self.trainer.train()
-
+        """ This dictionary will contain the different inputs that are going to be communicated to the
+        data collector and then to the bdi """
         self.received_inputs = {
             Constants.TOPIC_SPEECH: [],
             Constants.TOPIC_NAME_LEARNT: [],

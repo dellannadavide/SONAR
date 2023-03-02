@@ -10,6 +10,7 @@ import logging
 logger = logging.getLogger("nosar.mas.agent.worker.posturehandler")
 
 class PostureHandler(WorkerAgent):
+    """ Worker agent that can handle posture-related tasks (e.g., looking up)"""
     async def setup(self):
         self.mqtt_client = MQTTClient(Constants.MQTT_BROKER_ADDRESS, "NAO_PostureHandler_Publisher",
                                          Constants.MQTT_CLIENT_TYPE_PUBLISHER, None, None)
@@ -25,22 +26,6 @@ class PostureHandler(WorkerAgent):
             self.mqtt_client.publish(Constants.TOPIC_POSTURE, Constants.DIRECTIVE_PLAYANIMATION + Constants.STRING_SEPARATOR + str(work_info_dict[Constants.SPADE_MSG_POSTURE]))
         if work_info_dict[Constants.SPADE_MSG_DIRECTIVE] == Constants.DIRECTIVE_MOVEHEAD:
             person_is_looking = work_info_dict[Constants.SPADE_MSG_POSTURE]
-            # print("person is looking: ", person_is_looking)
-            #default is center
-            # pitch = 0.0
-            # yaw = 0.0
-
-            # if "top" in person_is_looking:
-            #     pitch = 50.0*-1 #I multiply by -1 so that I get the robot to follow the direction of looking
-            # if "bottom" in person_is_looking:
-            #     pitch = -70.0*-1
-            # if "left" in person_is_looking:
-            #     yaw = 50.0*-1
-            # if "right" in person_is_looking:
-            #     yaw = -50.0*-1
-            # msg = utils.joinStrings([Constants.DIRECTIVE_MOVEHEAD, str(pitch), str(yaw)],
-            #                         Constants.STRING_SEPARATOR)
-            # self.mqtt_client.publish(Constants.TOPIC_MOTION, msg)
 
             animation = "look" + \
                         ("_bottom" if Constants.ASL_FLUENT_BOTTOM_DIRECTION in person_is_looking else ("_top" if Constants.ASL_FLUENT_TOP_DIRECTION in person_is_looking else "_bottom")) +  \

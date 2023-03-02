@@ -1,6 +1,8 @@
 import utils.constants as Constants
 
 class NormativeReasoner:
+    """ This class represents an external (to the bdi agent, i.e., to agentspeak) normative reasoning module.
+     At the moment it is not used though. """
 
     def __init__(self) -> None:
         super().__init__()

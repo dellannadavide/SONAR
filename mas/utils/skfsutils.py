@@ -4,6 +4,10 @@ import skfuzzy as fuzz
 import logging
 logger = logging.getLogger("nosar.mas.utils.skfsutils")
 
+"""
+This module contains all utils related to fuzzy inference specific to skfuzzy
+"""
+
 def convertFSTOSkFuzzy(partition_universe_boundaries, simpful_fuzzyset):
     """ Assuming trapezoid """
     x = np.arange(partition_universe_boundaries[0], partition_universe_boundaries[1]+0.000001, 0.05)

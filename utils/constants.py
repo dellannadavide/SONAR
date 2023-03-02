@@ -223,7 +223,9 @@ SOCIAL_QUESTIONS_EXAMPLES = [
     "What do you do for a living?"
 ]
 
-
+GREETING_QUESTIONS = ["How is your day going?",  "How are you doing today?",
+                      "Having a nice day so far?", "What a nice day today, isn't it?",
+                      "What a day! Am I right?"]
 
 LV_VOC_PERSONAL = "PERSONAL_VOCABULARY"
 

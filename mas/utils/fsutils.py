@@ -1,17 +1,19 @@
-import copy
+import logging
 
+import pandas as pd
 import simpful as sf
 from simpful import *
+
 import utils.constants as Constants
-import pandas as pd
-import numpy as np
-
-
 from mas.utils.moea import getContextualizedFS
 from mas.utils.skfsutils import createSKFuzzyMFandGetDissimilarity
 
-import logging
 logger = logging.getLogger("nosar.mas.utils.fsutils")
+
+"""
+This module contains all utils related to fuzzy inference via simpful
+"""
+
 
 def scaleFrom01ToAB(x, a, b, lambd, k_SF):
     if x <= lambd:
@@ -19,24 +21,30 @@ def scaleFrom01ToAB(x, a, b, lambd, k_SF):
     else:
         return (a + ((b - a) * (1 - (((1 - lambd) ** (1 - k_SF)) * ((1 - x ** (k_SF)))))))
 
+
 def linearScaleFromABToA1B1(x, a, b, a1, b1):
-    xin01 = (x-a)/(b-a)
-    xinA1B1 = a1+((b1-a1)*xin01)
+    xin01 = (x - a) / (b - a)
+    xinA1B1 = a1 + ((b1 - a1) * xin01)
     return xinA1B1
 
-def scaleUniverse(sf_ling_var, a, b, lambd, k_SF): #sf_ling_var is a simpful linguistic var (not a SARFuzzyLingVar)
+
+def scaleUniverse(sf_ling_var, a, b, lambd, k_SF):  # sf_ling_var is a simpful linguistic var (not a SARFuzzyLingVar)
     sf_ling_var._universe_of_discourse = [scaleFrom01ToAB(sf_ling_var._universe_of_discourse[0], a, b, lambd, k_SF),
-                                                         scaleFrom01ToAB(sf_ling_var._universe_of_discourse[1], a, b, lambd, k_SF)]
+                                          scaleFrom01ToAB(sf_ling_var._universe_of_discourse[1], a, b, lambd, k_SF)]
 
-def linearScaleUniverseToA1B1(sf_ling_var, a1, b1): #sf_ling_var is a simpful linguistic var (not a SARFuzzyLingVar)
-    sf_ling_var._universe_of_discourse = [linearScaleFromABToA1B1(sf_ling_var._universe_of_discourse[0], sf_ling_var._universe_of_discourse[0], sf_ling_var._universe_of_discourse[1], a1, b1),
-                                          linearScaleFromABToA1B1(sf_ling_var._universe_of_discourse[1], sf_ling_var._universe_of_discourse[0], sf_ling_var._universe_of_discourse[1], a1, b1)]
+
+def linearScaleUniverseToA1B1(sf_ling_var, a1, b1):  # sf_ling_var is a simpful linguistic var (not a SARFuzzyLingVar)
+    sf_ling_var._universe_of_discourse = [
+        linearScaleFromABToA1B1(sf_ling_var._universe_of_discourse[0], sf_ling_var._universe_of_discourse[0],
+                                sf_ling_var._universe_of_discourse[1], a1, b1),
+        linearScaleFromABToA1B1(sf_ling_var._universe_of_discourse[1], sf_ling_var._universe_of_discourse[0],
+                                sf_ling_var._universe_of_discourse[1], a1, b1)]
     return sf_ling_var._universe_of_discourse
-
 
 
 def getDissimilarity(universe_boundaries, mf1_params, mf2_params):
     return createSKFuzzyMFandGetDissimilarity(universe_boundaries, mf1_params, mf2_params)
+
 
 class SARFuzzyLingVar:
     def __init__(self, name, concept, universe_of_discourse, fuzzy_sets, fuzzy_sets_names, default_val=None) -> None:
@@ -81,8 +89,6 @@ class SARFuzzySet:
         self.param = param
         self.fuzzy_set = self.createSimpfulFuzzySet()
 
-
-
     def createSimpfulFuzzySet(self):
         if self.type == Constants.FS_TRIANGULAR_MF:
             if (not "a" in self.param) or (not "b" in self.param) or (not "c" in self.param):
@@ -96,8 +102,10 @@ class SARFuzzySet:
                 logger.error("dict 'param' must specify param a,b,c,d for defining a trapezoidal mf")
                 return None
             else:
-                return DynamicTrapezoidFuzzySet(function=DynamicTrapezoidal_MF(a=self.param["a"], b=self.param["b"], c=self.param["c"], d=self.param["d"]),
-                                   term=self.term)
+                return DynamicTrapezoidFuzzySet(
+                    function=DynamicTrapezoidal_MF(a=self.param["a"], b=self.param["b"], c=self.param["c"],
+                                                   d=self.param["d"]),
+                    term=self.term)
         elif self.type == Constants.FS_GAUSSIAN_MF:
             if (not "a" in self.param) or (not "b" in self.param):
                 logger.error("dict 'param' must specify param a,b for defining a gaussian mf")
@@ -114,13 +122,15 @@ class SARFuzzySet:
     def updateMF(self, new_param):
         if self.type == Constants.FS_TRIANGULAR_MF:
             if (not "a" in new_param) or (not "b" in new_param) or (not "c" in new_param):
-                logger.error("the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
+                logger.error(
+                    "the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
             else:
                 self.param = new_param
                 self.fuzzy_set = self.createSimpfulFuzzySet()
         elif self.type == Constants.FS_TRAPEZOIDAL_MF:
             if (not "a" in new_param) or (not "b" in new_param) or (not "c" in new_param) or (not "d" in new_param):
-                logger.error("the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
+                logger.error(
+                    "the dictionary with the parameters must specify param a,b and c for defining a triangular mf")
             else:
                 self.param = new_param
                 self.fuzzy_set = self.createSimpfulFuzzySet()
@@ -139,6 +149,7 @@ class SARFuzzyRuleBase:
     """
     A Norm Base is actually a fuzzy system
     """
+
     def __init__(self, fuzzy_sets_file, ling_var_file, rules_file, aspect) -> None:
         super().__init__()
         self.aspect = aspect
@@ -150,10 +161,7 @@ class SARFuzzyRuleBase:
         # print(self.ling_vars_dict)
         logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.rules)
 
-
         self.fs = self.createFuzzySystem()
-
-
 
         # print(aspect)
         self.inputs, self.outputs = self.getInputOutputVariables(self.rules, self.ling_vars_dict)
@@ -181,7 +189,6 @@ class SARFuzzyRuleBase:
         fuzzy_set = self.fuzzy_sets_dict[fuzzy_set_id]
         fuzzy_set.updateMF(new_mfs)
 
-
     def updateFuzzySet(self, ling_var_id, fuzzy_set_id, new_fuzzyset):
         self.fuzzy_sets_dict[fuzzy_set_id] = new_fuzzyset
         self.ling_vars_dict[ling_var_id].updateFuzzySets(self.fuzzy_sets_dict[fuzzy_set_id])
@@ -194,7 +201,7 @@ class SARFuzzyRuleBase:
 
     def getLVSFromRulesContainingHighValuesOf(self, variable):
         lvs = {}
-        high_values_of_var = [str(variable)+" IS "+str(x) for x in Constants.FS_POSITIVE_INTERPRETATION_VALUES]
+        high_values_of_var = [str(variable) + " IS " + str(x) for x in Constants.FS_POSITIVE_INTERPRETATION_VALUES]
         for r in self.rules:
             for hv in high_values_of_var:
                 if hv in r:
@@ -219,10 +226,10 @@ class SARFuzzyRuleBase:
             for fuzzy_set_id in self.ling_vars_dict[lv_id].fuzzy_sets_names:
                 partition.append(self.fuzzy_sets_dict[fuzzy_set_id].fuzzy_set)
             self.ling_vars_dict[lv_id] = SARFuzzyLingVar(lv_id,
-                                               self.ling_vars_dict[lv_id].concept,
-                                               self.ling_vars_dict[lv_id].universe_of_discourse,
-                                               partition,
-                                               self.ling_vars_dict[lv_id].fuzzy_sets_names,
+                                                         self.ling_vars_dict[lv_id].concept,
+                                                         self.ling_vars_dict[lv_id].universe_of_discourse,
+                                                         partition,
+                                                         self.ling_vars_dict[lv_id].fuzzy_sets_names,
                                                          self.ling_vars_dict[lv_id].default_val)
             fuzzy_system.add_linguistic_variable(lv_id, self.ling_vars_dict[lv_id].getVar(), verbose=False)
 
@@ -231,12 +238,11 @@ class SARFuzzyRuleBase:
         # fuzzy_system.produce_figure()
         return fuzzy_system
 
-
     def extractRulesFromFile(self, rules_file):
         rules = []
         rules_df = pd.read_excel(rules_file, engine='openpyxl')
         for index, row in rules_df.iterrows():
-            if str(row['FS'])==self.aspect:
+            if str(row['FS']) == self.aspect:
                 rule = str(row['Rule'])
                 rules.append(rule)
         return rules
@@ -258,13 +264,13 @@ class SARFuzzyRuleBase:
                     default_val = float(row["DefaultVal"])
                     # print(default_val)
                 # else:
-                    # print("NOT FOND DEFAULT VAL FOR VAR", lv_id)
+                # print("NOT FOND DEFAULT VAL FOR VAR", lv_id)
                 ling_vars[lv_id] = SARFuzzyLingVar(lv_id,
-                                                str(row['Concept']),
-                                                [float(row['Min']), float(row['Max'])],
-                                                fss,
-                                                fss_ids,
-                                                default_val)
+                                                   str(row['Concept']),
+                                                   [float(row['Min']), float(row['Max'])],
+                                                   fss,
+                                                   fss_ids,
+                                                   default_val)
         return ling_vars
 
     def isLVinRules(self, lv, rules):
@@ -279,11 +285,11 @@ class SARFuzzyRuleBase:
         for index, row in fuzzy_sets_df.iterrows():
             fs_id = str(row['Term'])
             fuzzy_sets[fs_id] = SARFuzzySet(fs_id, str(row['Type']),
-                                         {"a": float(row['a']),
-                                               "b": float(row['b']),
-                                               "c": float(row['c']),
-                                                "d": float(row['d'])
-                                              })
+                                            {"a": float(row['a']),
+                                             "b": float(row['b']),
+                                             "c": float(row['c']),
+                                             "d": float(row['d'])
+                                             })
         return fuzzy_sets
 
     def getInputOutputVariables(self, rules, ling_vars_dict):
@@ -298,14 +304,13 @@ class SARFuzzyRuleBase:
             # print(parsed_consequent)
             for ling_var in ling_vars_dict.keys():
                 # print(ling_var)
-                if ling_var+" IS" in parsed_antecedent:
+                if ling_var + " IS" in parsed_antecedent:
                     # print("-> is in input")
                     inputs.add(ling_var)
-                if ling_var+" IS" in parsed_consequent:
+                if ling_var + " IS" in parsed_consequent:
                     # print("-> is in output")
                     outputs.add(ling_var)
-        return inputs,outputs
-
+        return inputs, outputs
 
     def getContextualizedFS(self, dataset, optim_param):
         # i first extract from the dataset the info relevant for the particular fs and prepare them for being used
@@ -322,18 +327,17 @@ class SARFuzzyRuleBase:
                     datapoint["outputs"][output_var] = dp[output_var]
                 fs_specific_dataset.append(datapoint)
             except:
-                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Skipping data point with no sufficient data for adapting the current FS.")
+                logger.log(Constants.LOGGING_LV_DEBUG_NOSAR,
+                           "Skipping data point with no sufficient data for adapting the current FS.")
                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, dp)
                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, "Required inputs and outputs")
                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.inputs)
                 logger.log(Constants.LOGGING_LV_DEBUG_NOSAR, self.outputs)
 
-        if (len(fs_specific_dataset)>0) and (len(self.dynamic_ling_var)>0):
+        if (len(fs_specific_dataset) > 0) and (len(self.dynamic_ling_var) > 0):
             # print("get the contextualized fs based on data", str(fs_specific_dataset))
             return getContextualizedFS(self.fs, self.dynamic_ling_var, fs_specific_dataset, optim_param=optim_param)
         return self.fs
-
-
 
 
 class DynamicTrapezoidal_MF(sf.Trapezoidal_MF):
@@ -370,6 +374,7 @@ class DynamicTrapezoidal_MF(sf.Trapezoidal_MF):
 
             return min(1, max(0.0, A_x))
 
+
 class DynamicTrapezoidFuzzySet(sf.FuzzySet):
     def __init__(self, function=None, term=""):
         # print("creating a dynamic trapezoid fuzzy set for term ", term)
@@ -387,7 +392,7 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
     def setGeneralizedPositivelyModifierParams(self, theta, k_GP):
         self._funpointer._theta = theta
         self._funpointer._k_GP = k_GP
-        return  self._funpointer._theta, self._funpointer._k_GP
+        return self._funpointer._theta, self._funpointer._k_GP
 
     def get_params(self):
         return self._funpointer._a, self._funpointer._b, self._funpointer._c, self._funpointer._d, self._funpointer._k_GP, self._funpointer._theta
@@ -401,6 +406,7 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
             "k_GP": self._funpointer._k_GP,
             "theta": self._funpointer._theta
         }
+
     def scale(self, a, b, lambd, k_SF):
         self._funpointer._a = scaleFrom01ToAB(self._funpointer._a, a, b, lambd, k_SF)
         self._funpointer._b = scaleFrom01ToAB(self._funpointer._b, a, b, lambd, k_SF)
