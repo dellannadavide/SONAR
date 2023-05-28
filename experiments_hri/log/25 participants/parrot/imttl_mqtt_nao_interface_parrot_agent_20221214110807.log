@@ -1,0 +1,50 @@
+2022-12-14 11:08:08,052 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_MicEnergyDetector connecting to localhost...
+2022-12-14 11:08:08,052 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:13,124 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_NaoImageCollector connecting to localhost...
+2022-12-14 11:08:13,124 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:13,174 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_TextToSpeech connecting to localhost...
+2022-12-14 11:08:13,174 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:13,243 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_Power connecting to localhost...
+2022-12-14 11:08:13,243 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:13,668 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_PostureActuator connecting to localhost...
+2022-12-14 11:08:13,668 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:13,696 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_LedsActuator connecting to localhost...
+2022-12-14 11:08:13,696 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:13,734 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_SpeechRecognizer connecting to localhost...
+2022-12-14 11:08:13,734 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:13,759 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Selected mic: 1 - {'defaultSampleRate': 44100.0, 'defaultLowOutputLatency': 0.09, 'defaultLowInputLatency': 0.09, 'maxInputChannels': 2L, 'structVersion': 2L, 'hostApi': 0L, 'index': 1, 'defaultHighOutputLatency': 0.18, 'maxOutputChannels': 0L, 'name': u'Microphone Array (Realtek(R) Au', 'defaultHighInputLatency': 0.18}
+2022-12-14 11:08:15,862 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_HumanDetector connecting to localhost...
+2022-12-14 11:08:15,862 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:17,045 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_HeadTracker connecting to localhost...
+2022-12-14 11:08:17,045 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:17,571 - INFO - mqtt-nao-interface.sensors.video.headtracker - Focal length face 600
+2022-12-14 11:08:17,571 - INFO - mqtt-nao-interface.sensors.video.headtracker - Focal length eyes 626
+2022-12-14 11:08:17,572 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_EmotionDetector connecting to localhost...
+2022-12-14 11:08:17,572 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:17,730 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_ObjectDetector connecting to localhost...
+2022-12-14 11:08:17,732 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-14 11:08:19,042 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-23', 'roll', '-5', 'dist', '1.05']
+2022-12-14 11:08:19,586 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-23', 'roll', '-6', 'dist', '1.05']
+2022-12-14 11:08:20,148 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-22', 'roll', '-6', 'dist', '1.06']
+2022-12-14 11:08:20,582 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [8.9077735e-01 6.6122371e-03 5.8333512e-02 1.9803444e-02 1.9468272e-02
+ 7.5299240e-04 2.5152713e-03 1.7369670e-03]
+2022-12-14 11:08:20,582 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-14 11:08:21,203 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-24', 'roll', '-6', 'dist', '1.08']
+2022-12-14 11:08:21,482 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-14 11:08:21,770 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '4', 'pitch', '-25', 'roll', '-6', 'dist', '1.06']
+2022-12-14 11:08:22,201 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.93%
+2022-12-14 11:08:22,342 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-24', 'roll', '-6', 'dist', '1.05']
+2022-12-14 11:08:22,648 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [8.8355982e-01 8.1941802e-03 6.4982802e-02 1.6189476e-02 2.1747289e-02
+ 8.2789344e-04 2.5798655e-03 1.9187079e-03]
+2022-12-14 11:08:22,650 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-14 11:08:22,907 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-23', 'roll', '-6', 'dist', '1.06']
+2022-12-14 11:08:23,667 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-26', 'roll', '-6', 'dist', '1.05']
+2022-12-14 11:08:24,234 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-9', 'pitch', '-14', 'roll', '5', 'dist', '1.02']
+2022-12-14 11:08:24,484 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-14 11:08:24,739 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.74107367 0.0885931  0.1175368  0.02694988 0.01672567 0.00097514
+ 0.00597852 0.00216725]
+2022-12-14 11:08:24,740 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-14 11:08:25,299 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-30', 'pitch', '-21', 'roll', '15', 'dist', '0.4']
+2022-12-14 11:08:25,512 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-14 11:08:25,558 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 1
+2022-12-14 11:08:25,865 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-32', 'pitch', '-13', 'roll', '13', 'dist', '-1.0']

@@ -1,0 +1,391 @@
+2022-12-15 10:07:40,604 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_MicEnergyDetector connecting to localhost...
+2022-12-15 10:07:40,605 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:45,686 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_NaoImageCollector connecting to localhost...
+2022-12-15 10:07:45,686 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:45,796 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_TextToSpeech connecting to localhost...
+2022-12-15 10:07:45,796 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:45,940 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_Power connecting to localhost...
+2022-12-15 10:07:45,940 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:48,089 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_PostureActuator connecting to localhost...
+2022-12-15 10:07:48,091 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:48,138 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_LedsActuator connecting to localhost...
+2022-12-15 10:07:48,138 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:48,197 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_SpeechRecognizer connecting to localhost...
+2022-12-15 10:07:48,197 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:48,276 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Selected mic: 1 - {'defaultSampleRate': 44100.0, 'defaultLowOutputLatency': 0.09, 'defaultLowInputLatency': 0.09, 'maxInputChannels': 2L, 'structVersion': 2L, 'hostApi': 0L, 'index': 1, 'defaultHighOutputLatency': 0.18, 'maxOutputChannels': 0L, 'name': u'Desktop Microphone (Wireless GO', 'defaultHighInputLatency': 0.18}
+2022-12-15 10:07:50,573 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_HumanDetector connecting to localhost...
+2022-12-15 10:07:50,575 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:53,915 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_HeadTracker connecting to localhost...
+2022-12-15 10:07:53,915 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:55,141 - INFO - mqtt-nao-interface.sensors.video.headtracker - Focal length face 600
+2022-12-15 10:07:55,142 - INFO - mqtt-nao-interface.sensors.video.headtracker - Focal length eyes 626
+2022-12-15 10:07:55,145 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_EmotionDetector connecting to localhost...
+2022-12-15 10:07:55,145 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:55,431 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_ObjectDetector connecting to localhost...
+2022-12-15 10:07:55,431 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-15 10:07:57,716 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-24', 'roll', '5', 'dist', '0.87']
+2022-12-15 10:07:58,286 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-22', 'roll', '6', 'dist', '0.87']
+2022-12-15 10:07:58,848 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-15', 'pitch', '-22', 'roll', '6', 'dist', '0.89']
+2022-12-15 10:07:59,298 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.2496932e-01 8.2559609e-01 3.6597498e-02 1.0510090e-02 1.2112947e-03
+ 8.6697488e-05 7.1515644e-04 3.1372075e-04]
+2022-12-15 10:07:59,299 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:07:59,928 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-36', 'roll', '8', 'dist', '-1.0']
+2022-12-15 10:08:00,131 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:00,753 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-9', 'pitch', '-17', 'roll', '3', 'dist', '0.82']
+2022-12-15 10:08:01,792 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-6', 'pitch', '-26', 'roll', '3', 'dist', '0.85']
+2022-12-15 10:08:02,515 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-5', 'pitch', '-11', 'roll', '0', 'dist', '0.8']
+2022-12-15 10:08:02,763 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.90%
+2022-12-15 10:08:03,112 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-6', 'pitch', '-10', 'roll', '1', 'dist', '0.82']
+2022-12-15 10:08:03,138 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:03,528 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.0281083e-02 9.8704135e-01 7.4755389e-04 1.0005753e-03 6.7820080e-04
+ 5.8546440e-05 5.5386110e-05 1.3726039e-04]
+2022-12-15 10:08:03,529 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:03,683 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-11', 'roll', '0', 'dist', '0.82']
+2022-12-15 10:08:04,173 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:05,128 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 1
+2022-12-15 10:08:05,216 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-5', 'pitch', '-11', 'roll', '1', 'dist', '0.82']
+2022-12-15 10:08:06,233 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:06,257 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.2795906e-02 9.8202097e-01 1.6052071e-03 1.8406800e-03 1.4016629e-03
+ 8.5231135e-05 1.1462553e-04 1.3576180e-04]
+2022-12-15 10:08:06,259 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:06,273 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-8', 'pitch', '-11', 'roll', '1', 'dist', '0.81']
+2022-12-15 10:08:07,065 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-10', 'roll', '0', 'dist', '0.78']
+2022-12-15 10:08:07,572 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:07,598 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 2
+2022-12-15 10:08:07,729 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-2', 'pitch', '-17', 'roll', '1', 'dist', '0.81']
+2022-12-15 10:08:08,345 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-13', 'roll', '0', 'dist', '0.76']
+2022-12-15 10:08:08,963 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-3', 'pitch', '-6', 'roll', '1', 'dist', '0.77']
+2022-12-15 10:08:09,263 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:09,559 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-3', 'pitch', '-13', 'roll', '-1', 'dist', '0.79']
+2022-12-15 10:08:09,984 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:10,118 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Detected speech info: how are you<str_sep_inner>68.95246195520572
+2022-12-15 10:08:10,121 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-21', 'roll', '-1', 'dist', '0.79']
+2022-12-15 10:08:10,128 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>True
+2022-12-15 10:08:10,130 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>True
+2022-12-15 10:08:10,131 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to True
+2022-12-15 10:08:10,463 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>False
+2022-12-15 10:08:10,463 - INFO - mqtt-nao-interface.actuators.actuator - TextToSpeech received message: say<str_sep>how are you<str_sep>volume<str_sep>90<str_sep>speed<str_sep>90<str_sep>tone<str_sep>100
+2022-12-15 10:08:10,463 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>False
+2022-12-15 10:08:10,464 - INFO - mqtt-nao-interface.actuators.speech.tts - ['say', 'how are you', 'volume', '90', 'speed', '90', 'tone', '100']
+2022-12-15 10:08:10,466 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to False
+2022-12-15 10:08:10,467 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to True
+2022-12-15 10:08:10,469 - INFO - mqtt-nao-interface.actuators.speech.tts - -> how are you
+2022-12-15 10:08:10,469 - INFO - mqtt-nao-interface.actuators.speech.tts - -> setting volume to 0.9
+2022-12-15 10:08:10,483 - INFO - mqtt-nao-interface.actuators.speech.tts - ---> \vct=100\\rspd=90\how are you
+2022-12-15 10:08:10,730 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.2038352e-01 8.4081173e-01 1.8339826e-02 1.2084248e-02 6.6608200e-03
+ 2.6104288e-04 1.0793384e-03 3.7941095e-04]
+2022-12-15 10:08:10,730 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:10,739 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-16', 'roll', '0', 'dist', '0.79']
+2022-12-15 10:08:10,957 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.92%
+2022-12-15 10:08:11,315 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-16', 'roll', '0', 'dist', '0.79']
+2022-12-15 10:08:11,582 - DEBUG - mqtt-nao-interface.actuators.speech.tts - FInished saying sentences
+2022-12-15 10:08:11,585 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to False
+2022-12-15 10:08:11,592 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 3
+2022-12-15 10:08:11,892 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-16', 'roll', '0', 'dist', '0.79']
+2022-12-15 10:08:12,267 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:12,436 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-2', 'pitch', '-19', 'roll', '-2', 'dist', '0.82']
+2022-12-15 10:08:12,831 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [3.1247783e-02 9.5529711e-01 1.8102014e-03 8.8235261e-03 2.2600959e-03
+ 1.5352413e-04 1.7716888e-04 2.3056990e-04]
+2022-12-15 10:08:12,834 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:12,993 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-18', 'roll', '-1', 'dist', '0.82']
+2022-12-15 10:08:13,572 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-11', 'roll', '-1', 'dist', '0.8']
+2022-12-15 10:08:14,164 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-15', 'roll', '-1', 'dist', '0.85']
+2022-12-15 10:08:14,726 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-14', 'roll', '0', 'dist', '0.8']
+2022-12-15 10:08:14,857 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:14,948 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Detected speech info: I'm fine you<str_sep_inner>63.7108430970875
+2022-12-15 10:08:14,954 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>True
+2022-12-15 10:08:14,956 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>True
+2022-12-15 10:08:14,957 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to True
+2022-12-15 10:08:15,236 - INFO - mqtt-nao-interface.actuators.actuator - TextToSpeech received message: say<str_sep>i'm fine you<str_sep>volume<str_sep>90<str_sep>speed<str_sep>90<str_sep>tone<str_sep>100
+2022-12-15 10:08:15,237 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>False
+2022-12-15 10:08:15,239 - INFO - mqtt-nao-interface.actuators.speech.tts - ['say', "i'm fine you", 'volume', '90', 'speed', '90', 'tone', '100']
+2022-12-15 10:08:15,240 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>False
+2022-12-15 10:08:15,240 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to True
+2022-12-15 10:08:15,242 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to False
+2022-12-15 10:08:15,243 - INFO - mqtt-nao-interface.actuators.speech.tts - -> i'm fine you
+2022-12-15 10:08:15,243 - INFO - mqtt-nao-interface.actuators.speech.tts - -> setting volume to 0.9
+2022-12-15 10:08:15,288 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:15,290 - INFO - mqtt-nao-interface.actuators.speech.tts - ---> \vct=100\\rspd=90\i'm fine you
+2022-12-15 10:08:15,312 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-18', 'roll', '0', 'dist', '0.82']
+2022-12-15 10:08:15,878 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.99%
+2022-12-15 10:08:15,888 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-17', 'roll', '-1', 'dist', '0.8']
+2022-12-15 10:08:16,444 - DEBUG - mqtt-nao-interface.actuators.speech.tts - FInished saying sentences
+2022-12-15 10:08:16,447 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to False
+2022-12-15 10:08:16,453 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 4
+2022-12-15 10:08:16,461 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-18', 'roll', '-1', 'dist', '0.81']
+2022-12-15 10:08:17,118 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-20', 'roll', '-3', 'dist', '0.78']
+2022-12-15 10:08:17,263 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.07563445e-02 9.83098924e-01 3.16605903e-03 9.18775331e-04
+ 1.79531693e-03 6.67491986e-05 1.05129264e-04 9.27876681e-05]
+2022-12-15 10:08:17,265 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:17,696 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-29', 'roll', '-2', 'dist', '0.81']
+2022-12-15 10:08:18,229 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-17', 'roll', '-1', 'dist', '0.78']
+2022-12-15 10:08:18,309 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:18,773 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '6', 'pitch', '-11', 'roll', '0', 'dist', '0.77']
+2022-12-15 10:08:19,319 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [4.5708053e-02 9.1622090e-01 1.1933487e-03 3.1255823e-02 4.5430334e-03
+ 4.0819723e-04 2.1711292e-04 4.5354944e-04]
+2022-12-15 10:08:19,319 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:19,821 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-13', 'roll', '0', 'dist', '0.77']
+2022-12-15 10:08:20,381 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-16', 'roll', '-2', 'dist', '0.78']
+2022-12-15 10:08:20,937 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-20', 'roll', '-2', 'dist', '0.81']
+2022-12-15 10:08:21,323 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:21,438 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:21,545 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Detected speech info: what's going on today in Delft<str_sep_inner>65.67054729723387
+2022-12-15 10:08:21,551 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>True
+2022-12-15 10:08:21,552 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>True
+2022-12-15 10:08:21,552 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to True
+2022-12-15 10:08:21,661 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [5.2377176e-03 9.9287993e-01 8.1031467e-04 5.7401991e-04 3.7099473e-04
+ 2.4040664e-05 4.4882192e-05 5.8135567e-05]
+2022-12-15 10:08:21,664 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.93%
+2022-12-15 10:08:21,664 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:21,819 - INFO - mqtt-nao-interface.actuators.actuator - TextToSpeech received message: say<str_sep>what's going on today in delft<str_sep>volume<str_sep>90<str_sep>speed<str_sep>90<str_sep>tone<str_sep>100
+2022-12-15 10:08:21,819 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>False
+2022-12-15 10:08:21,822 - INFO - mqtt-nao-interface.actuators.speech.tts - ['say', "what's going on today in delft", 'volume', '90', 'speed', '90', 'tone', '100']
+2022-12-15 10:08:21,822 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>False
+2022-12-15 10:08:21,823 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to True
+2022-12-15 10:08:21,825 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to False
+2022-12-15 10:08:21,825 - INFO - mqtt-nao-interface.actuators.speech.tts - -> what's going on today in delft
+2022-12-15 10:08:21,826 - INFO - mqtt-nao-interface.actuators.speech.tts - -> setting volume to 0.9
+2022-12-15 10:08:21,834 - INFO - mqtt-nao-interface.actuators.speech.tts - ---> \vct=100\\rspd=90\what's going on today in delft
+2022-12-15 10:08:22,013 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-20', 'roll', '-1', 'dist', '0.82']
+2022-12-15 10:08:22,648 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-22', 'roll', '-2', 'dist', '0.8']
+2022-12-15 10:08:23,200 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-22', 'roll', '-3', 'dist', '0.82']
+2022-12-15 10:08:23,763 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.6251901e-02 9.7768080e-01 2.9196271e-03 1.7056967e-03 1.2053981e-03
+ 4.8434857e-05 9.9537334e-05 8.8528315e-05]
+2022-12-15 10:08:23,765 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:24,019 - DEBUG - mqtt-nao-interface.actuators.speech.tts - FInished saying sentences
+2022-12-15 10:08:24,020 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to False
+2022-12-15 10:08:24,036 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 5
+2022-12-15 10:08:24,292 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-3', 'pitch', '-22', 'roll', '-5', 'dist', '0.82']
+2022-12-15 10:08:24,331 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:24,865 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-20', 'roll', '-5', 'dist', '0.78']
+2022-12-15 10:08:25,410 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-29', 'roll', '-5', 'dist', '0.82']
+2022-12-15 10:08:25,878 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.3571108e-02 9.7142458e-01 1.4634677e-03 9.8943179e-03 2.9187989e-03
+ 2.1402555e-04 3.1970837e-04 1.9400078e-04]
+2022-12-15 10:08:25,880 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:26,467 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '5', 'pitch', '-14', 'roll', '-5', 'dist', '0.83']
+2022-12-15 10:08:27,046 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-10', 'roll', '2', 'dist', '0.85']
+2022-12-15 10:08:27,345 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:27,631 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-9', 'pitch', '-7', 'roll', '1', 'dist', '0.82']
+2022-12-15 10:08:27,983 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.5765581  0.11518409 0.00453061 0.29493603 0.00579363 0.00064674
+ 0.00083159 0.00151914]
+2022-12-15 10:08:27,986 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:28,223 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-7', 'roll', '3', 'dist', '0.78']
+2022-12-15 10:08:28,806 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-14', 'pitch', '-8', 'roll', '3', 'dist', '0.84']
+2022-12-15 10:08:29,381 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-17', 'pitch', '4', 'roll', '0', 'dist', '0.89']
+2022-12-15 10:08:30,013 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-7', 'roll', '3', 'dist', '0.86']
+2022-12-15 10:08:30,030 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.97%
+2022-12-15 10:08:30,082 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.0134692e-01 8.6706853e-01 7.3474427e-03 2.0318329e-02 3.0780567e-03
+ 1.7518671e-04 3.2977929e-04 3.3574586e-04]
+2022-12-15 10:08:30,082 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:30,342 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:30,354 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:30,368 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 6
+2022-12-15 10:08:30,596 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-13', 'roll', '3', 'dist', '0.9']
+2022-12-15 10:08:31,239 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-13', 'roll', '3', 'dist', '0.87']
+2022-12-15 10:08:31,790 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-8', 'pitch', '-22', 'roll', '3', 'dist', '0.92']
+2022-12-15 10:08:32,180 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [7.55072534e-01 1.05712395e-02 2.46302667e-03 2.26783410e-01
+ 3.72263440e-03 2.73624726e-04 2.37250715e-04 8.76294507e-04]
+2022-12-15 10:08:32,183 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:32,349 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-8', 'roll', '1', 'dist', '0.92']
+2022-12-15 10:08:32,905 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-9', 'roll', '2', 'dist', '0.92']
+2022-12-15 10:08:33,371 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:33,461 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-7', 'roll', '2', 'dist', '0.93']
+2022-12-15 10:08:34,020 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-7', 'roll', '1', 'dist', '0.91']
+2022-12-15 10:08:34,286 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.55617285 0.19972073 0.00982485 0.21901162 0.01313147 0.00060383
+ 0.00066751 0.00086708]
+2022-12-15 10:08:34,286 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:34,575 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-8', 'pitch', '-8', 'roll', '1', 'dist', '0.93']
+2022-12-15 10:08:35,134 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-7', 'pitch', '-7', 'roll', '1', 'dist', '0.92']
+2022-12-15 10:08:35,711 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-6', 'roll', '1', 'dist', '0.92']
+2022-12-15 10:08:36,273 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-8', 'pitch', '-8', 'roll', '0', 'dist', '0.9']
+2022-12-15 10:08:36,375 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.5538171  0.18342666 0.00984896 0.23409809 0.01657834 0.00067932
+ 0.00067946 0.00087207]
+2022-12-15 10:08:36,378 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:36,384 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:36,552 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:36,571 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 7
+2022-12-15 10:08:36,839 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-7', 'roll', '1', 'dist', '0.88']
+2022-12-15 10:08:37,398 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-8', 'pitch', '-10', 'roll', '1', 'dist', '0.89']
+2022-12-15 10:08:37,963 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-7', 'pitch', '-9', 'roll', '0', 'dist', '0.91']
+2022-12-15 10:08:38,687 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [6.3966018e-01 2.5980109e-01 1.5446308e-02 7.7554531e-02 5.4509086e-03
+ 3.4095364e-04 6.9785397e-04 1.0481535e-03]
+2022-12-15 10:08:38,688 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:38,719 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.86%
+2022-12-15 10:08:39,042 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-7', 'pitch', '-18', 'roll', '-3', 'dist', '0.82']
+2022-12-15 10:08:39,388 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:39,608 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-14', 'roll', '-2', 'dist', '0.82']
+2022-12-15 10:08:40,171 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '7', 'pitch', '-9', 'roll', '-3', 'dist', '0.86']
+2022-12-15 10:08:40,752 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '8', 'pitch', '-10', 'roll', '-4', 'dist', '0.87']
+2022-12-15 10:08:41,303 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-15', 'roll', '-2', 'dist', '0.81']
+2022-12-15 10:08:41,864 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-17', 'roll', '-2', 'dist', '0.78']
+2022-12-15 10:08:42,395 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:42,436 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '5', 'pitch', '-12', 'roll', '-3', 'dist', '0.82']
+2022-12-15 10:08:42,792 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.45481274 0.24581608 0.01044144 0.2654397  0.02057867 0.00095526
+ 0.00098908 0.000967  ]
+2022-12-15 10:08:42,793 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:42,924 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:42,990 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '4', 'pitch', '-13', 'roll', '-2', 'dist', '0.82']
+2022-12-15 10:08:43,016 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Detected speech info: ok I'm Alessandro<str_sep_inner>65.18709854616068
+2022-12-15 10:08:43,023 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>True
+2022-12-15 10:08:43,025 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>True
+2022-12-15 10:08:43,026 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to True
+2022-12-15 10:08:43,460 - INFO - mqtt-nao-interface.actuators.actuator - TextToSpeech received message: say<str_sep>ok i'm alessandro<str_sep>volume<str_sep>90<str_sep>speed<str_sep>90<str_sep>tone<str_sep>100
+2022-12-15 10:08:43,460 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>False
+2022-12-15 10:08:43,463 - INFO - mqtt-nao-interface.actuators.speech.tts - ['say', "ok i'm alessandro", 'volume', '90', 'speed', '90', 'tone', '100']
+2022-12-15 10:08:43,464 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>False
+2022-12-15 10:08:43,466 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to True
+2022-12-15 10:08:43,467 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to False
+2022-12-15 10:08:43,467 - INFO - mqtt-nao-interface.actuators.speech.tts - -> ok i'm alessandro
+2022-12-15 10:08:43,469 - INFO - mqtt-nao-interface.actuators.speech.tts - -> setting volume to 0.9
+2022-12-15 10:08:43,476 - INFO - mqtt-nao-interface.actuators.speech.tts - ---> \vct=100\\rspd=90\ok i'm alessandro
+2022-12-15 10:08:43,546 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-18', 'roll', '0', 'dist', '0.78']
+2022-12-15 10:08:44,243 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.91%
+2022-12-15 10:08:44,604 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-14', 'roll', '-3', 'dist', '0.8']
+2022-12-15 10:08:44,865 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.7972256e-01 7.1990514e-01 1.3463483e-02 7.8841738e-02 6.5242513e-03
+ 3.6351298e-04 7.0034887e-04 4.7895111e-04]
+2022-12-15 10:08:44,865 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:45,176 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '5', 'pitch', '-13', 'roll', '-13', 'dist', '0.82']
+2022-12-15 10:08:45,398 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:45,496 - DEBUG - mqtt-nao-interface.actuators.speech.tts - FInished saying sentences
+2022-12-15 10:08:45,497 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to False
+2022-12-15 10:08:45,505 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 8
+2022-12-15 10:08:45,765 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '5', 'pitch', '-13', 'roll', '-15', 'dist', '0.78']
+2022-12-15 10:08:46,321 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-17', 'roll', '-14', 'dist', '0.82']
+2022-12-15 10:08:46,888 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-29', 'roll', '-12', 'dist', '0.87']
+2022-12-15 10:08:47,447 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-17', 'roll', '-7', 'dist', '0.82']
+2022-12-15 10:08:47,999 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-3', 'pitch', '-16', 'roll', '-5', 'dist', '0.82']
+2022-12-15 10:08:48,404 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:48,562 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '4', 'pitch', '-16', 'roll', '-4', 'dist', '0.85']
+2022-12-15 10:08:49,164 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.36319244 0.39767674 0.02032914 0.20129356 0.0149679  0.00068874
+ 0.0010896  0.00076191]
+2022-12-15 10:08:49,167 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:49,190 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '8', 'pitch', '-17', 'roll', '-3', 'dist', '0.91']
+2022-12-15 10:08:49,315 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.88%
+2022-12-15 10:08:49,737 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '8', 'pitch', '-25', 'roll', '-3', 'dist', '0.82']
+2022-12-15 10:08:50,322 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '5', 'pitch', '-23', 'roll', '-4', 'dist', '0.91']
+2022-12-15 10:08:50,897 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '5', 'pitch', '-26', 'roll', '-5', 'dist', '0.89']
+2022-12-15 10:08:51,275 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [7.60132313e-01 1.23359645e-02 7.40590692e-03 2.12978467e-01
+ 5.31717855e-03 3.61493789e-04 5.26649004e-04 9.42108687e-04]
+2022-12-15 10:08:51,278 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:51,417 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:51,447 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '4', 'pitch', '-22', 'roll', '-3', 'dist', '0.9']
+2022-12-15 10:08:51,809 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:08:51,915 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Detected speech info: ok ok you understand my name<str_sep_inner>64.80099544225295
+2022-12-15 10:08:51,921 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>True
+2022-12-15 10:08:51,923 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>True
+2022-12-15 10:08:51,924 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to True
+2022-12-15 10:08:52,007 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '4', 'pitch', '-22', 'roll', '-3', 'dist', '0.92']
+2022-12-15 10:08:52,269 - INFO - mqtt-nao-interface.actuators.actuator - TextToSpeech received message: say<str_sep>ok ok you understand my name<str_sep>volume<str_sep>90<str_sep>speed<str_sep>90<str_sep>tone<str_sep>100
+2022-12-15 10:08:52,269 - INFO - mqtt-nao-interface.actuators.actuator - Leds received message: set_led_thinking_color<str_sep>False
+2022-12-15 10:08:52,272 - INFO - mqtt-nao-interface.actuators.speech.tts - ['say', 'ok ok you understand my name', 'volume', '90', 'speed', '90', 'tone', '100']
+2022-12-15 10:08:52,273 - DEBUG - mqtt-nao-interface.actuators.system.leds - Actuatinig directive set_led_thinking_color<str_sep>False
+2022-12-15 10:08:52,273 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to True
+2022-12-15 10:08:52,273 - DEBUG - mqtt-nao-interface.actuators.system.leds - setting thinking to False
+2022-12-15 10:08:52,276 - INFO - mqtt-nao-interface.actuators.speech.tts - -> ok ok you understand my name
+2022-12-15 10:08:52,276 - INFO - mqtt-nao-interface.actuators.speech.tts - -> setting volume to 0.9
+2022-12-15 10:08:52,283 - INFO - mqtt-nao-interface.actuators.speech.tts - ---> \vct=100\\rspd=90\ok ok you understand my name
+2022-12-15 10:08:52,573 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-16', 'roll', '-4', 'dist', '0.83']
+2022-12-15 10:08:53,134 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '1', 'pitch', '-21', 'roll', '0', 'dist', '0.9']
+2022-12-15 10:08:53,384 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [2.1906156e-02 9.6527559e-01 2.9408024e-03 4.8761126e-03 4.4860058e-03
+ 1.7354010e-04 1.7533140e-04 1.6639700e-04]
+2022-12-15 10:08:53,385 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:53,684 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-23', 'roll', '-1', 'dist', '0.91']
+2022-12-15 10:08:54,256 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-26', 'roll', '-1', 'dist', '0.86']
+2022-12-15 10:08:54,433 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:54,914 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-24', 'roll', '-1', 'dist', '0.86']
+2022-12-15 10:08:55,016 - DEBUG - mqtt-nao-interface.actuators.speech.tts - FInished saying sentences
+2022-12-15 10:08:55,017 - DEBUG - mqtt-nao-interface.actuators.speech.tts - Setting is_speaking to False
+2022-12-15 10:08:55,019 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 9
+2022-12-15 10:08:55,039 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.95%
+2022-12-15 10:08:55,476 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [6.7397519e-03 9.8263907e-01 1.1987872e-03 5.5149235e-03 3.5335033e-03
+ 1.5850241e-04 1.2308749e-04 9.2372560e-05]
+2022-12-15 10:08:55,479 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:08:56,025 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-8', 'pitch', '-22', 'roll', '0', 'dist', '0.9']
+2022-12-15 10:08:56,592 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-7', 'pitch', '-22', 'roll', '-3', 'dist', '0.97']
+2022-12-15 10:08:57,170 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-10', 'roll', '-8', 'dist', '0.95']
+2022-12-15 10:08:57,437 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:08:57,576 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [8.4296489e-01 4.8070546e-02 8.9026038e-03 9.4620392e-02 3.0778211e-03
+ 3.1660491e-04 4.9664156e-04 1.5504813e-03]
+2022-12-15 10:08:57,578 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:08:57,746 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-15', 'pitch', '-8', 'roll', '-9', 'dist', '0.89']
+2022-12-15 10:08:58,321 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-17', 'pitch', '-11', 'roll', '-8', 'dist', '0.92']
+2022-12-15 10:08:58,871 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-16', 'pitch', '-9', 'roll', '-9', 'dist', '0.91']
+2022-12-15 10:08:59,437 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-16', 'pitch', '0', 'roll', '-11', 'dist', '0.92']
+2022-12-15 10:08:59,661 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [4.2581725e-01 5.3142709e-01 5.4593459e-03 3.3206701e-02 2.1163751e-03
+ 2.6949795e-04 3.3173102e-04 1.3719971e-03]
+2022-12-15 10:08:59,664 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:09:00,003 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-5', 'roll', '-11', 'dist', '0.91']
+2022-12-15 10:09:00,450 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:00,538 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-15', 'pitch', '-6', 'roll', '-10', 'dist', '0.95']
+2022-12-15 10:09:01,072 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-10', 'roll', '-9', 'dist', '0.96']
+2022-12-15 10:09:01,536 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:09:01,565 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 10
+2022-12-15 10:09:01,622 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-7', 'roll', '-8', 'dist', '0.97']
+2022-12-15 10:09:01,727 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.5790882e-02 9.7892672e-01 1.6954395e-03 2.1865086e-03 1.1069416e-03
+ 7.5493088e-05 7.9628677e-05 1.3845251e-04]
+2022-12-15 10:09:01,729 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:09:02,181 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-5', 'roll', '-8', 'dist', '0.87']
+2022-12-15 10:09:02,736 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-6', 'roll', '-7', 'dist', '0.92']
+2022-12-15 10:09:03,289 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-7', 'roll', '-6', 'dist', '0.96']
+2022-12-15 10:09:03,463 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:04,095 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [6.9719427e-03 9.8829585e-01 1.5247806e-03 1.5310434e-03 1.4518434e-03
+ 6.2275532e-05 9.0082889e-05 7.2055598e-05]
+2022-12-15 10:09:04,095 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:09:04,164 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.98%
+2022-12-15 10:09:04,378 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-7', 'roll', '-6', 'dist', '0.92']
+2022-12-15 10:09:04,943 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-8', 'roll', '-6', 'dist', '0.89']
+2022-12-15 10:09:05,523 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-17', 'roll', '-6', 'dist', '0.89']
+2022-12-15 10:09:06,072 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-7', 'roll', '-6', 'dist', '0.91']
+2022-12-15 10:09:06,476 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:06,625 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-3', 'roll', '-4', 'dist', '0.88']
+2022-12-15 10:09:07,177 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-6', 'roll', '-3', 'dist', '0.9']
+2022-12-15 10:09:07,732 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '6', 'pitch', '-2', 'roll', '-3', 'dist', '0.92']
+2022-12-15 10:09:07,786 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:09:07,823 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 11
+2022-12-15 10:09:08,207 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [2.7194537e-02 9.1738731e-01 2.4443185e-03 2.8327081e-02 2.2970755e-02
+ 9.5653854e-04 3.4760387e-04 3.7194704e-04]
+2022-12-15 10:09:08,209 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:09:08,301 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '4', 'roll', '-4', 'dist', '0.4']
+2022-12-15 10:09:08,865 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-1', 'roll', '-4', 'dist', '0.93']
+2022-12-15 10:09:09,427 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-1', 'roll', '-4', 'dist', '0.89']
+2022-12-15 10:09:09,477 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:09,984 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-5', 'roll', '-5', 'dist', '0.91']
+2022-12-15 10:09:10,301 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.60540825 0.05910916 0.02561629 0.28771275 0.01889171 0.00072707
+ 0.00170506 0.00082972]
+2022-12-15 10:09:10,305 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:09:10,540 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-16', 'roll', '-9', 'dist', '0.83']
+2022-12-15 10:09:11,114 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-10', 'roll', '-11', 'dist', '0.87']
+2022-12-15 10:09:11,674 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-2', 'pitch', '-11', 'roll', '-10', 'dist', '0.8']
+2022-12-15 10:09:12,243 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '3', 'pitch', '-11', 'roll', '-12', 'dist', '0.84']
+2022-12-15 10:09:12,480 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:12,828 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-12', 'roll', '-10', 'dist', '0.87']
+2022-12-15 10:09:12,857 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.96%
+2022-12-15 10:09:13,404 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-17', 'roll', '-10', 'dist', '0.87']
+2022-12-15 10:09:13,999 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '9', 'pitch', '-19', 'roll', '-8', 'dist', '0.89']
+2022-12-15 10:09:14,362 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:09:14,417 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 12
+2022-12-15 10:09:14,417 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.6213579  0.1261117  0.02191558 0.20501682 0.02227765 0.00094166
+ 0.00119214 0.00118657]
+2022-12-15 10:09:14,421 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:09:14,571 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '4', 'pitch', '-7', 'roll', '-2', 'dist', '1.0']
+2022-12-15 10:09:15,132 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-6', 'roll', '-1', 'dist', '1.05']
+2022-12-15 10:09:15,490 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:15,701 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-10', 'roll', '-1', 'dist', '1.0']
+2022-12-15 10:09:16,259 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-2', 'pitch', '-32', 'roll', '0', 'dist', '0.75']
+2022-12-15 10:09:16,519 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [7.2544062e-01 2.2811666e-01 2.4313517e-02 1.8700292e-02 4.9564912e-04
+ 1.3296287e-04 7.2943751e-04 2.0708188e-03]
+2022-12-15 10:09:16,519 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: neutral
+2022-12-15 10:09:16,816 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '2', 'pitch', '-18', 'roll', '2', 'dist', '0.93']
+2022-12-15 10:09:17,390 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-17', 'roll', '6', 'dist', '1.02']
+2022-12-15 10:09:17,959 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '13', 'pitch', '-39', 'roll', '-3', 'dist', '-1.0']
+2022-12-15 10:09:18,494 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:20,737 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-15 10:09:20,790 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 13
+2022-12-15 10:09:21,117 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-18', 'roll', '3', 'dist', '0.78']
+2022-12-15 10:09:21,509 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-15 10:09:21,660 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-6', 'pitch', '-16', 'roll', '16', 'dist', '0.87']
+2022-12-15 10:09:22,220 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-9', 'pitch', '-14', 'roll', '18', 'dist', '-1.0']
+2022-12-15 10:09:22,660 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [3.8677788e-01 4.9530470e-01 7.8762516e-02 3.3547457e-02 3.2856902e-03
+ 1.9366400e-04 1.5008702e-03 6.2729517e-04]
+2022-12-15 10:09:22,664 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-15 10:09:22,792 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '19', 'pitch', '-36', 'roll', '0', 'dist', '-1.0']

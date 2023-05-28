@@ -1,0 +1,182 @@
+2022-12-09 10:53:35,076 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_MicEnergyDetector connecting to localhost...
+2022-12-09 10:53:35,078 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:40,130 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_NaoImageCollector connecting to localhost...
+2022-12-09 10:53:40,131 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:40,170 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_TextToSpeech connecting to localhost...
+2022-12-09 10:53:40,170 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:40,298 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_Power connecting to localhost...
+2022-12-09 10:53:40,298 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:42,203 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_PostureActuator connecting to localhost...
+2022-12-09 10:53:42,203 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:42,226 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTListener_Actuator_LedsActuator connecting to localhost...
+2022-12-09 10:53:42,226 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:42,253 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_SpeechRecognizer connecting to localhost...
+2022-12-09 10:53:42,253 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:42,286 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - Selected mic: 1 - {'defaultSampleRate': 44100.0, 'defaultLowOutputLatency': 0.09, 'defaultLowInputLatency': 0.09, 'maxInputChannels': 2L, 'structVersion': 2L, 'hostApi': 0L, 'index': 1, 'defaultHighOutputLatency': 0.18, 'maxOutputChannels': 0L, 'name': u'Desktop Microphone (Wireless GO', 'defaultHighInputLatency': 0.18}
+2022-12-09 10:53:44,138 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_HumanDetector connecting to localhost...
+2022-12-09 10:53:44,138 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:45,302 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_HeadTracker connecting to localhost...
+2022-12-09 10:53:45,302 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:46,216 - INFO - mqtt-nao-interface.sensors.video.headtracker - Focal length face 600
+2022-12-09 10:53:46,216 - INFO - mqtt-nao-interface.sensors.video.headtracker - Focal length eyes 626
+2022-12-09 10:53:46,219 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_EmotionDetector connecting to localhost...
+2022-12-09 10:53:46,219 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:46,385 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_ObjectDetector connecting to localhost...
+2022-12-09 10:53:46,385 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
+2022-12-09 10:53:47,871 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-5', 'pitch', '-13', 'roll', '-1', 'dist', '0.98']
+2022-12-09 10:53:48,448 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-13', 'roll', '-1', 'dist', '1.0']
+2022-12-09 10:53:49,019 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-6', 'pitch', '-15', 'roll', '0', 'dist', '1.01']
+2022-12-09 10:53:49,490 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [2.9856467e-01 5.2894098e-01 1.4302757e-01 2.2698686e-02 3.2584886e-03
+ 1.5192694e-04 2.8639608e-03 4.9369270e-04]
+2022-12-09 10:53:49,492 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-09 10:53:49,576 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-5', 'pitch', '-16', 'roll', '-1', 'dist', '1.01']
+2022-12-09 10:53:50,128 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '0', 'pitch', '-3', 'roll', '-6', 'dist', '0.97']
+2022-12-09 10:53:50,316 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:53:50,698 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '6', 'pitch', '-1', 'roll', '-8', 'dist', '0.97']
+2022-12-09 10:53:51,141 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.92%
+2022-12-09 10:53:51,250 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-3', 'pitch', '-6', 'roll', '-6', 'dist', '0.96']
+2022-12-09 10:53:51,582 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [2.7259862e-02 8.9181811e-01 7.2614722e-02 5.4676784e-03 1.8558779e-03
+ 4.9834081e-05 8.6956087e-04 6.4398519e-05]
+2022-12-09 10:53:51,585 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-09 10:53:51,812 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-3', 'pitch', '-10', 'roll', '-4', 'dist', '0.97']
+2022-12-09 10:53:52,446 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-1', 'pitch', '-8', 'roll', '-5', 'dist', '0.98']
+2022-12-09 10:53:52,572 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-09 10:53:52,608 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 1
+2022-12-09 10:53:53,015 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-3', 'pitch', '-6', 'roll', '-6', 'dist', '0.95']
+2022-12-09 10:53:53,326 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:53:53,582 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-4', 'pitch', '-6', 'roll', '-6', 'dist', '0.98']
+2022-12-09 10:53:54,148 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-09 10:53:54,154 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '0', 'roll', '-4', 'dist', '0.75']
+2022-12-09 10:53:54,224 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 2
+2022-12-09 10:53:54,713 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-15', 'roll', '0', 'dist', '0.56']
+2022-12-09 10:53:55,286 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-15', 'roll', '0', 'dist', '0.56']
+2022-12-09 10:53:55,721 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [0.4241552  0.5185954  0.03457931 0.01080902 0.00547536 0.00086105
+ 0.00213268 0.00339201]
+2022-12-09 10:53:55,723 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-09 10:53:55,865 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-19', 'roll', '0', 'dist', '0.58']
+2022-12-09 10:53:56,331 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:53:56,421 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-9', 'pitch', '-38', 'roll', '1', 'dist', '0.96']
+2022-12-09 10:53:57,036 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-35', 'roll', '1', 'dist', '1.0']
+2022-12-09 10:53:57,341 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.35%
+2022-12-09 10:53:57,605 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-26', 'roll', '-3', 'dist', '0.97']
+2022-12-09 10:53:57,710 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-09 10:53:57,778 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 3
+2022-12-09 10:53:57,828 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [7.4570134e-02 8.7051845e-01 2.7550302e-02 2.1720324e-02 4.5823883e-03
+ 1.7252839e-04 6.9979706e-04 1.8610878e-04]
+2022-12-09 10:53:57,831 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-09 10:53:58,188 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-25', 'roll', '-3', 'dist', '0.96']
+2022-12-09 10:53:58,838 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-24', 'roll', '-2', 'dist', '0.97']
+2022-12-09 10:53:59,332 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:53:59,403 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-11', 'pitch', '-26', 'roll', '-3', 'dist', '0.97']
+2022-12-09 10:53:59,937 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [8.2038589e-02 8.5486352e-01 3.3870518e-02 2.3701636e-02 4.3446310e-03
+ 1.7460980e-04 8.0970931e-04 1.9683443e-04]
+2022-12-09 10:53:59,937 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-09 10:53:59,970 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-26', 'roll', '-3', 'dist', '1.0']
+2022-12-09 10:54:00,528 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-26', 'roll', '-2', 'dist', '1.0']
+2022-12-09 10:54:00,835 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-09 10:54:00,915 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 4
+2022-12-09 10:54:01,092 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-26', 'roll', '-2', 'dist', '0.98']
+2022-12-09 10:54:01,644 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-12', 'pitch', '-26', 'roll', '-3', 'dist', '0.98']
+2022-12-09 10:54:02,025 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [9.2039332e-02 8.3142620e-01 4.1528512e-02 2.8724620e-02 4.8811482e-03
+ 1.9480623e-04 9.9430082e-04 2.1121911e-04]
+2022-12-09 10:54:02,028 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-09 10:54:02,181 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-13', 'pitch', '-26', 'roll', '-2', 'dist', '1.0']
+2022-12-09 10:54:02,346 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:02,734 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-27', 'roll', '-4', 'dist', '1.0']
+2022-12-09 10:54:03,242 - INFO - mqtt-nao-interface.sensors.video.object_detector - predicted object person: 99.97%
+2022-12-09 10:54:03,286 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-9', 'pitch', '-24', 'roll', '-4', 'dist', '0.97']
+2022-12-09 10:54:03,845 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-9', 'pitch', '-18', 'roll', '-4', 'dist', '0.92']
+2022-12-09 10:54:04,348 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Prob.: [1.5720806e-01 7.2055703e-01 1.0418658e-01 1.3484619e-02 2.3695901e-03
+ 1.0651701e-04 1.8019800e-03 2.8565081e-04]
+2022-12-09 10:54:04,349 - INFO - mqtt-nao-interface.sensors.video.emotion_detector - Predicted: happy
+2022-12-09 10:54:04,457 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-10', 'pitch', '-11', 'roll', '-1', 'dist', '0.91']
+2022-12-09 10:54:05,043 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-7', 'pitch', '-11', 'roll', '0', 'dist', '0.72']
+2022-12-09 10:54:05,359 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:05,605 - INFO - mqtt-nao-interface.sensors.video.headtracker - ['yaw', '-6', 'pitch', '-18', 'roll', '1', 'dist', '0.59']
+2022-12-09 10:54:07,953 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-09 10:54:08,367 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:11,377 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:14,391 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:17,400 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:20,414 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:23,417 - INFO - mqtt-nao-interface.sensors.video.detecthuman - faces: []
+2022-12-09 10:54:24,424 - INFO - mqtt-nao-interface - Closing application
+2022-12-09 10:54:24,424 - INFO - mqtt-nao-interface - Closing application
+2022-12-09 10:54:24,426 - INFO - mqtt-nao-interface - Asking to every service to prepare to close
+2022-12-09 10:54:24,427 - INFO - mqtt-nao-interface - Asking to every service to prepare to close
+2022-12-09 10:54:24,427 - ERROR - mqtt-nao-interface.sensors.sensor - Traceback (most recent call last):
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\sensor.py", line 82, in run
+    data_to_publish = self.sense()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\video\naoimagecollector.py", line 58, in sense
+    self.lastImage = self.services[Constants.NAO_SERVICE_VIDEO].getImageRemote(self._imgClient)
+RuntimeError: Socket Disconnected
+
+2022-12-09 10:54:24,427 - ERROR - mqtt-nao-interface.sensors.sensor - Runtime or Key Error. Waiting 5 seconds and then rebooting...
+2022-12-09 10:54:24,711 - DEBUG - mqtt-nao-interface.sensors.audio.speechrecognizer - stopping listening
+2022-12-09 10:54:24,726 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 5
+2022-12-09 10:54:24,727 - INFO - mqtt-nao-interface - Closing application
+2022-12-09 10:54:24,729 - INFO - mqtt-nao-interface - Asking to every service to prepare to close
+2022-12-09 10:54:24,732 - WARNING - mqtt-nao-interface.sensors.sensor - Traceback (most recent call last):
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\sensor.py", line 82, in run
+    data_to_publish = self.sense()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\audio\speechrecognizer.py", line 139, in sense
+    self.nao_interface.services["LedsActuator"].setColor("green")
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\actuators\system\leds.py", line 86, in setColor
+    self.handleRUntimeException()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\actuators\actuator.py", line 56, in handleRUntimeException
+    self.nao_interface.handleRuntimeExceptions()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\main.py", line 105, in handleRuntimeExceptions
+    self.services[s].prepareToEnd()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\sensor.py", line 66, in prepareToEnd
+    self.mqtt_client.disconnect()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\utils\mqttclient.py", line 49, in disconnect
+    self.client.disconnect()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 1358, in disconnect
+    return self._send_disconnect(reasoncode, properties)
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 2853, in _send_disconnect
+    return self._packet_queue(command, packet, 0, 0)
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 3016, in _packet_queue
+    return self.loop_write()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 1577, in loop_write
+    rc = self._packet_write()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 2504, in _packet_write
+    self._do_on_disconnect(MQTT_ERR_SUCCESS)
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 3475, in _do_on_disconnect
+    on_disconnect(self, self._userdata, rc)
+TypeError: on_disconnect() takes exactly 5 arguments (4 given)
+
+2022-12-09 10:54:24,759 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 6
+2022-12-09 10:54:24,759 - INFO - mqtt-nao-interface - Closing application
+2022-12-09 10:54:24,760 - INFO - mqtt-nao-interface - Asking to every service to prepare to close
+2022-12-09 10:54:24,763 - WARNING - mqtt-nao-interface.sensors.sensor - Traceback (most recent call last):
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\sensor.py", line 82, in run
+    data_to_publish = self.sense()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\audio\speechrecognizer.py", line 139, in sense
+    self.nao_interface.services["LedsActuator"].setColor("green")
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\actuators\system\leds.py", line 86, in setColor
+    self.handleRUntimeException()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\actuators\actuator.py", line 56, in handleRUntimeException
+    self.nao_interface.handleRuntimeExceptions()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\main.py", line 105, in handleRuntimeExceptions
+    self.services[s].prepareToEnd()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\sensors\sensor.py", line 66, in prepareToEnd
+    self.mqtt_client.disconnect()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\utils\mqttclient.py", line 49, in disconnect
+    self.client.disconnect()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 1358, in disconnect
+    return self._send_disconnect(reasoncode, properties)
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 2853, in _send_disconnect
+    return self._packet_queue(command, packet, 0, 0)
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 3016, in _packet_queue
+    return self.loop_write()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 1577, in loop_write
+    rc = self._packet_write()
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 2504, in _packet_write
+    self._do_on_disconnect(MQTT_ERR_SUCCESS)
+  File "C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\MQTT-Nao-Interface\venv\lib\site-packages\paho\mqtt\client.py", line 3475, in _do_on_disconnect
+    on_disconnect(self, self._userdata, rc)
+TypeError: on_disconnect() takes exactly 5 arguments (4 given)
+
+2022-12-09 10:54:24,789 - INFO - mqtt-nao-interface.sensors.audio.speechrecognizer - listening 7
+2022-12-09 10:54:24,790 - INFO - mqtt-nao-interface - Closing application
+2022-12-09 10:54:24,790 - INFO - mqtt-nao-interface - Asking to every service to prepare to close

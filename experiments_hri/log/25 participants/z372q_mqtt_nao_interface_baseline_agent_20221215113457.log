@@ -1,0 +1,3 @@
+2022-12-15 11:34:58,697 - WARNING - mqtt-nao-interface.sensors.sensor - Cannot find service ALAudioDevice
+2022-12-15 11:34:58,703 - INFO - mqtt-nao-interface.utils.mqttclient - MQTT Client NAOInterface_MQTTPublisher_Sensor_MicEnergyDetector connecting to localhost...
+2022-12-15 11:34:58,704 - INFO - mqtt-nao-interface.utils.mqttclient - Connection returned 0
