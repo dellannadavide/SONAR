@@ -96,5 +96,5 @@ To register the required SONAR agents on Prosody via terminal (see [Prosody guid
 >2. Start Mosquitto as per section 2.2.1
 >3. Run SONAR via ```python SONAR/main.py```.
 
-At this point SONAR should be running, with the several agents communicating between each other, and waiting for messages to be received via the MQTT broker by the [MQTT-Nao-Interface](https://github.com/dellannadavide/MQTT-Nao-Interface)..
+At this point SONAR should be running, with the several agents communicating between each other, and waiting for messages to be received via the MQTT broker (e.g., by the [MQTT-Nao-Interface](https://github.com/dellannadavide/MQTT-Nao-Interface)).
 
