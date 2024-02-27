@@ -5,11 +5,11 @@
       <excludeFolder url="file://$MODULE_DIR$/experiments_adaptation/results/preliminary_pt1/test" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (NOSAR)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (SONAR)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">
-    <option name="requirementsPath" value="C:\Users\ddellanna\surfdrive\PostDoc\Notes\NormsSAR\NOSAR\requirements.txt" />
+    <option name="requirementsPath" value="C:\Users\della003\surfdrive\Notes\Delft\SONAR\requirements.txt" />
     <option name="removeUnused" value="true" />
   </component>
 </module>

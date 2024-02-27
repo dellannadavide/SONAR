@@ -10,13 +10,11 @@ from mas.agent.worker.datacollector import DataColletor
 from mas.agent.bdicore import BDICore
 from mas.agent.worker.chatter import Chatter
 from mas.agent.worker.positionhandler import PositionHandler
-from mas.agent.worker.stuff.positionhandlerSIM import PositionHandlerSim
 from mas.agent.worker.posturehandler import PostureHandler
 from mas.agent.worker.systemhandler import SystemHandler
 
 import utils.constants as Constants
 from mas.agent.worker.visionhandler import VisionHandler
-from mas.agent.worker.stuff.visionhandlerSIM import VisionHandlerSim
 # from mas.gui.gui_normadaptivity import GUI_NormAdaptivity
 
 logger = logging.getLogger("sonar.mas.mas")

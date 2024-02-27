@@ -126,38 +126,16 @@ high_mov_a = fuzz.gaussmf(range_mov,        distributions_averages["Austria"]["h
 # # plt.plot(range_dist, mid_distance_us_trap_approx, 'k--')
 # plt.show()
 # exit()
-""" Reading one from the results file """
 
-# results = pd.read_excel('20220918/exp_exp_20220905195629/aggr_res.xlsx', index_col=0)
-# # results = pd.read_excel('20220918/exp_exp_20220905195659/aggr_res.xlsx', index_col=0)
-# index_row_to_plot = 488
-# index_row_to_plot = 263
-# index_row_to_plot = 14
-# index_row_to_plot = 251
+""" Reading one from the results file 
+SPECIFY HERE THE FILE NAME """
 
-#G1
-# results = pd.read_excel('final/exp_exp_20220929110809/res_group_all_l100_l200_G1.xlsx', sheet_name="Sheet1")
-results = pd.read_excel('final/exp_exp_20220929110809/res_20220929110809_20220929110819_0_ext.xlsx', sheet_name="Sheet1")
-results = pd.read_excel('final/exp_exp_20220929110904/res_20220929110904_20220929112927_0_ext.xlsx', sheet_name="Sheet1")
-results = pd.read_excel('final/exp_exp_20221213112012/res_20221213112012_20221213215949_0_ext.xlsx', sheet_name="Sheet1")
-results = pd.read_excel('final/5datasets_2040mindp/res_20230212143920_20230212152113_7_ext.xlsx', sheet_name="Sheet1")
-# indeces_row_to_plot = [113, 118] #G1, 10k, 100, no past
+results = pd.read_excel('final/5ds_last1k_last200_case1_case2-08/res_20240224164347_20240224223200_38_ext.xlsx', sheet_name="Sheet1") #perfect
+# results = pd.read_excel('final/5ds_last1k_last200_case1_case2-08/res_20240224164347_20240224224151_39_ext.xlsx', sheet_name="Sheet1") #imperfect
 
-# indeces_row_to_plot = [63, 68] #G1, 1k, 10, no past
-# indeces_row_to_plot = [1, 6] #G1, 1k, 10, no past
-# indeces_row_to_plot = [915] #G1, 1k, 10, no past
-indeces_row_to_plot = [950] #G1, 1k, 10, no past
+""" SPECIFY THE INDEX OF THE ROW TO PLOT"""
+indeces_row_to_plot = [500]
 
-# #G2
-# results = pd.read_excel('final/exp_exp_20220929110904/aggr_res_g2.xlsx', sheet_name="Sheet1")
-# indeces_row_to_plot = [113, 118] #G2, 10k, 100, no past
-# indeces_row_to_plot = [74, 78] #G2, 1k, 50, no past
-# indeces_row_to_plot = [93, 99] #G2, 10k, 10, no past
-#
-# #G3 missing pt 1
-# results = pd.read_excel('final/exp_exp_20221115171111/aggr_res_g3_missingpt1.xlsx', sheet_name="Sheet1")
-# indeces_row_to_plot = [0, 5] #G3, PHI, 1K, 10, 100, 20
-# indeces_row_to_plot = [10, 5] #G3, PHI, 1K, 10, 100, 20
 
 plt.figure(figsize=(12, 8))
 

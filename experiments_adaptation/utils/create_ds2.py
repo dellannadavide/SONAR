@@ -78,23 +78,23 @@ distributions_stdevs = {
 # exit()
 
 behavioral_rules = { #first element refers to distance, second element refers to volume, third refers to movement
-    "DUTY":         ["M","L","L"],
-    "INTELLECT":    ["H","L","L"],
+    "DUTY":         ["H","L","L"],
+    "INTELLECT":    ["M","L","L"],
     "ADVERSITY":    ["H","H","H"],
     "MATING":       ["L","L","L"],
-    "POSITIVITY":   ["M","M","M"],
-    "NEGATIVITY":   ["M","M","M"],
+    "POSITIVITY":   ["M","H","H"],
+    "NEGATIVITY":   ["H","M","M"],
     "DECEPTION":    ["L","M","M"],
     "SOCIALITY":    ["M","M","M"]
 }
 
 
 
-cue2diam_file = "../../data/societies_norms/cues-to-diamonds-fs-all.xlsx"
+cue2diam_file = "../../data/societies_norms/old/cues-to-diamonds-fs-all.xlsx"
 
 
 societies = ["Austria", "US"]
-nr_data_points = 20000
+nr_data_points = 5000
 data = []
 cues_string = "Cue"
 
@@ -161,6 +161,6 @@ for society in societies:
             nr_data_points_soc = nr_data_points_soc + 1
 
 print(data)
-with open("../data/societies_norms/data_{}_{}dp_v11_simple.csv".format(str(societies), str(nr_data_points)), "w+",newline="") as file:
+with open("../../data/societies_norms/data_{}_{}dp_v11_simple_new.csv".format(str(societies), str(nr_data_points)), "w+",newline="") as file:
     write = csv.writer(file)
     write.writerows(data)

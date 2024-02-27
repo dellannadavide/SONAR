@@ -231,7 +231,10 @@ class NormAdapter2SIMnoagent():
                     print(social_int)
                     dp = aggr_knowledge[social_int]
                     print("social interpreter")
+                    # leaving this uncommented for consistency with SONAR, but in the experimets this should have no
+                    # effect because assumed that no dynamic variables is in the social interpretation rules
                     self.adaptRuleBase(self.fsi, dp, data, self.curr_adaptation)
+                    # only the following should have effect
                     for fsq in self.fsq:
                         print("social qualifier " + str(fsq))
                         self.adaptRuleBase(self.fsq[fsq], dp, data, self.curr_adaptation)
@@ -294,8 +297,12 @@ class NormAdapter2SIMnoagent():
                         # for fs in partition:
                         #     new_mfs = fs.scaleLinear(curr_uni[0], curr_uni[1], data_min_value, data_max_value)
                         #     rulebase.updateMFParams(fs._term, new_mfs)
-                        new_mf = trap_fs.updateSupportBoundaries(data_min_value, data_max_value)
-                        rulebase.updateMFParams(trap_fs._term, new_mf)
+                        # new_mf = trap_fs.updateSupportBoundaries(data_min_value, data_max_value)
+                        # rulebase.updateMFParams(trap_fs._term, new_mf)
+                        for fs in partition:
+                            new_mfs = fs.linearScaleSupportBoundariesFromABtoA1B1(curr_uni[0], curr_uni[1], new_universe[0], new_universe[1])
+                            print("\tnew mfs of "+str(fs)+": "+str(new_mfs))
+                            rulebase.updateMFParams(fs._term, new_mfs)
 
 
                         curr_mfs = fuzzy_set.getMF()  # fuzzy_set is a SARFuzzySet. getMF() returns its attribute "param", which is a dictionary of parameters (e.g., {"a": float}

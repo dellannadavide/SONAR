@@ -267,7 +267,7 @@ class Chatter(WorkerAgent):
 
             elif self.is_name_retrieval:
                 # when I'm in states that are not the default,
-                # I do not want to send stuff to the data collector (so I do not add to received_inputs),
+                # I do not want to send stuff_deprecated to the data collector (so I do not add to received_inputs),
                 # but I still would like to store the conversation
                 self.chatter.converser.addUserInput(user_input)  # note I only add to the user input history
                 self.chatter.addOneInputBeingProcessed()

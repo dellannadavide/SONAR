@@ -101,6 +101,7 @@ def main():
         'min_nr_datapoints': [10, 50, 100],  # [1, 5, 10],
         'min_certainty_threshold': [0.0],  # [0.0, 0.05, 0.1, 0.15],
         'use_correct_interpretation': [False],  # [True, False],
+        'ratio_correct_interpretation': [0.8],
         'consider_past_experience': [True, False],
         'genetic_algo': [Constants.GA],
         'ga_nr_gen': [100],

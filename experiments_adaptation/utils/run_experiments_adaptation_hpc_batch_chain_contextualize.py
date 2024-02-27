@@ -97,16 +97,17 @@ def main():
         'fuzzy_sets_file': ['fuzzy_sets_multiple_ref.xlsx'],
         'ling_vars_file': ['ling_var_multiple_ref.xlsx'],
         'rules_file_id': ['_ref_all_refined2'], # ['_ref_all'], ['_ref_all_refined']
-        'interpretability_index': [Constants.PHI_INTERPRETABILITY_INDEX], # [Constants.PHI_INTERPRETABILITY_INDEX, Constants.AVG_COVERAGE_INDEX], #["Phi", "XP"],
+        'interpretability_index': [Constants.PHI_INTERPRETABILITY_INDEX, Constants.AVG_COVERAGE_INDEX], #["Phi", "XP"],
         'min_nr_datapoints': [10, 50, 100],  # [1, 5, 10],
         'min_certainty_threshold': [0.0],  # [0.0, 0.05, 0.1, 0.15],
-        'use_correct_interpretation': [True],  # [True, False],
+        'use_correct_interpretation': [False],  # [True, False],
+        'ratio_correct_interpretation': [0.8],
         'consider_past_experience': [True, False],
         'genetic_algo': [Constants.GA],
-        'ga_nr_gen': [100],
-        'pop_size': [20],
-        'contextualize': [False],  # [False, True],
-        'min_nr_adaptations_for_contextualizing': [10],
+        'ga_nr_gen': [50, 100],
+        'pop_size': [10, 20],
+        'contextualize': [True],  # [False, True],
+        'min_nr_adaptations_for_contextualizing': [10, 50, 100],
         'trial': list(range(5))
     }
     # exp_possible_val = {

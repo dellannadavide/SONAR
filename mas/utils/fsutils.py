@@ -437,6 +437,18 @@ class DynamicTrapezoidFuzzySet(sf.FuzzySet):
 
         return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
 
+    def linearScaleSupportBoundariesFromABtoA1B1(self, a, b, a1, b1):
+        print("\t\tscaling mf from domain ["+str(a)+","+str(b)+"] to ["+str(a1)+","+str(b1)+"]")
+        print("\t\tcurrent val: "+str(self._funpointer._a)+", "+str(self._funpointer._b)+", "+str(self._funpointer._c)+", "+str(self._funpointer._d))
+        self._funpointer._a = linearScaleFromABToA1B1(self._funpointer._a, a, b, a1, b1)
+        self._funpointer._d = linearScaleFromABToA1B1(self._funpointer._d, a, b, a1, b1)
+        self._funpointer._b = max(self._funpointer._a, min(self._funpointer._b, self._funpointer._d))
+        self._funpointer._c = max(self._funpointer._a, min(self._funpointer._c, self._funpointer._d))
+
+        self.ensureOrdering()
+
+        return {"a": self._funpointer._a, "b": self._funpointer._b, "c": self._funpointer._c, "d": self._funpointer._d}
+
     def modifyCorePosition(self, k_CP):
         a, b, c, d, k_GP, theta = self.get_params()
         if k_CP < 0:

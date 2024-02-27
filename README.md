@@ -26,7 +26,61 @@ Specifically concerning the MQTT-Nao-Interface, such an interface runs, due to c
 Decoupling such an interface from the implementation of SONAR, facilitates the implementation of several modern features that rely on libraries based on Python 3.x.
 
 
-Below are reported the steps required to install and run SONAR.
+Below are reported the structure of this repository, and the steps required to install and run SONAR.
+
+## 1. Structure of this repository
+```
+SONAR
+│   README.md                               # This file
+│   main.py                                 # Main file to run SONAR. It defines the agents composing the MAS and starts it                   
+│   requirements.txt                        # The list of libraries required to setup and run SONAR
+│   sonar.jpg                               # A figure that overviews the SONAR architecture
+│
+└───data                                    # Data used in the experiments for HRI and for norm-adaptation via simulation
+│   └───fuzzy_rules                         # Data containing info about the fuzzy sets, linguistic variables and fuzzy rules 
+│   │   │                                   # used in the experiments.
+│   │   └───social_interpretation2sim       # Data for the norm-adaptation comupter simulations experiments
+│   │   └───social_interpretationHRI        # Data for HRI experiments
+│   └───societies_norms                     # Data sets of synthesized interactions, used in the norm-adaptation experiments
+│
+└───experiments_adaptation                  # Scripts to run the norm-adaptation computer simulations experiments
+│   └───results                             # Folder containing the results of the experiments reported in the paper, 
+│   │   │                                   # and the results of experiments that will be generated if running the script 
+│   │   └───final                           # Final results files of experiments reported in the paper
+│   │   analyze_adaptation_results.py       # Script to run to automatically analyze the results 
+│   │                                       # (needs specification of the correct results folder)
+│   │   plot_mfs.py                         # Script to plot membership functions
+│   │                                       # (needs specification of results file and index of iteration in the file)
+│   └───utils                               # Utils files used for preparation of experiments (can be ignored) 
+│   normadapter2SIMnoagent.py               # Python file representing the norm adapter agent. 
+│                                           # This is actually the file that performs the norm adaptation. 
+│                                           # Since we are not in the MAS, the norm adapter is *not* an agent, for simplicity.
+│   run_experiment_adaptation_commandline.py# Python file that is called by the other run_experiment_adaptation_* files 
+│                                           # to actually run all the experiments
+│   run_experiment_adaptation_*             # Python files to be used to set all the combinations of parameters to be run, 
+│                                           # and run them by automatically invoking the _commandline.py file. 
+│                                           # The _local.py file supports execution of experiments on local machine
+│                                           # The other files support execution of experiments on HPC
+│
+└───experiments_adaptation                  # All the results, material, execution logs, dataset conversation, 
+│   │                                       # of the HRI experiments with Nao robot
+│   └───log                                 # Execution logs                     
+│
+└───log                                     # Folder that will contain the logs of execution, if the MAS is run
+│
+└───mas                                     # Folder containing all the code of the MAS and agents of SONAR
+│   └───agent                               # Folder containing all the agents                     
+│   │   └───worker                          # Folder containing all the worker agents                    
+│   │   bdicore.py                          # The BDI agents                     
+│   │   workeragent.py                      # The abstract class implemented by all the worker agents                     
+│   └───norm                                # Folder containing all the modules concerning normative reasoning                     
+│   └───utils                               # Folder containing util files for the mas and the agents                     
+│   basic2.asl                              # The AgentSpeak(L) plan library used by Nao-SONAR in the HRI experiments
+│   basic_minimal_baseline.asl              # The AgentSpeak(L) plan library used by Nao-Chatbot in the HRI experiments
+│   basic_showcase_parrot.asl               # The AgentSpeak(L) plan library used by Nao-Parrot in the introduction of the HRI experiments
+│   
+└───utils                                   # Utilities for SONAR
+```
 
 ## 2. Basic services required to run SONAR
 ### 2.1. XMPP communication server.

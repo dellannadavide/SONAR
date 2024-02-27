@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     logger.info("Starting agent")
     workers_to_start = [
-        Constants.SYSTEM_HANDLER_NAME,
+        Constants.SYSTEM_HANDLER_AME,
         # Constants.NORM_ADAPTER_NAME,
         Constants.CHATTER_NAME,
         # Constants.POSITION_HANDLER_NAME, #to be ignored since replaced by the vision

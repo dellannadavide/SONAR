@@ -64,7 +64,8 @@ class NormAdapter(WorkerAgent):
                             lv]  # retrieve the fuzzy linguistic variable (e.g., DIST) N.B. I am retrieving a SARFuzzyLingVar
                         partition = current_fuzzy_ling_var.fuzzy_sets  # partition a list of DynamicTrapezoidFuzzySet
 
-                        fuzzy_set = None  # retrieve the fuzzy_set (e.g., mid_dist if the rule contains mid_dist)
+                        # retrieve the fuzzy_set (e.g., mid_dist if the rule contains mid_dist)
+                        fuzzy_set = None
                         term = None
                         trap_fs = None
                         for fs in partition:  # for each dynamic trapezoid fuzzy set in the partition
@@ -96,18 +97,22 @@ class NormAdapter(WorkerAgent):
                                 data_max_value))
 
                             if data_stdev_value>0 and data_min_value!=data_max_value:
-                                """ I want to first scale the universe and all variables, if necessary """
+                                """ I want to first scale the universe and all fuzzy sets, if necessary """
                                 curr_uni = current_fuzzy_ling_var.ling_var._universe_of_discourse
                                 logging.info("\tcurrent universe of " + str(current_fuzzy_ling_var) + ": " + str(curr_uni))
                                 new_universe = linearScaleUniverseToA1B1(current_fuzzy_ling_var.ling_var,
                                                                          self.var_maxmin[lv]["min"],
-                                                                         self.var_maxmin[lv]["max"])
+                                                                         self.var_maxmin[lv]["max"]) #the universe is scaled to the actual min and max ever identified (not only to those from the latest set of datapoints
                                 current_fuzzy_ling_var.universe_of_discourse = new_universe
                                 logging.info("\tnew universe of " + str(current_fuzzy_ling_var) + ": " + str(
                                     current_fuzzy_ling_var.universe_of_discourse))
                                 # for fs in partition:
                                 #     new_mfs = fs.scaleLinear(curr_uni[0], curr_uni[1], data_min_value, data_max_value)
                                 #     rulebase.updateMFParams(fs._term, new_mfs)
+
+                                # here I update the support of the current variable instead to the min and max from the latest set of datapoints.
+                                # however why am I not doing it for all the fuzzy sets?
+                                # e.g., shouldn't we compute also an error here like (e.g., a change in support), and compute it for all?
                                 new_mf = trap_fs.updateSupportBoundaries(data_min_value, data_max_value)
                                 rulebase.updateMFParams(trap_fs._term, new_mf)
 

@@ -1,3 +1,5 @@
+import numpy as np
+
 from normadapter2SIMnoagent import NormAdapter2SIMnoagent
 from mas.norm.fuzzysocialinterpreter import FuzzySocialInterpreter
 from mas.norm.fuzzysocialqualifier import FuzzySocialQualifier
@@ -6,6 +8,7 @@ import utils.constants as Constants
 import pandas as pd
 from datetime import datetime
 import sys
+import random
 
 
 def main(argv):
@@ -20,6 +23,7 @@ def main(argv):
         'min_nr_datapoints': int,
         'min_certainty_threshold': float,
         'use_correct_interpretation': bool,
+        'ratio_correct_interpretation': float,
         'consider_past_experience': bool,
         'genetic_algo': str,
         'ga_nr_gen': int,
@@ -100,6 +104,7 @@ def main(argv):
         'trial': [],
         'STEP/DATAPOINT': [],
         'use_correct_interpretation': [],
+        'ratio_correct_interpretation': [],
         'consider_past_experience': [],
         'contextualize': [],
         'min_nr_adaptations_for_contextualizing': [],
@@ -147,6 +152,12 @@ def main(argv):
         if processed_inputs<max_ds_size:
             data = {}
 
+            """
+            ------------------------------
+            Hypothetically the social interpretation could be obtained via inference according to the following.
+            However in the experiments this is ignored for the time being (replaced via randomization of interpretation
+            for simplicity 
+            """
             for socialcue in Constants.LV_SOCIAL_CUES:
                 data[socialcue] = float(df[socialcue][i])
 
@@ -163,12 +174,32 @@ def main(argv):
                     if not social_cue in data.keys():
                         data[social_cue] = 0.0
                 # print("data: " + str(data))
-                social_values, best_social_interpr = fsi.getBestSocialInterpretation(data)
+                """ IMPORTANT THis is the key part that is commented out
+                TO USE THIS, THERE MUST BE SOCIAL INTERPRETATION RULES IN THE FILES rules_DIAMONDS_*"""
+                # social_values, best_social_interpr = fsi.getBestSocialInterpretation(data) #note this is ignored at the moment
+            """ 
+            ------------------------------
+            Until here
+            """
 
             # print(social_values)
             # print(best_social_interpr)
+            correct_interpretation = str(df["SocialInterpretation"][i])
+            # print("correct interpretation: "+str(df["SocialInterpretation"][i]))
             if exp_param["use_correct_interpretation"]:
-                best_social_interpr = str(df["SocialInterpretation"][i])
+                # print("using correct interpretation")
+                best_social_interpr = correct_interpretation
+            else:
+                # print("not using correct interpretation")
+                if random.random() <= exp_param["ratio_correct_interpretation"]:
+                    # print("but still using the correct one due to the ratio of correct")
+                    best_social_interpr = correct_interpretation
+                else:
+                    # print("actually using a randomly picked one")
+                    while best_social_interpr == correct_interpretation:
+                        best_social_interpr = str(np.random.choice(Constants.DIAMONDS_NOT_OVERLAPPING[correct_interpretation]))
+            # print("picked interpretation: " + best_social_interpr)
+
 
             if (not best_social_interpr is None):
                 # print("best social interpretation: " + str(best_social_interpr))
@@ -211,6 +242,7 @@ def main(argv):
 
             df_results['STEP/DATAPOINT'].append(i)
             df_results['use_correct_interpretation'].append(exp_param["use_correct_interpretation"])
+            df_results['ratio_correct_interpretation'].append(exp_param["ratio_correct_interpretation"])
             df_results['consider_past_experience'].append(exp_param["consider_past_experience"])
             df_results['contextualize'].append(exp_param["contextualize"])
             df_results['min_nr_adaptations_for_contextualizing'].append(exp_param["min_nr_adaptations_for_contextualizing"])

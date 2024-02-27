@@ -9,32 +9,6 @@ from mas.utils.moea import PHI_Q
 
 pd.set_option('display.max_columns', None)
 
-# aggregated_final_results = pd.DataFrame()
-# res_folder = "20220918/exp_exp_20220905195629/"
-res_folder = "final/exp_exp_20220929110809/" #G1
-# res_folder = "final/exp_exp_20220929110904/" #G2
-# res_folder = "final/exp_exp_20220929110937/" #G3
-# res_folder = "final/exp_exp_20221115171111/" #G3 missing pt1
-# res_folder = "20220918/exp_exp_20220905195659/"
-# for filename in os.listdir(res_folder):
-#     f = os.path.join(res_folder, filename)
-#     if os.path.isfile(f) and f.endswith(".csv"):
-#         dataset_df = pd.read_csv(f)
-#         last_row = dataset_df.iloc[-1:] # I'm taking only the last row
-#         aggregated_final_results = pd.concat([aggregated_final_results, last_row])
-
-
-# fuzzy_sets_file_austria = "data/fuzzy_rules/social_interpretation2sim/fuzzy_sets_multiple_GOLDSTANDARD_Austria.xlsx"
-# fuzzy_sets_file_us = "data/fuzzy_rules/social_interpretation2sim/fuzzy_sets_multiple_GOLDSTANDARD_US.xlsx"
-# ling_vars_file = "data/fuzzy_rules/social_interpretation2sim/ling_var_multiple.xlsx"
-# rules_file_austria = "data/fuzzy_rules/social_interpretation2sim/rules_DIAMONDS_multiple_Austria.xlsx"
-# rules_file_us = "data/fuzzy_rules/social_interpretation2sim/rules_DIAMONDS_multiple_US.xlsx"
-# fsis = {
-#     "Austria": FuzzySocialInterpreter(fuzzy_sets_file_austria, ling_vars_file, rules_file_austria, 0.2),
-#     "US": FuzzySocialInterpreter(fuzzy_sets_file_us, ling_vars_file, rules_file_us, 0.2)
-# }
-#
-# aggregated_final_results.to_excel(os.path.join(res_folder, "aggr_res.xlsx"))
 mappings = {
     "DIST": {
         "L": "low_distance",
@@ -117,17 +91,7 @@ mapping_ranges = {
 }
 
 res_folders = [
-    # "final/exp_exp_20220929110809/", #G1,
-    #                 "final/exp_exp_20220929110904/", #G2
-                    # "final/exp_exp_20220929110937/", #G3
-                    # "final/exp_exp_20221115171111/", #G3 missing pt1,
-                    # "final/exp_exp_20221115171427/", #G3 missing pt2
-                    # "final/exp_exp_20221213112012/", #g3 longer optim
-                    # "final/25-35k/exp_exp_20221221210716/",
-                    # "final/25-35k/exp_exp_20221221211115/",
-                    # "final/25-35k/exp_exp_20221221211314/",
-                    # "final/5datasets",
-                    "final/5datasets_2040mindp",
+    "exp_exp_20240224164347", #new
     ]
 
 """ Analysis steps
@@ -143,11 +107,20 @@ res_folders = [
 - given the output files of step 1, compute, for every file (i.e., experimetn) the RMSE of the NRMSEerrors of core center and width and of interpretability
 - generate a new file results_<foldername>.xlsx containing one row per experiments with the full list of param + the resulting RMSEs.
 
+In the following:
+if all_steps == True, runs all steps one after the other
+otherwise only runs the step indicated by analysis_step
 
 """
+all_steps = True
+
 analysis_step = 0
 
 if analysis_step == 0:
+    print("----------------------------------------step 0------------------------------------")
+    print("----------------------just print info files in results folder---------------------")
+    print("----------------------------------------------------------------------------------")
+
     for res_folder in res_folders:
         print(res_folder)
         for filename in os.listdir(res_folder):
@@ -171,7 +144,16 @@ if analysis_step == 0:
                 # 'correct_interpretation', 'social_interpretation',
                 # 'certainty_interpretation',
 
+if all_steps:
+    analysis_step = analysis_step + 1
+
 if analysis_step == 1:
+    print("----------------------------------------step 1------------------------------------")
+    print("-----------------from the files obtained by running simulations, -----------------")
+    print("-------------compute, in an efficient way, the interpretability indeces ----------")
+    print("-----------------------------and the NRMSE of every step. ------------------------")
+    print("-----generate a new file <original_filename>_ext.xlsx containing the new info ----")
+    print("----------------------------------------------------------------------------------")
     memory_to_speed_up = {}
 
     for res_folder in res_folders:
@@ -301,7 +283,17 @@ if analysis_step == 1:
                 else:
                     print("Skipping (already exists)")
 
+if all_steps:
+    analysis_step = analysis_step + 1
+
 if analysis_step == 2:
+    print("----------------------------------------step 2------------------------------------")
+    print("----given the output files of step 1, compute, for every file (i.e., experimetn)--")
+    print("----the RMSE of the NRMSEerrors of core center and width and of interpretability--")
+    print("-generate a new file results_<foldername>.xlsx containing one row per experiments-")
+    print("---------------with the full list of param + the resulting RMSEs.-----------------")
+    print("----------------------------------------------------------------------------------")
+
     for res_folder in res_folders:
         res_group = pd.DataFrame()
 
@@ -321,7 +313,7 @@ if analysis_step == 2:
             f = os.path.join(res_folder, filename)
             if os.path.isfile(f) and f.endswith("_ext.xlsx"):
                 print(filename)
-                dataset_df = pd.read_excel(f)
+                dataset_df = pd.read_excel(f, engine='openpyxl')
 
                 last_row = dataset_df.iloc[-1:]  # taking the last row just to store all the experiments parameters
                 res_group = pd.concat([res_group, last_row])
