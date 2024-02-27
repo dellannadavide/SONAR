@@ -1,5 +1,6 @@
 # SONAR: An Adaptive Control Architecture for SOcial Norm Aware Robots
-![alt text](sonar.jpg)
+![SONAR: An Adaptive Control Architecture for SOcial Norm Aware Robots](sonar.jpg)
+
 SONAR is a Python 3.9 resource that provides robot-agnostic decision-making mechanisms for social robots that allow them to account for social norms, practices and cues in interactions with humans.
 
 SONAR is technically a multi-agent system with a hierarchical organization. 
@@ -31,11 +32,6 @@ Below are reported the structure of this repository, and the steps required to i
 ## 1. Structure of this repository
 ```
 SONAR
-│   README.md                               # This file
-│   main.py                                 # Main file to run SONAR. It defines the agents composing the MAS and starts it                   
-│   requirements.txt                        # The list of libraries required to setup and run SONAR
-│   sonar.jpg                               # A figure that overviews the SONAR architecture
-│
 └───data                                    # Data used in the experiments for HRI and for norm-adaptation via simulation
 │   └───fuzzy_rules                         # Data containing info about the fuzzy sets, linguistic variables and fuzzy rules 
 │   │   │                                   # used in the experiments.
@@ -80,6 +76,11 @@ SONAR
 │   basic_showcase_parrot.asl               # The AgentSpeak(L) plan library used by Nao-Parrot in the introduction of the HRI experiments
 │   
 └───utils                                   # Utilities for SONAR
+│
+│   README.md                               # This file
+│   main.py                                 # Main file to run SONAR. It defines the agents composing the MAS and starts it                   
+│   requirements.txt                        # The list of libraries required to setup and run SONAR
+│   sonar.jpg                               # A figure that overviews the SONAR architecture
 ```
 
 ## 2. Basic services required to run SONAR
