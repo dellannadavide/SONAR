@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10719808.svg)](https://doi.org/10.5281/zenodo.10719808)
+
 # SONAR: An Adaptive Control Architecture for SOcial Norm Aware Robots
 ![SONAR: An Adaptive Control Architecture for SOcial Norm Aware Robots](sonar.jpg)
 
