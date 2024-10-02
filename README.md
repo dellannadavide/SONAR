@@ -1,5 +1,9 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10719808.svg)](https://doi.org/10.5281/zenodo.10719808)
 
+Reference article:
+
+Dell’Anna, D., Jamshidnejad, A. SONAR: An Adaptive Control Architecture for Social Norm Aware Robots. Int J of Soc Robotics (2024). [https://doi.org/10.1007/s12369-024-01172-8](https://doi.org/10.1007/s12369-024-01172-8)
+
 # SONAR: An Adaptive Control Architecture for SOcial Norm Aware Robots
 ![SONAR: An Adaptive Control Architecture for SOcial Norm Aware Robots](sonar.jpg)
 
